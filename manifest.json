@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+  "name": "YT Skip Ad",
+  "description": "Automatically closes and removes YouTube ads for you.",
+  "version": "1.0",
+  "icons": {
+    "512": "icons/icon512.png",
+    "128": "icons/icon128.png",
+    "64": "icons/icon64.png",
+    "32": "icons/icon32.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.youtube.com/*"
+      ],
+      "run_at": "document_idle",
+      "js": [
+        "content.js"
+      ]
+    }
+  ]
+}
