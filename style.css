@@ -1,0 +1,63 @@
+body,.reponav-item.selected,.bg-dark , .bg-gray-light,.btn{
+  background-color: #24292e !important;
+  color: #e4e4e4 !important;
+}
+
+.Box-header,.user-profile-nav {
+  background-color: #24292e !important;
+}
+
+a {
+  color: #e4e4e4 !important;
+}
+.MarketplaceBackground-buffer,
+a,
+.branch-name,
+.dropdown-menu,
+.topic-tag-link,
+.commit-tease,
+td,
+.repohead.experiment-repo-nav ,
+.profile-timeline-card-wrapper,.bg-white , .Box
+{background-color: #272d33 !important;}
+
+.btn{background-image: linear-gradient(-180deg,#272d33,#272d33 90%) !important; border: 1px solid #777777 !important;}
+.js-profile-editable-edit-button,.btn-primary {
+  color: #fff !important;
+  background-color: #28a745 !important;
+  background-image: linear-gradient(-180deg,#34d058,#28a745 90%) !important;
+}
+
+.markdown-body .highlight pre, .markdown-body pre {background-color: #838383 !important;}
+
+.branch-name,.pagehead,.Box,.topic-tag-link {
+  border: 1px solid #565656 !important;
+}
+
+.reponav-item.selected {
+  border-color: #e36209 #24292e transparent !important;
+}
+
+.social-count {color: #000000 !important;}
+
+table.files td {
+  border-top: 1px solid #454c52 !important;
+}
+
+table.files td.icon, table.files td.icon .octicon-file-directory {
+  color: rgba(254, 254, 255, 0.5) !important;
+}
+.ajax-pagination-form .ajax-pagination-btn,
+.bg-gray,.bg-white {
+  background: #24292e !important;
+  color: #fff !important;
+}
+
+.branch-name,
+.watch_started,.text-gray,.link-gray-dark ,.text-gray-dark,.color-white{color: #f1f1f1 !important;}
+
+/* active */
+.Box-row--focus-gray.navigation-focus,
+.CopyBlock:active, .CopyBlock:focus, .CopyBlock:hover {
+  background-color: #444 !important;  
+}

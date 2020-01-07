@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "YT Skip Ads",
-  "description": "Automatically closes and removes YouTube ads for you.",
+  "name": "Github dark mode",
+  "description": "github dark mode.",
   "version": "1.0",
   "icons": {
     "512": "icons/icon512.png",
@@ -12,11 +12,14 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.youtube.com/*"
+        "https://*.github.com/*"
       ],
       "run_at": "document_idle",
       "js": [
         "content.js"
+      ],
+      "css": [
+        "style.css"
       ]
     }
   ]

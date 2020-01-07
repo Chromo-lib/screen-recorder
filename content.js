@@ -1,22 +1,37 @@
-// remove Ads right top section
-var rightTopAds = document.getElementById('player-ads');
-if (rightTopAds) {
-  rightTopAds.style.display = 'none';
+const elmts = document.querySelectorAll('.bg-white');
+for (const el of elmts) {
+  el.classList.remove('bg-white');
+  el.classList.add('bg-dark');
 }
 
-// close the ad banner on the video : class => video-ads ytp-ad-module
-var vdBannerAds = document.querySelector('.video-ads');
-if (vdBannerAds) {
-  vdBannerAds.style.display = 'none';
+const elmtsGray = document.querySelectorAll('.bg-gray');
+for (const el of elmtsGray) {
+  el.classList.remove('bg-gray');
+  el.classList.add('bg-dark');
+  console.log(el);
+
 }
 
-// skip video Ad
-var btnClick = (className) => {
-  var button = document.querySelector(className);
-  button.click();
-}
 
-setInterval(() => {
-  btnClick(".ytp-ad-skip-button");
-  btnClick(".ytp-ad-overlay-close-button");
-}, 200);
+window.addEventListener('load', () => {
+  const textGrayDark = document.querySelectorAll('.text-gray-dark');
+  for (const el of textGrayDark) {
+    el.classList.remove('text-gray-dark');
+    el.classList.add('text-white');
+    el.style.color = "#fff !important";
+  }
+
+  const linksGray = document.querySelectorAll('.link-gray-dark');
+  for (const el of linksGray) {
+    el.classList.remove('link-gray-dark');
+    el.classList.add('text-white');
+    el.style.color = "#fff";
+  }
+
+  const bgGrayDark = document.querySelectorAll('.bg-gray-light');
+  for (const el of bgGrayDark) {
+    el.classList.remove('bg-gray-light');
+    el.classList.add('bg-dark');
+  }
+
+})
