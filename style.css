@@ -33,7 +33,7 @@ th{
   background-image: linear-gradient(-180deg,#34d058,#28a745 90%) !important;
 }
 
-.markdown-body .highlight pre, .markdown-body pre {background-color: #838383 !important;}
+.markdown-body .highlight pre, .markdown-body pre {background-color: #000000 !important;}
 
 .branch-name,.pagehead,.Box,.topic-tag-link {
   border: 1px solid #565656 !important;
@@ -64,9 +64,15 @@ table.files td.icon, table.files td.icon .octicon-file-directory {
 .reponav-item .octicon,
 .branch-name,
 .watch_started,.text-gray,.link-gray-dark ,.text-gray-dark,.color-white{color: #f1f1f1 !important;}
-
+.link-gray-dark {
+  color: #e2e2e2!important;
+  background-color: #888888 !important;
+}
+.text-gray-dark,
+.blob-num ,.blob-code-inner,.pl-s .pl-s1, .pl-smi,
+.pl-pds, .pl-s, .pl-s .pl-pse .pl-s1, .pl-sr, .pl-sr .pl-cce, .pl-sr .pl-sra, .pl-sr .pl-sre{color: #fff !important;}
 /* active */
 .Box-row--focus-gray.navigation-focus,
 .CopyBlock:active, .CopyBlock:focus, .CopyBlock:hover {
-  background-color: rgb(109, 109, 109) !important;  
+  background-color: rgb(143, 143, 143) !important;  
 }
