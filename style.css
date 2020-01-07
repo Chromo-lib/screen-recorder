@@ -1,4 +1,4 @@
-body,.reponav-item.selected,.bg-dark , .bg-gray-light,.btn,.orghead,.Box-row--gray{
+body,.reponav-item.selected,.bg-dark , .bg-gray-light,.btn,.orghead,.Box-row--gray,.table-list-header{
   background-color: #24292e !important;
   color: #e4e4e4 !important;
 }
@@ -53,6 +53,9 @@ table.files td.icon, table.files td.icon .octicon-file-directory {
   color: #fff !important;
 }
 
+.dropdown-item,
+.text-emphasized,
+.repository-lang-stats ol.repository-lang-stats-numbers li .lang,
 .reponav-item .octicon,
 .branch-name,
 .watch_started,.text-gray,.link-gray-dark ,.text-gray-dark,.color-white{color: #f1f1f1 !important;}
