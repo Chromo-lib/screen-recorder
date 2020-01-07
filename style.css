@@ -1,4 +1,4 @@
-body,.reponav-item.selected,.bg-dark , .bg-gray-light,.btn{
+body,.reponav-item.selected,.bg-dark , .bg-gray-light,.btn,.orghead,.Box-row--gray{
   background-color: #24292e !important;
   color: #e4e4e4 !important;
 }
@@ -38,7 +38,7 @@ td,
   border-color: #e36209 #24292e transparent !important;
 }
 
-.social-count {color: #000000 !important;}
+.social-count {color: #000000 !important; background-color: rgba(254, 254, 255, 0.5) !important;}
 
 table.files td {
   border-top: 1px solid #454c52 !important;
@@ -53,6 +53,7 @@ table.files td.icon, table.files td.icon .octicon-file-directory {
   color: #fff !important;
 }
 
+.reponav-item .octicon,
 .branch-name,
 .watch_started,.text-gray,.link-gray-dark ,.text-gray-dark,.color-white{color: #f1f1f1 !important;}
 
