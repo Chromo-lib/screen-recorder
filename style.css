@@ -71,7 +71,7 @@ table.files td.icon, table.files td.icon .octicon-file-directory {
   color: #e2e2e2!important;
   background-color: #888888 !important;
 }
-.text-gray-dark,
+
 .blob-num ,.blob-code-inner,.pl-s .pl-s1, .pl-smi,
 .pl-pds, .pl-s, .pl-s .pl-pse .pl-s1, .pl-sr, .pl-sr .pl-cce, .pl-sr .pl-sra, .pl-sr .pl-sre{color: #fff !important;}
 /* active */
@@ -87,4 +87,7 @@ table.files td.icon, table.files td.icon .octicon-file-directory {
 
 .topic-input-container .tag-input .tag-input-inner {color: black !important;}
 .diffstat-summary strong,p {color: #a7a7a7 !important;}
+
 h4,.diffstat-summary {color: blanchedalmond !important;}
+
+.text-gray-dark{background-color: #f1f1f1 !important;}
