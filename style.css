@@ -80,4 +80,11 @@ table.files td.icon, table.files td.icon .octicon-file-directory {
   background-color: rgb(143, 143, 143) !important;  
 }
 
+.Box--condensed .Box-body, .Box--condensed .Box-footer, .Box--condensed .Box-header,
+.suggester li,.topic-tag-action,.traffic-graph,.traffic-graph-stats .summary-stats li,
+.markdown-body .anchor,.markdown-body h1 .octicon-link, .markdown-body h2 .octicon-link, .markdown-body h3 .octicon-link, .markdown-body h4 .octicon-link, .markdown-body h5 .octicon-link, .markdown-body h6 .octicon-link,
 .copyable-terminal {background-color: #222 !important; color: aliceblue !important;}
+
+.topic-input-container .tag-input .tag-input-inner {color: black !important;}
+.diffstat-summary strong,p {color: #a7a7a7 !important;}
+h4,.diffstat-summary {color: blanchedalmond !important;}
