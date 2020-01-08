@@ -79,3 +79,5 @@ table.files td.icon, table.files td.icon .octicon-file-directory {
 .CopyBlock:active, .CopyBlock:focus, .CopyBlock:hover {
   background-color: rgb(143, 143, 143) !important;  
 }
+
+.copyable-terminal {background-color: #222 !important; color: aliceblue !important;}
