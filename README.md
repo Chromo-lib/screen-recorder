@@ -1,13 +1,20 @@
-# Github dark mode
-Browser extension..
+# S-RECORDER
 
-## Icon
+Browser extension  
+Screen recorder.
+
+### Icon
 
 ![icon](icons/icon64.png)
 
 ### Capture
-![capture](https://i.ibb.co/VWpcG2H/Capture.png)
 
+![Capture](https://i.ibb.co/3s6R69M/Capture.png)
+
+### Features
+- [ ] Screen recorder.
+- [ ] Video to gif.
+- [ ] Take snapshot.
 
 # License
 MIT

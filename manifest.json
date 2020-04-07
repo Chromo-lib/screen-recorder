@@ -1,26 +1,20 @@
 {
   "manifest_version": 2,
-  "name": "Github dark mode",
-  "description": "github dark mode.",
+  "name": "S-RECORDER",
+  "description": "Screen recorder",
   "version": "1.0",
   "icons": {
-    "512": "icons/icon512.png",
+    "256": "icons/icon256.png",
     "128": "icons/icon128.png",
     "64": "icons/icon64.png",
     "32": "icons/icon32.png"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://*.github.com/*"
-      ],
-      "run_at": "document_idle",
-      "js": [
-        "content.js"
-      ],
-      "css": [
-        "style.css"
-      ]
-    }
+  "browser_action": {
+    "default_title": "S-RECORDER",
+    "default_popup": "popup.html",
+    "browser_style": true
+  },
+  "permissions": [
+    "desktopCapture"
   ]
 }
