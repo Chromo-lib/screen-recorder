@@ -12,20 +12,19 @@
 
 <body>
 
-  <div class="container">
-    <button id="btn-record">record</button>
-    <button id="btn-cancel">cancel</button>
+  <div class="container di-flex">
+    <button id="btn-record" class="wi-100 di-flex ripple">
+      <img src="assets/record.svg" alt="record" width="20" height="20" class="mr-10" /> record
+    </button>
 
-    <button id="btn-start-record">start record</button>
-    <button id="btn-cancel-record">cancel record</button>
+    <div class="wi-100 di-flex" id="vid-rec"></div>
 
-    <div>
-      <audio src="" id="audio"></audio>
-      <video src="" id="video" controls></video>
-    </div>
+    <button id="btn-download" class="wi-100 di-flex ripple cl-green">
+      <img src="assets/download.svg" alt="record" width="20" height="20" class="mr-10" /> download
+    </button>
   </div>
 
-
+  <script src="scripts/api.js" defer></script>
   <script src="scripts/popup.js" defer></script>
 </body>
 

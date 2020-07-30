@@ -13,14 +13,61 @@ html {
 
 body {
   margin: 0;
+  overflow: hidden;
 }
 
-body, .container {
-  width: 1280px;
-  height: 720px;
+.container {
+  padding: 10px;
+  min-width: 150px;
 }
 
 video {
-  width: 400px;
-  height: 200px;
+  max-height: 200px;
+  margin: 10px 0;
+}
+
+#audio {
+  display: none;
+}
+
+.di-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.wi-100 {
+  width: 100%;
+}
+
+.cl-green { background-color: #4CAF50 }
+.cl-rose { background-color: #E91E63;}
+
+.mr-10 {margin:10px}
+
+button {
+  border: none;
+  border-radius: 2px;
+  font-size: 12px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  background-color: #2196f3;
+  box-shadow: 0 0 4px #999;
+  outline: none;
+  letter-spacing: 2px;
+}
+
+.ripple {
+  background-position: center;
+  transition: background 0.8s;
+}
+.ripple:hover {
+  background: #000000 radial-gradient(circle, transparent 1%, #000000 1%) center/15000%;
+}
+.ripple:active {
+  background-color: #6eb9f7;
+  background-size: 100%;
+  transition: background 0s;
 }
