@@ -16,12 +16,11 @@ chrome.storage.sync.get(['blobUrl'], function (result) {
 function listenToBackgroundMessages (message, sender, sendResponse) {
 
   if (message.startRecording) {
-    //chrome.storage.sync.clear();
+    chrome.storage.sync.clear();
   }
-
+  
   // when user stop recording
   if (message.blobUrl) {
-    // create video recording
     createVidElement(message.blobUrl);
     blobUrl = message.blobUrl;
     btnDownload.style.display = 'flex';

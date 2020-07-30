@@ -55,7 +55,7 @@ function receiver (request, sender, response) {
           let blobUrl = window.URL.createObjectURL(blob);
 
           chrome.runtime.sendMessage({ blobUrl });
-          chrome.storage.sync.set({ blobUrl });
+          chrome.storage.sync.set({ blobUrl }, () => { });
         };
 
         mediaRecorder.start(100);
