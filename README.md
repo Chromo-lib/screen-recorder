@@ -20,4 +20,4 @@
 - [ ] Take snapshot.
 
 # License
-MIT
+Apache Version 2.0

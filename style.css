@@ -13,7 +13,12 @@ html {
 
 body {
   margin: 0;
-  overflow: hidden;
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .container {
@@ -41,19 +46,27 @@ video {
   width: 100%;
 }
 
-.cl-green { background-color: #4CAF50 }
-.cl-rose { background-color: #E91E63;}
+.cl-green {
+  background-color: #4CAF50
+}
 
-.mr-10 {margin:10px}
+.cl-rose {
+  background-color: #E91E63;
+}
+
+.mr-10 {
+  margin: 10px
+}
 
 button {
   border: none;
   border-radius: 2px;
-  font-size: 12px;
+  font-size: 14px;
   text-transform: uppercase;
   cursor: pointer;
   color: white;
   background-color: #2196f3;
+  padding: 7px 25px;
   box-shadow: 0 0 4px #999;
   outline: none;
   letter-spacing: 2px;
@@ -63,9 +76,11 @@ button {
   background-position: center;
   transition: background 0.8s;
 }
+
 .ripple:hover {
   background: #000000 radial-gradient(circle, transparent 1%, #000000 1%) center/15000%;
 }
+
 .ripple:active {
   background-color: #6eb9f7;
   background-size: 100%;
