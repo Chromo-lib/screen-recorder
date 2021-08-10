@@ -1,78 +1,56 @@
-let streamId;
-let mediaRecorder;
 let recordedChunks = [];
+let mediaRecorder;
+let stream;
 
-function downloadVid (filename, blobUrl) {
-  window.prompt(filename)
+async function receiver (request) {
+  if (request.message === 'start-record') {
 
-  let downloadLink = document.createElement('a');
-  downloadLink.href = URL.createObjectURL(blobUrl);
-  downloadLink.download = `${filename}.webm`;
+    stream = await navigator.mediaDevices.getDisplayMedia({ audio: true, video: true });
+    mediaRecorder = new MediaRecorder(stream, { mimeType: getSupportedMimeTypes() });
 
-  document.body.appendChild(downloadLink);
-  downloadLink.click();
-  URL.revokeObjectURL(blobUrl);
-  document.body.removeChild(downloadLink);
-}
+    const mediaStream = new MediaStream();
+    const videoTrack = stream.getVideoTracks()[0];
+    mediaStream.addTrack(videoTrack);
 
-async function receiver (request, sender, response) {
+    mediaRecorder.ondataavailable = function (e) {
+      if (e.data.size > 0) {
+        recordedChunks.push(e.data);
+      }
+    };
 
-  let requestId;
-  const screenOptions = ['screen', 'window', 'tab'];
-  const options = { canRequestAudioTrack: true };
-
-  let mediaRecorder;
-  let mimeType = 'video/webm';
-
-  if (request.message === 'start-recording') {
-
-    chrome.runtime.sendMessage({ startRecording: 'start-recording' });
-
-    let stream = await recordScreen();
-    mediaRecorder = createRecorder(stream, mimeType);
-
-    async function recordScreen () {
-      return await navigator.mediaDevices.getDisplayMedia({
-        audio: false,
-        video: { mediaSource: "screen" }
-      });
+    mediaRecorder.onstop = function () {      
+      openDownloadTab(recordedChunks)
+      recordedChunks = []
     }
 
-    function createRecorder (stream, mimeType) {
-      // the stream data is stored in this array
-      let recordedChunks = [];
-
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm; codecs=vp9" });
-
-      mediaRecorder.ondataavailable = function (e) {
-        if (e.data.size > 0) {
-          recordedChunks.push(e.data);
-        }
-      };
-
-      mediaRecorder.onstop = function () {
-        saveFile(recordedChunks);
-        recordedChunks = [];
-      };
-
-      mediaRecorder.start(200);
-      return mediaRecorder;
+    mediaRecorder.oninactive = function () {
+      mediaRecorder.stop();
+      openDownloadTab(recordedChunks)
+      recordedChunks = []
     }
 
-    function saveFile (recordedChunks) {
-      const blob = new Blob(recordedChunks, { type: 'video/webm' });
-      //downloadVid(blobUrl)
-      let blobUrl = window.URL.createObjectURL(blob);
-
-      chrome.tabs.create({ url: 'download.html?blob=' + blobUrl });
-
-      //chrome.runtime.sendMessage({ blobUrl });
-    }
+    mediaRecorder.start(100);
   }
 
-  if (request.message === 'stop-recording') {
+  if (request.message === 'stop-record') {
     mediaRecorder.stop();
   }
+}
+
+function openDownloadTab (recordedChunks) {
+  const blob = new Blob(recordedChunks, { type: getSupportedMimeTypes() });
+  let blobUrl = window.URL.createObjectURL(blob);
+  chrome.tabs.create({ url: 'download.html?blob=' + blobUrl });
+}
+
+function getSupportedMimeTypes () {
+  const possibleTypes = [
+    'video/webm;codecs=vp9,opus',
+    'video/webm;codecs=vp8,opus',
+    'video/webm;codecs=h264,opus',
+    'video/mp4;codecs=h264,aac',
+  ];
+  return possibleTypes.filter(mimeType => MediaRecorder.isTypeSupported(mimeType))[0]
 }
 
 chrome.runtime.onMessage.addListener(receiver);

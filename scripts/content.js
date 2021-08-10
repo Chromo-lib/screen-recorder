@@ -1,6 +1,10 @@
-function receiver (request, sender, response) {
-  if (request.message === 'start-record') {    
-    chrome.runtime.sendMessage({ message: 'start-recording' });
+function receiver (request) {
+  if (request.message === 'start-record') {
+    chrome.runtime.sendMessage({ message: 'start-record' });
+  }
+
+  if (request.message === 'stop-record') {
+    chrome.runtime.sendMessage({ message: 'stop-record' });
   }
 }
 

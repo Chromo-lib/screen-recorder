@@ -7,15 +7,17 @@ vid.src = blobUrl
 const onDownloadVid = () => {
   let filename = window.prompt('Please enter video file name: ')
 
-  let downloadLink = document.createElement('a');
-  downloadLink.href = blobUrl;
-  downloadLink.download = `${filename}.webm`;
+  let link = document.createElement('a');
+  link.href = blobUrl;
+  link.download = `${filename}.webm`;
 
-  document.body.appendChild(downloadLink);
-  downloadLink.click();
+  document.body.appendChild(link);
+  link.click();
 
-  URL.revokeObjectURL(blobUrl);
-  document.body.removeChild(downloadLink);
+  setTimeout(function() {
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  }, 100);
 }
 
 window.onbeforeunload = function (e) {
