@@ -13,8 +13,7 @@ html {
 
 body {
   margin: 0;
-  min-height: 100vh;
-  min-width: 100vw;
+  min-width: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -27,15 +26,47 @@ body {
 }
 
 video {
-  max-height: 200px;
+  height: 60%;
+  width: 60%;
   margin: 10px 0;
 }
 
-#audio {
-  display: none;
+select, button {
+  border: none;
+  border-radius: 2px;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  background-color: #f94646;
+  padding: 7px 25px;
+  box-shadow: 0 0 4px #999;
+  outline: none;
+  letter-spacing: 2px;
+  line-height: 1.5;
 }
 
-.di-flex {
+select {
+  background: #03a9f4;
+  width: 100%;
+}
+
+.ripple {
+  background-position: center;
+  transition: background 0.8s;
+}
+
+.ripple:hover {
+  background: #000000 radial-gradient(circle, transparent 1%, #000000 1%) center/15000%;
+}
+
+.ripple:active {
+  background-color: #6eb9f7;
+  background-size: 100%;
+  transition: background 0s;
+}
+
+.d-flex {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -55,34 +86,9 @@ video {
 }
 
 .mr-10 {
-  margin: 10px
+  margin-right: 10px
 }
 
-button {
-  border: none;
-  border-radius: 2px;
-  font-size: 14px;
-  text-transform: uppercase;
-  cursor: pointer;
-  color: white;
-  background-color: #f94646;
-  padding: 7px 25px;
-  box-shadow: 0 0 4px #999;
-  outline: none;
-  letter-spacing: 2px;
-}
-
-.ripple {
-  background-position: center;
-  transition: background 0.8s;
-}
-
-.ripple:hover {
-  background: #000000 radial-gradient(circle, transparent 1%, #000000 1%) center/15000%;
-}
-
-.ripple:active {
-  background-color: #6eb9f7;
-  background-size: 100%;
-  transition: background 0s;
+.mb-10 {
+  margin-bottom: 10px
 }

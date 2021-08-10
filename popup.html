@@ -13,13 +13,24 @@
 </head>
 
 <body>
-  <div class="container di-flex">
-    <button id="btn-record" class="wi-100 di-flex ripple">
-      <img src="assets/record.svg" alt="record" width="20" height="20" class="mr-10" /> record
-    </button>
+  <div class="container d-flex">
 
-    <button id="btn-stop" class="wi-100 di-flex ripple">
-      <img src="assets/stop.svg" alt="stop" width="20" height="20" class="mr-10" /> stop
+    <form class="mb-10" id="form-config">
+
+      <select class="mb-10" name="mic" id="micophone">
+        <option value="screen">micophone</option>
+        <option value="disabled">disabled</option>
+      </select>
+
+      <select name="video" id="media-source">
+        <option value="screen">screen</option>
+        <option value="window">window</option>
+        <option value="tab">tab</option>
+      </select>
+    </form>
+
+    <button id="btn-record" class="wi-100 d-flex ripple">
+      <img src="assets/record.svg" alt="record" width="20" height="20" class="mr-10" /> record
     </button>
   </div>
 

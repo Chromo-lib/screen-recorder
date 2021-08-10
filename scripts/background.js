@@ -1,47 +1,11 @@
-let recordedChunks = [];
-let mediaRecorder;
-let stream;
+'use strict';
 
-async function receiver (request) {
-  if (request.message === 'start-record') {
-
-    stream = await navigator.mediaDevices.getDisplayMedia({ audio: true, video: true });
-    mediaRecorder = new MediaRecorder(stream, { mimeType: getSupportedMimeTypes() });
-
-    const mediaStream = new MediaStream();
-    const videoTrack = stream.getVideoTracks()[0];
-    mediaStream.addTrack(videoTrack);
-
-    mediaRecorder.ondataavailable = function (e) {
-      if (e.data.size > 0) {
-        recordedChunks.push(e.data);
-      }
-    };
-
-    mediaRecorder.onstop = function () {      
-      openDownloadTab(recordedChunks)
-      recordedChunks = []
-    }
-
-    mediaRecorder.oninactive = function () {
-      mediaRecorder.stop();
-      openDownloadTab(recordedChunks)
-      recordedChunks = []
-    }
-
-    mediaRecorder.start(100);
-  }
-
-  if (request.message === 'stop-record') {
-    mediaRecorder.stop();
-  }
-}
-
-function openDownloadTab (recordedChunks) {
-  const blob = new Blob(recordedChunks, { type: getSupportedMimeTypes() });
-  let blobUrl = window.URL.createObjectURL(blob);
-  chrome.tabs.create({ url: 'download.html?blob=' + blobUrl });
-}
+const notify = e => chrome.notifications.create({
+  type: 'basic',
+  iconUrl: '../icons/icon64.png',
+  title: chrome.runtime.getManifest().name,
+  message: e.message || e
+});
 
 function getSupportedMimeTypes () {
   const possibleTypes = [
@@ -53,4 +17,138 @@ function getSupportedMimeTypes () {
   return possibleTypes.filter(mimeType => MediaRecorder.isTypeSupported(mimeType))[0]
 }
 
-chrome.runtime.onMessage.addListener(receiver);
+function openDownloadTab (recordedChunks) {
+  console.log('openDownloadTab');
+  const blob = new Blob(recordedChunks, { type: getSupportedMimeTypes() });
+  let blobUrl = window.URL.createObjectURL(blob);
+  chrome.tabs.create({ url: 'download.html?blob=' + blobUrl });
+}
+
+let mediaRecorder = null;
+let tracks = [];
+const chunks = [];
+
+const onMessage = async (request) => {
+  if (request.message === 'start-record') {
+    try {
+      if (request.audio === 'mic' || request.audio === 'mixed') {
+        const state = (await navigator.permissions.query({ name: 'microphone' })).state;
+        if (state !== 'granted') {
+          return chrome.windows.create({
+            url: chrome.extension.getURL('../permission/index.html?' + `video=${request.video}&audio=${request.audio}`),
+            width: 350,
+            height: 350,
+            type: 'popup'
+          });
+        }
+      }
+
+      const type = [request.video];
+      if (request.audio === 'system' || request.audio === 'mixed') {
+        type.push('audio');
+      }
+
+      const requestId = chrome.desktopCapture.chooseDesktopMedia(type, async streamKey => {
+        try {
+          tracks = [];
+          const constraints = {
+            video: {
+              mandatory: {
+                chromeMediaSource: 'desktop',
+                chromeMediaSourceId: streamKey
+              }
+            }
+          };
+
+          if (request.audio === 'system' || request.audio === 'mixed') {
+            constraints.audio = {
+              mandatory: {
+                chromeMediaSource: 'desktop',
+                chromeMediaSourceId: streamKey
+              }
+            };
+          }
+
+          constraints.video.mandatory.maxWidth = screen.width * 2;
+          constraints.video.mandatory.maxHeight = screen.height * 2;
+
+          let stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+          if (request.audio === 'mic' || request.audio === 'mixed') {
+
+            const audio = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            if (stream.getAudioTracks().length === 0) {
+              for (const track of audio.getAudioTracks()) {
+                stream.addTrack(track);
+              }
+            }
+            else {
+              try {
+                const context = new AudioContext();
+                const destination = context.createMediaStreamDestination();
+                context.createMediaStreamSource(audio).connect(destination);
+                context.createMediaStreamSource(stream).connect(destination);
+                const ns = new MediaStream();
+                stream.getVideoTracks().forEach(track => ns.addTrack(track));
+                destination.stream.getAudioTracks().forEach(track => ns.addTrack(track));
+                tracks.push(...stream.getTracks());
+                stream = ns;
+              }
+              catch (e) {
+                console.log(e);
+                notify(e);
+              }
+            }
+          }
+
+          tracks.push(...stream.getTracks());
+          mediaRecorder = new MediaRecorder(stream, { mime: 'video/webm' });
+
+          mediaRecorder.onerror = e => {
+            mediaRecorder.stop()
+            notify(e.message)
+          }
+
+          mediaRecorder.ondataavailable = e => {
+            if (e.data.size) {
+              chunks.push(e.data);
+            }
+          }
+
+          mediaRecorder.onstop = e => {
+            console.log('stop', mediaRecorder.state);
+            openDownloadTab(chunks)
+          }
+
+          stream.getVideoTracks()[0].onended = function () {
+            chrome.desktopCapture.cancelChooseDesktopMedia(requestId)
+            setTimeout(() => {
+              tracks.forEach(track => track.stop());
+              mediaRecorder.stop();
+            }, 1000);
+          };
+
+          mediaRecorder.start(100);
+        }
+        catch (e) {
+          console.log(e);
+          notify(e.message || 'Capturing Failed with an unknown error');
+        }
+      });
+    }
+    catch (e) {
+      notify(e.message || 'Capturing Failed with an unknown error');
+    }
+  }
+
+  if (request.message === 'stop-record' && tracks && mediaRecorder) {
+    if (mediaRecorder.state !== 'inactive') {
+      tracks.forEach(track => track.stop());
+      mediaRecorder.stop()
+    }
+    openDownloadTab(chunks)
+  }
+};
+
+chrome.runtime.onMessage.addListener(onMessage);

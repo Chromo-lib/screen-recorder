@@ -9,7 +9,7 @@ const onDownloadVid = () => {
 
   let link = document.createElement('a');
   link.href = blobUrl;
-  link.download = `${filename}.webm`;
+  link.download = `${filename}.mp4`;
 
   document.body.appendChild(link);
   link.click();

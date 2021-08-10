@@ -18,7 +18,8 @@
   "permissions": [
     "desktopCapture",
     "activeTab",
-    "storage"
+    "storage",
+    "notifications"
   ],
   "background": {
     "scripts": [
