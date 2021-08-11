@@ -1,23 +1,31 @@
-let vid = document.getElementById('vid')
-
+const vid = document.getElementById('vid')
 const blobUrl = window.location.search.split('=')[1];
 
 vid.src = blobUrl
 
-const onDownloadVid = () => {
-  let filename = window.prompt('Please enter video file name: ')
+const onDownloadVid = (e) => {
+  try {
+    e.preventDefault();
 
-  let link = document.createElement('a');
-  link.href = blobUrl;
-  link.download = `${filename}.mp4`;
+    const target = e.target.elements;
 
-  document.body.appendChild(link);
-  link.click();
+    let vidType = target[0].value || 'webm';
+    let filename = target[1].value || 'reco';
 
-  setTimeout(function () {
-    document.body.removeChild(link);
+    let link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = `${filename}.${vidType}`;
+
+    document.body.appendChild(link);
+    link.click();
+
+    setTimeout(function () {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    }, 100);
+  } catch (error) {
     window.URL.revokeObjectURL(blobUrl);
-  }, 100);
+  }
 }
 
 window.onbeforeunload = function (e) {
@@ -35,4 +43,4 @@ window.onbeforeunload = function (e) {
   }
 };
 
-document.getElementById('btn-download').addEventListener('click', onDownloadVid, false)
+document.getElementById('form-download').addEventListener('submit', onDownloadVid, false)

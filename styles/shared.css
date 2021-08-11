@@ -1,0 +1,101 @@
+:root {
+  --light:#7a7a7a;
+  --black:#181717;
+  --green:#4CAF50;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: sans-serif;
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+  margin: 0;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+ button {
+  border: none;
+  border-radius: 4px;  
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  background-color: var(--black);
+  padding: 10px 25px;
+  outline: none;
+  letter-spacing: 2px;
+  line-height: 1.5;
+  transition: opacity .25s;
+}
+
+input, select {
+  padding: 10px 15px;
+  width: 100%;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+input[type="checkbox"] {padding: 0; width: 15px; margin-right: 15px;}
+
+label {
+  color: var(--light);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+svg path{
+  fill: var(--light);
+}
+
+button:hover {opacity: 0.8;}
+
+.d-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.vertical-align {display: flex; align-items: center;}
+
+.w-100 {
+  width: 100%;
+}
+
+.cl-green {
+  background-color: #4CAF50
+}
+
+.active-tab svg path{fill: var(--black);}
+
+.mr-10 {
+  margin-right: 10px
+}
+
+.mb-10 {
+  margin-bottom: 10px
+}
+
+.mb-20 {
+  margin-bottom: 20px
+}
+
+.mt-10 {
+  margin-top: 10px
+}

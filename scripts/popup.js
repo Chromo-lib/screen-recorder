@@ -13,13 +13,6 @@ let config = {
 
 navigator.mediaDevices.enumerateDevices()
   .then(enumerator => {
-
-    enumerator.push({
-      label: 'Disabled',
-      kind: 'audioinput',
-      deviceId: null
-    });
-
     enumerator.forEach(input => {
       if (input.kind === "audioinput" && input.label) {
         const option = document.createElement('option')
@@ -49,19 +42,20 @@ function onVideMediaSource (e) {
   }
 }
 
-function onConfig (e) {
+async function onStartRecord (e) {
   e.preventDefault();
 
-  let name = e.target.name;
-  let value = e.target.value;
+  const target = e.target.elements;
 
-  if (name === 'notification') value = JSON.parse(value);
+  let audioDeviceID = target[0].value;
+  let notification = JSON.parse(target[1].checked);
 
-  config = { ...config, [name]: value };
-}
-
-async function startRecord () {
-  await sendMsg({ message: 'start-record', ...config });
+  await sendMsg({
+    message: 'start-record',
+    ...config,
+    audioDeviceID,
+    notification
+  });
 }
 
 function listenToBackgroundMessages (message, sender, sendResponse) { }
@@ -73,7 +67,6 @@ async function sendMsg (msg) {
   });
 }
 
-btnRecord.addEventListener('click', startRecord, false);
 videoMediaSource.addEventListener('click', onVideMediaSource)
-formConfig.addEventListener('change', onConfig)
+formConfig.addEventListener('submit', onStartRecord)
 chrome.runtime.onMessage.addListener(listenToBackgroundMessages);

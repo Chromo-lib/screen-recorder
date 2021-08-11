@@ -25,11 +25,14 @@ function openDownloadTab (recordedChunks) {
 
 let mediaRecorder = null;
 let tracks = [];
-const chunks = [];
+let chunks = [];
 
 const onMessage = async (request) => {
   if (request.message === 'start-record') {
     try {
+      
+      chunks = [];
+
       if (request.audio === 'mic' || request.audio === 'mixed') {
         const state = (await navigator.permissions.query({ name: 'microphone' })).state;
         if (state !== 'granted') {
@@ -73,7 +76,7 @@ const onMessage = async (request) => {
 
           let stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-          const audio = await navigator.mediaDevices.getUserMedia({
+          const audioStream = await navigator.mediaDevices.getUserMedia({
             audio: {
               noiseSuppression: true,
               echoCancellation: true,
@@ -82,7 +85,7 @@ const onMessage = async (request) => {
           });
 
           if (stream.getAudioTracks().length === 0) {
-            for (const track of audio.getAudioTracks()) {
+            for (const track of audioStream.getAudioTracks()) {
               stream.addTrack(track);
             }
           }
@@ -90,7 +93,7 @@ const onMessage = async (request) => {
             try {
               const context = new AudioContext();
               const destination = context.createMediaStreamDestination();
-              context.createMediaStreamSource(audio).connect(destination);
+              context.createMediaStreamSource(audioStream).connect(destination);
               context.createMediaStreamSource(stream).connect(destination);
               const ns = new MediaStream();
               stream.getVideoTracks().forEach(track => ns.addTrack(track));
@@ -123,12 +126,16 @@ const onMessage = async (request) => {
             openDownloadTab(chunks)
           }
 
+          console.log(request.audio);
+
           stream.getVideoTracks()[0].onended = function () {
+            //audioStream.getAudioTracks()[0].enabled = true;
             chrome.desktopCapture.cancelChooseDesktopMedia(requestId)
+
             setTimeout(() => {
               tracks.forEach(track => track.stop());
-              mediaRecorder.stop();
-            }, 1000);
+              mediaRecorder.stop();              
+            }, 100);
           };
 
           mediaRecorder.start(100);
