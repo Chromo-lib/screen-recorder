@@ -1,6 +1,6 @@
 let vid = document.getElementById('vid')
 
-const blobUrl = window.location.search.split('=')[1]
+const blobUrl = window.location.search.split('=')[1];
 
 vid.src = blobUrl
 
@@ -14,21 +14,25 @@ const onDownloadVid = () => {
   document.body.appendChild(link);
   link.click();
 
-  setTimeout(function() {
+  setTimeout(function () {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
   }, 100);
 }
 
 window.onbeforeunload = function (e) {
-  if (blobUrl) {
-    URL.revokeObjectURL(blobUrl)
+  try {
+    if (blobUrl) {
+      window.URL.revokeObjectURL(blobUrl)
+    }
+
+    const confirmationMessage = 'Are you sure you want to leave?';
+    (e || window.event).returnValue = confirmationMessage;
+
+    return confirmationMessage;
+  } catch (error) {
+    window.URL.revokeObjectURL(blobUrl);
   }
-
-  const confirmationMessage = 'Are you sure you want to leave?';
-
-  (e || window.event).returnValue = confirmationMessage;
-  return confirmationMessage;
 };
 
 document.getElementById('btn-download').addEventListener('click', onDownloadVid, false)

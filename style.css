@@ -1,3 +1,9 @@
+:root {
+  --light:#7a7a7a;
+  --black:#181717;
+  --green:#4CAF50;
+}
+
 *,
 *::before,
 *::after {
@@ -13,15 +19,17 @@ html {
 
 body {
   margin: 0;
-  min-width: 200px;
+  min-width: 240px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .container {
-  padding: 10px;
+  padding: 15px;
   min-width: 150px;
 }
 
@@ -31,40 +39,65 @@ video {
   margin: 10px 0;
 }
 
-select, button {
+#video-media-source {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+
+#video-media-source li { 
+  text-align: center; padding: 10px; cursor: pointer;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--light);
+}
+
+#video-media-source li svg { 
+  width: 40px;
+  margin-bottom: 5px;
+}
+
+ button {
   border: none;
-  border-radius: 2px;
-  font-size: 14px;
+  border-radius: 4px;  
   text-transform: uppercase;
   cursor: pointer;
   color: white;
-  background-color: #f94646;
-  padding: 7px 25px;
-  box-shadow: 0 0 4px #999;
+  background-color: var(--black);
+  padding: 10px 25px;
   outline: none;
   letter-spacing: 2px;
   line-height: 1.5;
+  transition: opacity .25s;
 }
 
-select {
-  background: #03a9f4;
+input, select {
+  padding: 10px 15px;
   width: 100%;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-.ripple {
-  background-position: center;
-  transition: background 0.8s;
+input[type="checkbox"] {padding: 0; width: 15px; margin-right: 15px;}
+
+label {
+  color: var(--light);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.5;
 }
 
-.ripple:hover {
-  background: #000000 radial-gradient(circle, transparent 1%, #000000 1%) center/15000%;
+svg path{
+  fill: var(--light);
 }
 
-.ripple:active {
-  background-color: #6eb9f7;
-  background-size: 100%;
-  transition: background 0s;
-}
+button:hover {opacity: 0.8;}
 
 .d-flex {
   display: flex;
@@ -72,6 +105,8 @@ select {
   justify-content: center;
   align-items: center;
 }
+
+.vertical-align {display: flex; align-items: center;}
 
 .wi-100 {
   width: 100%;
@@ -81,9 +116,7 @@ select {
   background-color: #4CAF50
 }
 
-.cl-rose {
-  background-color: #E91E63;
-}
+.active-tab svg path{fill: var(--black);}
 
 .mr-10 {
   margin-right: 10px
@@ -91,4 +124,12 @@ select {
 
 .mb-10 {
   margin-bottom: 10px
+}
+
+.mb-20 {
+  margin-bottom: 20px
+}
+
+.mt-10 {
+  margin-top: 10px
 }

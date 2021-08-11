@@ -8,17 +8,16 @@ const notify = e => chrome.notifications.create({
 });
 
 function getSupportedMimeTypes () {
-  const possibleTypes = [
+  const mimeTypes = [
     'video/webm;codecs=vp9,opus',
     'video/webm;codecs=vp8,opus',
     'video/webm;codecs=h264,opus',
     'video/mp4;codecs=h264,aac',
   ];
-  return possibleTypes.filter(mimeType => MediaRecorder.isTypeSupported(mimeType))[0]
+  return mimeTypes.filter(mimeType => MediaRecorder.isTypeSupported(mimeType))[0]
 }
 
 function openDownloadTab (recordedChunks) {
-  console.log('openDownloadTab');
   const blob = new Blob(recordedChunks, { type: getSupportedMimeTypes() });
   let blobUrl = window.URL.createObjectURL(blob);
   chrome.tabs.create({ url: 'download.html?blob=' + blobUrl });
@@ -74,40 +73,43 @@ const onMessage = async (request) => {
 
           let stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-          if (request.audio === 'mic' || request.audio === 'mixed') {
-
-            const audio = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-            if (stream.getAudioTracks().length === 0) {
-              for (const track of audio.getAudioTracks()) {
-                stream.addTrack(track);
-              }
+          const audio = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              noiseSuppression: true,
+              echoCancellation: true,
+              deviceId: request.audioDeviceID
             }
-            else {
-              try {
-                const context = new AudioContext();
-                const destination = context.createMediaStreamDestination();
-                context.createMediaStreamSource(audio).connect(destination);
-                context.createMediaStreamSource(stream).connect(destination);
-                const ns = new MediaStream();
-                stream.getVideoTracks().forEach(track => ns.addTrack(track));
-                destination.stream.getAudioTracks().forEach(track => ns.addTrack(track));
-                tracks.push(...stream.getTracks());
-                stream = ns;
-              }
-              catch (e) {
-                console.log(e);
-                notify(e);
-              }
+          });
+
+          if (stream.getAudioTracks().length === 0) {
+            for (const track of audio.getAudioTracks()) {
+              stream.addTrack(track);
+            }
+          }
+          else {
+            try {
+              const context = new AudioContext();
+              const destination = context.createMediaStreamDestination();
+              context.createMediaStreamSource(audio).connect(destination);
+              context.createMediaStreamSource(stream).connect(destination);
+              const ns = new MediaStream();
+              stream.getVideoTracks().forEach(track => ns.addTrack(track));
+              destination.stream.getAudioTracks().forEach(track => ns.addTrack(track));
+              tracks.push(...stream.getTracks());
+              stream = ns;
+            }
+            catch (e) {
+              console.log(e);
+              if(request.notification) notify(e);
             }
           }
 
           tracks.push(...stream.getTracks());
-          mediaRecorder = new MediaRecorder(stream, { mime: 'video/webm' });
+          mediaRecorder = new MediaRecorder(stream, { mimeType: getSupportedMimeTypes() });
 
           mediaRecorder.onerror = e => {
             mediaRecorder.stop()
-            notify(e.message)
+            if (request.notification) notify(e.message)
           }
 
           mediaRecorder.ondataavailable = e => {
@@ -117,7 +119,7 @@ const onMessage = async (request) => {
           }
 
           mediaRecorder.onstop = e => {
-            console.log('stop', mediaRecorder.state);
+            console.log('stop', mediaRecorder.state);            
             openDownloadTab(chunks)
           }
 
@@ -133,12 +135,12 @@ const onMessage = async (request) => {
         }
         catch (e) {
           console.log(e);
-          notify(e.message || 'Capturing Failed with an unknown error');
+          if (request.notification) notify(e.message || 'Capturing Failed with an unknown error');
         }
       });
     }
     catch (e) {
-      notify(e.message || 'Capturing Failed with an unknown error');
+      if (request.notification) notify(e.message || 'Capturing Failed with an unknown error');
     }
   }
 

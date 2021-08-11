@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Reco - Screen Recorder",
-  "description": "Screen recorder tool",
+  "name": "Reco - Screen Video Recorder",
+  "description": "Screen Video Recorder tool",
   "version": "1.0",
   "icons": {
     "512": "icons/icon512.png",
@@ -11,7 +11,7 @@
     "32": "icons/icon32.png"
   },
   "browser_action": {
-    "default_title": "reco",
+    "default_title": "Reco - Screen Video Recorder",
     "default_popup": "popup.html",
     "browser_style": true
   },
