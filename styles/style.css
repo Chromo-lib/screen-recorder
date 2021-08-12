@@ -70,6 +70,12 @@ body {
   transition: opacity .25s;
 }
 
+button:disabled {
+  background-color: var(--light);
+}
+
+button:hover {opacity: 0.8;}
+
 input, select {
   padding: 10px 15px;
   width: 100%;
@@ -87,11 +93,7 @@ label {
   line-height: 1.5;
 }
 
-svg path{
-  fill: var(--light);
-}
-
-button:hover {opacity: 0.8;}
+svg path{ fill: var(--light);}
 
 .d-flex {
   display: flex;
@@ -102,28 +104,19 @@ button:hover {opacity: 0.8;}
 
 .vertical-align {display: flex; align-items: center;}
 
-.wi-100 {
-  width: 100%;
-}
+.w-100 { width: 100%;}
 
-.cl-green {
-  background-color: #4CAF50
-}
+.cl-green { background-color: #4CAF50}
 
 .active-tab svg path{fill: var(--black);}
 
-.mr-10 {
-  margin-right: 10px
-}
+.mr-10 { margin-right: 10px}
+.mb-10 { margin-bottom: 10px}
+.mb-20 { margin-bottom: 20px}
+.mt-20 {margin-top: 20px !important}
+.mt-10 {margin-top: 10px}
 
-.mb-10 {
-  margin-bottom: 10px
-}
-
-.mb-20 {
-  margin-bottom: 20px
-}
-
-.mt-10 {
-  margin-top: 10px
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
 }

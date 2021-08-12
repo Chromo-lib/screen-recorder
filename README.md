@@ -16,8 +16,11 @@
 
 ### Features
 - [x] Screen recorder.
-- [ ] Video to gif.
+- [x] Video to gif.
 - [ ] Take snapshot.
+
+### Similar Apps
+- [fullpage Screenshot](https://github.com/Chromo-lib/screenshot-fullpage-extension)
 
 # License
 Apache Version 2.0

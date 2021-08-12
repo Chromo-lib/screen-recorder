@@ -21,7 +21,7 @@
 
     <aside>
 
-      <h3>Download</h3>
+      <h3>Video</h3>
       <form id="form-download">
         <div class="mb-20">
           <label for="vidtype">Video type</label>
@@ -33,14 +33,47 @@
 
         <div class="mb-20">
           <label for="filename">file name</label>
-          <input class="mt-10" type="text" name="filename" id="filename" placeholder="filename">
+          <input class="mt-10" type="text" name="filename" placeholder="filename" required>
         </div>
 
         <button type="submit" class="w-100">download</button>
       </form>
+
+      <hr>
+
+      <h3>Image Gif</h3>
+      <form id="form-convert">
+        <div class="mb-10">
+          <label for="filename">filename</label>
+          <input type="text" name="filename" placeholder="default: reco" required>
+        </div>
+
+        <div class="mb-10">
+          <label for="width">width</label>
+          <input type="number" min="1" name="width" id="width" placeholder="default: video width">
+        </div>
+
+        <div class="mb-10">
+          <label for="height">height</label>
+          <input type="number" min="1" name="height" id="height" placeholder="default: video height">
+        </div>
+
+        <div class="mb-10">
+          <label for="frames">number of frames</label>
+          <input type="number" min="1" name="frames" id="frames" placeholder="default: 40">
+        </div>
+
+        <div class="mb-20">
+          <label for="frames">number of workers</label>
+          <input type="number" min="1" name="frames" id="frames" placeholder="default: 2">
+        </div>
+
+        <button type="submit" class="w-100">convert</button>
+      </form>
     </aside>
   </main>
 
+  <script src="scripts/gifshot.js"></script>
   <script src="scripts/download.js" defer></script>
 </body>
 
