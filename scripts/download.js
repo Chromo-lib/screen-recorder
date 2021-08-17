@@ -55,7 +55,9 @@ const convertGif = (e) => {
     sampleInterval: 10,
     numWorkers: target[4].value || 2,
     progressCallback: (captureProgress) => {
-      btnConvert.textContent = 'Conversion (' + (parseInt(captureProgress * 100, 10)) + '%)';
+      captureProgress = captureProgress * 100
+      if(captureProgress) captureProgress -= 2;
+      btnConvert.textContent = 'Conversion (' + (parseInt(captureProgress, 10)) + '%)';
     }
   }, function (obj) {
 
@@ -63,10 +65,8 @@ const convertGif = (e) => {
       console.log(obj.error);
     }
     else {
-      videosElement[0].classList.add('mb-20')
-      if (videosElement[1] && videosElement[1].id !== 'vid') {
-        videosElement[1].style.display = 'none';
-      }
+      btnConvert.textContent = 'Conversion (100%)';
+      videosElement[0].classList.add('mb-20')      
 
       // preview anddownload gif
       const img = document.createElement('img')
@@ -85,6 +85,14 @@ const convertGif = (e) => {
       contentElement.appendChild(btn)
 
       btnConvert.disabled = false;
+
+      let intervalId = setInterval(() => {
+        let vidMask = document.querySelector('[crossorigin="Anonymous"]');
+        if (vidMask && vidMask.id !== 'vid') {
+          vidMask.style.display = 'none';
+          clearInterval(intervalId)
+        }
+      }, 2000);
     }
   });
 }

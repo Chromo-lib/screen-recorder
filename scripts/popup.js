@@ -1,15 +1,20 @@
 const btnRecord = document.getElementById('btn-record');
 const formConfig = document.getElementById('form-config')
+
 const selectAudioDeviceID = document.getElementById('audioDeviceID')
 const videoMediaSource = document.getElementById('video-media-source')
+const withMicrophoneEl = document.getElementById('withMicrophone')
 
 let config = {
   video: 'tab',
   audio: 'mixed',
   audioDeviceID: 'default',
   quality: 'high',
-  notification: false
+  notification: false,
+  withMicrophone: false
 }
+
+selectAudioDeviceID.parentElement.style.display = config.withMicrophone ? 'block' : 'none';
 
 navigator.mediaDevices.enumerateDevices()
   .then(enumerator => {
@@ -42,6 +47,12 @@ function onVideMediaSource (e) {
   }
 }
 
+function toggleMicrophone (e) {
+  const val = e.target.checked
+  config.withMicrophone = val;
+  selectAudioDeviceID.parentElement.style.display = val ? 'block' : 'none'
+}
+
 async function onStartRecord (e) {
   e.preventDefault();
 
@@ -67,6 +78,8 @@ async function sendMsg (msg) {
   });
 }
 
+withMicrophoneEl.addEventListener('change', toggleMicrophone)
 videoMediaSource.addEventListener('click', onVideMediaSource)
 formConfig.addEventListener('submit', onStartRecord)
+
 chrome.runtime.onMessage.addListener(listenToBackgroundMessages);

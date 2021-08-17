@@ -10,7 +10,7 @@
   <meta name="author" content="Haikel Fazzani">
   <title>Reco - Screen Video Recorder</title>
   <link rel="stylesheet" href="styles/shared.css">
-  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/popup.css">
 </head>
 
 <body>
@@ -42,7 +42,7 @@
       </li>
     </ul>
 
-    <form id="form-config">
+    <form class="w-100" id="form-config">
       <div>
         <label for="audioDeviceID">Audio source</label>
         <select class="mt-10" name="audioDeviceID" id="audioDeviceID"></select>
@@ -50,7 +50,12 @@
 
       <div class="vertical-align mt-10">
         <input type="checkbox" id="notification" name="notification" value="false">
-        <label for="notification"> notification</label>
+        <label for="notification"> activate notification</label>
+      </div>
+
+      <div class="vertical-align mt-10">
+        <input type="checkbox" id="withMicrophone" name="withMicrophone" value="false">
+        <label for="withMicrophone"> activate Microphone</label>
       </div>
 
       <button type="submit" class="w-100 d-flex mt-10">

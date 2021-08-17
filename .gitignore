@@ -3,3 +3,6 @@ testr/
 
 .vscode
 .cache
+
+*.zip
+*.rar

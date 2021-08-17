@@ -30,11 +30,12 @@ let chunks = [];
 const onMessage = async (request) => {
   if (request.message === 'start-record') {
     try {
-      
+
       chunks = [];
 
       if (request.audio === 'mic' || request.audio === 'mixed') {
         const state = (await navigator.permissions.query({ name: 'microphone' })).state;
+        console.log(state);
         if (state !== 'granted') {
           return chrome.windows.create({
             url: chrome.extension.getURL('../permission/index.html?' + `video=${request.video}&audio=${request.audio}`),
@@ -76,34 +77,40 @@ const onMessage = async (request) => {
 
           let stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-          const audioStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              noiseSuppression: true,
-              echoCancellation: true,
-              deviceId: request.audioDeviceID
-            }
-          });
-
-          if (stream.getAudioTracks().length === 0) {
-            for (const track of audioStream.getAudioTracks()) {
-              stream.addTrack(track);
-            }
-          }
-          else {
+          if (request.withMicrophone) {
             try {
-              const context = new AudioContext();
-              const destination = context.createMediaStreamDestination();
-              context.createMediaStreamSource(audioStream).connect(destination);
-              context.createMediaStreamSource(stream).connect(destination);
-              const ns = new MediaStream();
-              stream.getVideoTracks().forEach(track => ns.addTrack(track));
-              destination.stream.getAudioTracks().forEach(track => ns.addTrack(track));
-              tracks.push(...stream.getTracks());
-              stream = ns;
-            }
-            catch (e) {
-              console.log(e);
-              if(request.notification) notify(e);
+              const audioStream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                  noiseSuppression: true,
+                  echoCancellation: true,
+                  deviceId: request.audioDeviceID
+                }
+              });
+
+              if (stream.getAudioTracks().length === 0) {
+                for (const track of audioStream.getAudioTracks()) {
+                  stream.addTrack(track);
+                }
+              }
+              else {
+                try {
+                  const context = new AudioContext();
+                  const destination = context.createMediaStreamDestination();
+                  context.createMediaStreamSource(audioStream).connect(destination);
+                  context.createMediaStreamSource(stream).connect(destination);
+                  const ns = new MediaStream();
+                  stream.getVideoTracks().forEach(track => ns.addTrack(track));
+                  destination.stream.getAudioTracks().forEach(track => ns.addTrack(track));
+                  tracks.push(...stream.getTracks());
+                  stream = ns;
+                }
+                catch (e) {
+                  console.log(e);
+                  if (request.notification) notify(e);
+                }
+              }
+            } catch (error) {
+              console.log('There is no microphone..');
             }
           }
 
@@ -122,7 +129,7 @@ const onMessage = async (request) => {
           }
 
           mediaRecorder.onstop = e => {
-            console.log('stop', mediaRecorder.state);            
+            console.log('stop', mediaRecorder.state);
             openDownloadTab(chunks)
           }
 
@@ -134,7 +141,7 @@ const onMessage = async (request) => {
 
             setTimeout(() => {
               tracks.forEach(track => track.stop());
-              mediaRecorder.stop();              
+              mediaRecorder.stop();
             }, 100);
           };
 
