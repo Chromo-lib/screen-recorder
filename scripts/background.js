@@ -18,9 +18,9 @@ function getSupportedMimeTypes () {
 }
 
 function openDownloadTab (recordedChunks) {
-  const blob = new Blob(recordedChunks, { type: getSupportedMimeTypes() });
-  let blobUrl = window.URL.createObjectURL(blob);
-  chrome.tabs.create({ url: 'download.html?blob=' + blobUrl });
+  let newwindow = window.open('../editor.html');
+  newwindow.recordedChunks = recordedChunks;
+  newwindow.vidMimeType = getSupportedMimeTypes()
 }
 
 let mediaRecorder = null;

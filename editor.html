@@ -15,19 +15,18 @@
 
 <body>
   <main>
-    <div class="content">
-      <video id="vid" controls></video>
-    </div>
+    <div class="content"><video id="vid" controls preload="metadata"></video></div>
 
     <aside>
-
       <h3>Video</h3>
       <form id="form-download">
         <div class="mb-20">
           <label for="vidtype">Video type</label>
           <select class="mt-10" name="vidtype" id="vidtype">
-            <option value="webm">webm</option>
-            <option value="mp4">mp4</option>
+            <option value="video/webm;codecs=vp9,opus">webm vp9</option>
+            <option value="video/webm;codecs=vp8,opus">webm vp8</option>
+            <option value="video/webm;codecs=h264,opus">webm h264</option>
+            <option value="video/mp4;codecs=h264,aac">mp4 h264</option>
           </select>
         </div>
 
@@ -73,8 +72,8 @@
     </aside>
   </main>
 
-  <script src="scripts/gifshot.js"></script>
-  <script src="scripts/download.js" defer></script>
+  <script src="scripts/util/gifshot.js"></script>
+  <script src="scripts/editor.js" defer></script>
 </body>
 
 </html>

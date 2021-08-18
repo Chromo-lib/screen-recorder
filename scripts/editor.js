@@ -1,21 +1,30 @@
 const contentElement = document.querySelector('.content');
-
 const formConvert = document.getElementById('form-convert');
 const btnConvert = formConvert.querySelector('button');
+const videoPlayer = document.getElementById('vid');
 
-const vid = document.getElementById('vid')
-const blobUrl = window.location.search.split('=')[1];
+const blob = new Blob(window.recordedChunks, { type: window.vidMimeType });
+const blobUrl = window.URL.createObjectURL(blob);
 
-vid.src = blobUrl;
+videoPlayer.src = blobUrl + "#t=" + window.recordedChunks.length;
 
-const download = (filename, type, url) => {
+const download = (filename, type) => {
+  const nblob = new Blob(window.recordedChunks, { type });
+  const url = window.URL.createObjectURL(nblob);
+
+  let vidExtension = type.includes('webm')
+
   let link = document.createElement('a');
   link.href = url;
-  link.download = `${filename}.${type}`;
+  link.download = `${filename}.${vidExtension ? 'webm' : 'mp4'}`;
 
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
+
+  setTimeout(() => {
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }, 1000);
 }
 
 const onDownloadVid = (e) => {
@@ -27,17 +36,13 @@ const onDownloadVid = (e) => {
     let vidType = target[0].value || 'webm';
     let filename = target[1].value || 'reco';
 
-    download(filename, vidType, blobUrl)
-
-    setTimeout(function () {
-      window.URL.revokeObjectURL(blobUrl);
-    }, 100);
+    download(filename, vidType)
   } catch (error) {
     window.URL.revokeObjectURL(blobUrl);
   }
 }
 
-const convertGif = (e) => {
+const onConvertToGif = (e) => {
   e.preventDefault();
 
   const videosElement = document.querySelectorAll('video')
@@ -56,7 +61,7 @@ const convertGif = (e) => {
     numWorkers: target[4].value || 2,
     progressCallback: (captureProgress) => {
       captureProgress = captureProgress * 100
-      if(captureProgress) captureProgress -= 2;
+      if (captureProgress) captureProgress -= 2;
       btnConvert.textContent = 'Conversion (' + (parseInt(captureProgress, 10)) + '%)';
     }
   }, function (obj) {
@@ -66,7 +71,7 @@ const convertGif = (e) => {
     }
     else {
       btnConvert.textContent = 'Conversion (100%)';
-      videosElement[0].classList.add('mb-20')      
+      videosElement[0].classList.add('mb-20')
 
       // preview anddownload gif
       const img = document.createElement('img')
@@ -88,7 +93,7 @@ const convertGif = (e) => {
 
       let intervalId = setInterval(() => {
         let vidMask = document.querySelector('[crossorigin="Anonymous"]');
-        if (vidMask && vidMask.id !== 'vid') {
+        if (vidMask && vidMask.id !== 'videoPlayer') {
           vidMask.style.display = 'none';
           clearInterval(intervalId)
         }
@@ -112,5 +117,5 @@ window.onbeforeunload = function (e) {
   }
 };
 
-formConvert.addEventListener('submit', convertGif, false)
+formConvert.addEventListener('submit', onConvertToGif, false)
 document.getElementById('form-download').addEventListener('submit', onDownloadVid, false)

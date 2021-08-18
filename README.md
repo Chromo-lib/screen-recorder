@@ -17,6 +17,7 @@
 ### Features
 - [x] Screen recorder.
 - [x] Video to gif.
+- [ ] Video editor.
 - [ ] Take snapshot.
 
 ### Similar Apps
