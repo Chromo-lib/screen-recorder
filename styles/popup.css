@@ -115,8 +115,3 @@ svg path{ fill: var(--light);}
 .mb-20 { margin-bottom: 20px}
 .mt-20 {margin-top: 20px !important}
 .mt-10 {margin-top: 10px}
-
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}

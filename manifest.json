@@ -2,13 +2,13 @@
   "manifest_version": 2,
   "name": "Reco - Screen Recorder",
   "description": "Screen Recorder tool",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "icons": {
-    "512": "icons/icon512.png",
-    "256": "icons/icon256.png",
-    "128": "icons/icon128.png",
-    "64": "icons/icon64.png",
-    "32": "icons/icon32.png"
+    "512": "icons/512.png",
+    "256": "icons/256.png",
+    "128": "icons/128.png",
+    "64": "icons/64.png",
+    "32": "icons/32.png"
   },
   "browser_action": {
     "default_title": "Reco - Screen Recorder",

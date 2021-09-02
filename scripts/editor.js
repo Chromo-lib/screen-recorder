@@ -3,29 +3,11 @@ const formConvert = document.getElementById('form-convert');
 const btnConvert = formConvert.querySelector('button');
 const videoPlayer = document.getElementById('vid');
 
-const blob = new Blob(window.recordedChunks, { type: window.vidMimeType });
+let tmpRecordedChunks = window.recordedChunks.slice(0);
+const blob = new Blob(tmpRecordedChunks, { type: window.vidMimeType });
 const blobUrl = window.URL.createObjectURL(blob);
 
 videoPlayer.src = blobUrl + "#t=" + window.recordedChunks.length;
-
-const download = (filename, type) => {
-  const nblob = new Blob(window.recordedChunks, { type });
-  const url = window.URL.createObjectURL(nblob);
-
-  let vidExtension = type.includes('webm')
-
-  let link = document.createElement('a');
-  link.href = url;
-  link.download = `${filename}.${vidExtension ? 'webm' : 'mp4'}`;
-
-  document.body.appendChild(link);
-  link.click();
-
-  setTimeout(() => {
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  }, 1000);
-}
 
 const onDownloadVid = (e) => {
   try {
@@ -36,7 +18,7 @@ const onDownloadVid = (e) => {
     let vidType = target[0].value || 'webm';
     let filename = target[1].value || 'reco';
 
-    download(filename, vidType)
+    download(tmpRecordedChunks, filename, vidType)
   } catch (error) {
     window.URL.revokeObjectURL(blobUrl);
   }
@@ -83,7 +65,8 @@ const onConvertToGif = (e) => {
       btn.textContent = 'Download gif'
 
       btn.onclick = () => {
-        download(target[0].value, 'gif', obj.image);
+        const filename = target[0].value;
+        download(obj.image, filename, null, 'gif');
       }
 
       contentElement.appendChild(img)
@@ -104,12 +87,12 @@ const onConvertToGif = (e) => {
 
 window.onbeforeunload = function (e) {
   try {
+    const confirmationMessage = 'Are you sure you want to leave?';
+    (e || window.event).returnValue = confirmationMessage;
+
     if (blobUrl) {
       window.URL.revokeObjectURL(blobUrl)
     }
-
-    const confirmationMessage = 'Are you sure you want to leave?';
-    (e || window.event).returnValue = confirmationMessage;
 
     return confirmationMessage;
   } catch (error) {
