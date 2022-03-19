@@ -1,15 +1,17 @@
-const btnRecord = document.getElementById('btn-record');
+const btnStopRecord = document.getElementById('btn-stop-record');
 const formConfigEL = document.getElementById('form-config')
 
 const selectAudioDeviceIDEL = document.getElementById('audioDeviceID');
-const videoMediaSourceEL = document.getElementById('video-media-source')
-const enableAudioEl = document.getElementById('enableAudio')
+const videoMediaSourceEL = document.getElementById('video-media-source');
+
+btnStopRecord.style.display = 'none';
 
 let config = {
   videoMediaSource: 'tab',
   audioDeviceID: 'default',
   enableAudio: false,
   enableCamera: false,
+  enableAudioCamera: false,
   mimeType: 'video/webm;codecs=vp8,opus'
 }
 
@@ -18,15 +20,20 @@ setAudioInputs();
 
 async function onStartRecord(e) {
   e.preventDefault();
-  const target = e.target.elements;
 
-  const audioDeviceID = target[0].value,
-    mimeType = target[1].value,
-    enableAudio = target[2].checked,
-    enableCamera = target[3].checked;
+  for (const element of e.target.elements) {
+    if (element.type === 'checkbox') config[element.name] = JSON.parse(element.checked);
+    else config[element.name] = element.value;
+  }
 
   chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config, audioDeviceID, mimeType, enableAudio, enableCamera });
+    chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config });
+  });
+}
+
+async function onStopRecord(e) {
+  chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, { message: 'stop-record' });
   });
 }
 
@@ -38,14 +45,20 @@ function onVideMediaSource(e) {
       ? e.target.parentNode : null;
 
   if (liTarget && value) {
+    value = value === 'off' ? false : value;
     config = { ...config, videoMediaSource: value };
 
     Array.from(videoMediaSourceEL.children).forEach(li => {
       li.classList.remove('active-tab')
     });
 
-    liTarget.classList.add('active-tab')
+    liTarget.classList.add('active-tab');
+    btnStopRecord.style.display = !value && config.enableAudio ? 'flex' : 'none';
   }
+}
+
+const onToggleMic = (e) => {
+  btnStopRecord.style.display = e.target.checked && !config.videoMediaSource ? 'flex' : 'none';
 }
 
 function setMimeTypes() {
@@ -64,7 +77,6 @@ function setMimeTypes() {
 
 function setAudioInputs() {
   const selectAudioDeviceIDEL = document.getElementById('audioDeviceID');
-  selectAudioDeviceIDEL.parentElement.style.display = config.enableAudio ? 'block' : 'none';
 
   navigator.mediaDevices.enumerateDevices()
     .then(enumerator => {
@@ -79,13 +91,8 @@ function setAudioInputs() {
     });
 }
 
-function onToggleMicrophone(e) {
-  const val = e.target.checked
-  config.enableAudio = val;
-  selectAudioDeviceIDEL.parentElement.style.display = val ? 'block' : 'none'
-}
-
-enableAudioEl.addEventListener('change', onToggleMicrophone)
-videoMediaSourceEL.addEventListener('click', onVideMediaSource)
-formConfigEL.addEventListener('submit', onStartRecord)
+document.getElementById('enableAudio').addEventListener('change', onToggleMic, false);
+btnStopRecord.addEventListener('click', onStopRecord, false)
+videoMediaSourceEL.addEventListener('click', onVideMediaSource, false)
+formConfigEL.addEventListener('submit', onStartRecord, false)
 //chrome.runtime.onMessage.addListener(listenToBackgroundMessages);

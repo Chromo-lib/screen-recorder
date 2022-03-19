@@ -51,11 +51,13 @@ input, select {
 
 input[type="checkbox"] {padding: 0; width: 15px; margin-right: 15px;}
 
-label {
+label,fieldset {
   color: var(--light);
   text-transform: uppercase;
   line-height: 1.5;
 }
+
+fieldset {margin-bottom: 10px; border: 1px solid #ddd; border-radius: 7px;}
 
 svg path{
   fill: var(--light);
@@ -65,20 +67,28 @@ button:hover {opacity: 0.8;}
 
 ul { list-style: none; margin: 0; padding: 0; }
 
+hr {
+  border: 1px solid #f3f3f3;
+  width: 50%;
+  margin: 17px auto;
+}
+
 #video-media-source li { 
-  text-align: center; padding: 10px; cursor: pointer;
+  text-align: center; cursor: pointer;
   text-transform: uppercase;
   font-size: 11px;
   color: var(--light);
 }
 
 #video-media-source li svg { 
-  width: 45px;
+  width: 35px;
 }
 
 .d-flex { display: flex; justify-content: center; align-items: center; }
 
 .flex-column {flex-direction: column;}
+
+.align-center {align-items: center;}
 
 .justify-between {justify-content: space-between;}
 

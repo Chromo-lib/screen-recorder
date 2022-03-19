@@ -122,6 +122,10 @@ const onClearCache = () => {
   try {
     const isOk = window.confirm('Are you sure you want to clear cache?')
     if (isOk) {
+      videoPlayer.src = null;
+      tmpRecordedChunks = [];
+      blob = null;
+      blobUrl = null;
       window.URL.revokeObjectURL(blobUrl);
       btnClearCache.textContent = 'Empty cache';
       setTimeout(() => { btnClearCache.textContent = 'Clear cache'; }, 3000);
@@ -133,11 +137,7 @@ window.onbeforeunload = function (e) {
   try {
     const confirmationMessage = 'Are you sure you want to leave?';
     (e || window.event).returnValue = confirmationMessage;
-
-    if (blobUrl) {
-      window.URL.revokeObjectURL(blobUrl)
-    }
-
+    if (blobUrl) { window.URL.revokeObjectURL(blobUrl) }
     return confirmationMessage;
   } catch (error) {
     window.URL.revokeObjectURL(blobUrl);
