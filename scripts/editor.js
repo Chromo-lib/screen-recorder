@@ -3,20 +3,27 @@ const formConvert = document.getElementById('form-convert');
 const btnConvert = formConvert.querySelector('button');
 const videoPlayer = document.getElementById('vid');
 
-let tmpRecordedChunks = window.recordedChunks.slice(0);
-const blob = new Blob(tmpRecordedChunks, { type: window.vidMimeType });
-const blobUrl = window.URL.createObjectURL(blob);
+const btnClearCache = document.getElementById('btn-clear-cache');
+
+var tmpRecordedChunks;
+var blob;
+var blobUrl;
+
+if (window.recordedChunks) {
+  tmpRecordedChunks = window.recordedChunks.slice(0);
+  blob = new Blob(tmpRecordedChunks, { type: window.vidMimeType });
+  blobUrl = window.URL.createObjectURL(blob);
+}
 
 videoPlayer.src = blobUrl + "#t=" + window.recordedChunks.length;
 
 const onDownloadVid = (e) => {
   try {
     e.preventDefault();
-
     const target = e.target.elements;
 
-    let vidType = target[0].value || 'webm';
-    let filename = target[1].value || 'reco';
+    let filename = target[0].value || 'reco';
+    let vidType = window.vidMimeType || 'webm';
 
     download(tmpRecordedChunks, filename, vidType)
   } catch (error) {
@@ -85,6 +92,43 @@ const onConvertToGif = (e) => {
   });
 }
 
+const onSaveForLater = () => {
+  const videos = localStorage.getItem('videos')
+    ? JSON.parse(localStorage.getItem('videos'))
+    : [];
+
+  videos.push(tmpRecordedChunks);
+  localStorage.setItem('videos', JSON.stringify(videos));
+}
+
+function loadStoredVideos() {
+  const videos = localStorage.getItem('videos')
+    ? JSON.parse(localStorage.getItem('videos'))
+    : [];
+
+  if (videos.length > 0) {
+    const listVideos = document.getElementById('videos');
+    for (const records of videos) {
+      const videoEL = document.createElement('video')
+      videoEL.controls = true;
+      const videoBlob = new Blob(records, { type: window.vidMimeType });
+      videoEL.src = window.URL.createObjectURL(videoBlob);
+      listVideos.appendChild(videoEL);
+    }
+  }
+}
+
+const onClearCache = () => {
+  try {
+    const isOk = window.confirm('Are you sure you want to clear cache?')
+    if (isOk) {
+      window.URL.revokeObjectURL(blobUrl);
+      btnClearCache.textContent = 'Empty cache';
+      setTimeout(() => { btnClearCache.textContent = 'Clear cache'; }, 3000);
+    }
+  } catch (error) { }
+}
+
 window.onbeforeunload = function (e) {
   try {
     const confirmationMessage = 'Are you sure you want to leave?';
@@ -101,4 +145,6 @@ window.onbeforeunload = function (e) {
 };
 
 formConvert.addEventListener('submit', onConvertToGif, false)
+btnClearCache.addEventListener('click', onClearCache)
+//document.getElementById('btn-save').addEventListener('click', onSaveForLater)
 document.getElementById('form-download').addEventListener('submit', onDownloadVid, false)

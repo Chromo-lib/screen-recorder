@@ -10,13 +10,12 @@
   <meta name="author" content="Haikel Fazzani">
   <title>Reco - Screen Video Recorder</title>
   <link rel="stylesheet" href="styles/shared.css">
-  <link rel="stylesheet" href="styles/popup.css">
 </head>
 
 <body>
-  <div class="container d-flex">
+  <div class="w-100 d-flex flex-column p-20">
 
-    <ul class="mb-20" id="video-media-source">
+    <ul class="w-100 d-flex justify-between" id="video-media-source">
       <li class="active-tab" data-value="tab">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
           <path fill="currentColor"
@@ -43,22 +42,22 @@
     </ul>
 
     <form class="w-100" id="form-config">
-      <div>
-        <label for="audioDeviceID">Audio source</label>
+      <div class="mb-20">
+        <label for="audioDeviceID">Choose Audio source</label>
         <select class="mt-10" name="audioDeviceID" id="audioDeviceID"></select>
       </div>
 
-      <div class="vertical-align mt-10">
-        <input type="checkbox" id="notification" name="notification" value="false">
-        <label for="notification"> activate notification</label>
+      <div class="mb-20">
+        <label for="mimeType">Choose mimeType</label>
+        <select class="mt-10" name="mimeType" id="mimeType"></select>
       </div>
 
-      <div class="vertical-align mt-10">
-        <input type="checkbox" id="withMicrophone" name="withMicrophone" value="false">
-        <label for="withMicrophone"> activate Microphone</label>
+      <div class="vertical-align mb-10">
+        <input type="checkbox" id="enableAudio" name="enableAudio" value="false">
+        <label for="enableAudio"> activate Microphone</label>
       </div>
 
-      <button type="submit" class="w-100 d-flex mt-10">
+      <button type="submit" class="w-100 d-flex">
         <img src="assets/record.svg" alt="record" width="20" height="20" class="mr-10" /> record
       </button>
     </form>

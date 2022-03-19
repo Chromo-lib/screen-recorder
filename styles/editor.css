@@ -87,6 +87,12 @@ input,select {
   border: 1px solid #9e9e9e;
 }
 
+.grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 20px;
+}
+
 @media screen and (max-width: 600px) {
   main {
     width: 100%;

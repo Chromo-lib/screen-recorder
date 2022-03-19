@@ -17,20 +17,21 @@
   <main>
     <div class="content">
       <video id="vid" controls preload="metadata"></video>
-      <form id="form-download">
-        <select class="border-right-0" name="vidtype" id="vidtype">
-          <option value="video/webm;codecs=vp9,opus">webm vp9</option>
-          <option value="video/webm;codecs=vp8,opus">webm vp8</option>
-          <option value="video/webm;codecs=h264,opus">webm h264</option>
-          <option value="video/mp4;codecs=h264,aac">mp4 h264</option>
-        </select>
 
-        <input type="text" name="filename" placeholder="filename" required>
-        <button type="submit">download</button>
-      </form>
+      <div class="w-100 d-flex">
+        <form id="form-download">
+          <input type="text" name="filename" placeholder="filename" required>
+          <button type="submit">download</button>
+        </form>
+
+        <!-- <button id="btn-save">Save for later</button> -->
+      </div>
+
+      <div class="grid-4" id="videos"></div>
     </div>
 
     <aside>
+      <button type="button" id="btn-clear-cache" class="w-100 danger">Clear cache</button>
       <!-- <hr> -->
 
       <h3>Image Gif</h3>

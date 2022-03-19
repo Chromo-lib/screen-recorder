@@ -1,169 +1,89 @@
 'use strict';
 
-const notify = e => chrome.notifications.create({
-  type: 'basic',
-  iconUrl: '../icons/icon64.png',
-  title: chrome.runtime.getManifest().name,
-  message: e.message || e
-});
-
-function getSupportedMimeTypes () {
-  const mimeTypes = [
-    'video/webm;codecs=vp9,opus',
-    'video/webm;codecs=vp8,opus',
-    'video/webm;codecs=h264,opus',
-    'video/mp4;codecs=h264,aac',
-  ];
-  return mimeTypes.filter(mimeType => MediaRecorder.isTypeSupported(mimeType))[0]
+async function chooseDesktopMedia(videoMediaSource) {
+  return new Promise(resolve => {
+    chrome.desktopCapture.chooseDesktopMedia([videoMediaSource || 'window', 'screen', 'tab'],
+      async (id) => { resolve(id) })
+  })
 }
 
-function openDownloadTab (recordedChunks) {
+function openDownloadTab(recordedChunks, vidMimeType) {
   let newwindow = window.open('../editor.html');
   newwindow.recordedChunks = recordedChunks;
-  newwindow.vidMimeType = getSupportedMimeTypes()
+  newwindow.vidMimeType = vidMimeType
 }
 
 let mediaRecorder = null;
-let tracks = [];
+let requestId;
 let chunks = [];
 
 const onMessage = async (request) => {
   if (request.message === 'start-record') {
-    try {
-
-      chunks = [];
-
-      if (request.audio === 'mic' || request.audio === 'mixed') {
-        const state = (await navigator.permissions.query({ name: 'microphone' })).state;
-        console.log(state);
-        if (state !== 'granted') {
-          return chrome.windows.create({
-            url: chrome.extension.getURL('../permission/index.html?' + `video=${request.video}&audio=${request.audio}`),
-            width: 350,
-            height: 350,
-            type: 'popup'
-          });
-        }
-      }
-
-      const type = [request.video];
-      if (request.audio === 'system' || request.audio === 'mixed') {
-        type.push('audio');
-      }
-
-      const requestId = chrome.desktopCapture.chooseDesktopMedia(type, async streamKey => {
-        try {
-          tracks = [];
-          const constraints = {
-            video: {
-              mandatory: {
-                chromeMediaSource: 'desktop',
-                chromeMediaSourceId: streamKey
-              }
-            }
-          };
-
-          if (request.audio === 'system' || request.audio === 'mixed') {
-            constraints.audio = {
-              mandatory: {
-                chromeMediaSource: 'desktop',
-                chromeMediaSourceId: streamKey
-              }
-            };
-          }
-
-          constraints.video.mandatory.maxWidth = screen.width * 2;
-          constraints.video.mandatory.maxHeight = screen.height * 2;
-
-          let stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-          if (request.withMicrophone) {
-            try {
-              const audioStream = await navigator.mediaDevices.getUserMedia({
-                audio: {
-                  noiseSuppression: true,
-                  echoCancellation: true,
-                  deviceId: request.audioDeviceID
-                }
-              });
-
-              if (stream.getAudioTracks().length === 0) {
-                for (const track of audioStream.getAudioTracks()) {
-                  stream.addTrack(track);
-                }
-              }
-              else {
-                try {
-                  const context = new AudioContext();
-                  const destination = context.createMediaStreamDestination();
-                  context.createMediaStreamSource(audioStream).connect(destination);
-                  context.createMediaStreamSource(stream).connect(destination);
-                  const ns = new MediaStream();
-                  stream.getVideoTracks().forEach(track => ns.addTrack(track));
-                  destination.stream.getAudioTracks().forEach(track => ns.addTrack(track));
-                  tracks.push(...stream.getTracks());
-                  stream = ns;
-                }
-                catch (e) {
-                  console.log(e);
-                  if (request.notification) notify(e);
-                }
-              }
-            } catch (error) {
-              console.log('There is no microphone..');
-            }
-          }
-
-          tracks.push(...stream.getTracks());
-          mediaRecorder = new MediaRecorder(stream, { mimeType: getSupportedMimeTypes() });
-
-          mediaRecorder.onerror = e => {
-            mediaRecorder.stop()
-            if (request.notification) notify(e.message)
-          }
-
-          mediaRecorder.ondataavailable = e => {
-            if (e.data.size) {
-              chunks.push(e.data);
-            }
-          }
-
-          mediaRecorder.onstop = e => {
-            console.log('stop', mediaRecorder.state);
-            openDownloadTab(chunks)
-          }
-
-          console.log(request.audio);
-
-          stream.getVideoTracks()[0].onended = function () {
-            //audioStream.getAudioTracks()[0].enabled = true;
-            chrome.desktopCapture.cancelChooseDesktopMedia(requestId)
-
-            setTimeout(() => {
-              tracks.forEach(track => track.stop());
-              mediaRecorder.stop();
-            }, 100);
-          };
-
-          mediaRecorder.start(100);
-        }
-        catch (e) {
-          console.log(e);
-          if (request.notification) notify(e.message || 'Capturing Failed with an unknown error');
-        }
+    const permission = await navigator.permissions.query({ name: 'microphone' });
+    if (permission.state !== 'granted') {
+      chrome.windows.create({
+        url: chrome.extension.getURL('../permission/index.html?' + `video=${request.video}&audio=${request.audio}`),
+        width: 350,
+        height: 350,
+        type: 'popup'
       });
+      return;
     }
-    catch (e) {
-      if (request.notification) notify(e.message || 'Capturing Failed with an unknown error');
+
+    try {
+      requestId = await chooseDesktopMedia(request.videoMediaSource);
+
+      const constraints = {
+        video: {
+          mandatory: {
+            chromeMediaSource: 'desktop',
+            chromeMediaSourceId: requestId,
+          },
+          // width: { min: 640, ideal: 1920, max: 3840, },
+          // height: { min: 480, ideal: 1080, max: 2160, },
+          // aspectRatio: 1.777,
+          // frameRate: { min: 5, ideal: 15, max: 30, }
+        }, audio: false
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      const audioStream = await navigator.mediaDevices.getUserMedia({
+        audio: { deviceId: request.audioDeviceID }
+      });
+
+      audioStream.getAudioTracks()[0].enabled = request.enableAudio;
+      stream.addTrack(audioStream.getAudioTracks()[0]);
+
+      if (!mediaRecorder) mediaRecorder = new MediaRecorder(stream, { mimeType: request.mimeType });
+
+      mediaRecorder.start();
+
+      mediaRecorder.ondataavailable = function (e) {
+        chunks.push(e.data);
+      }
+
+      mediaRecorder.onstop = () => {
+        console.log('Recording is stoped');
+        openDownloadTab(chunks, request.mimeType)
+      }
+
+      mediaRecorder.onerror = (event) => {
+        console.error(`error recording stream: ${event.error.name}`)
+      }
+
+      stream.getVideoTracks()[0].onended = function () {
+        //if(requestId) chrome.desktopCapture.cancelChooseDesktopMedia(requestId);
+        mediaRecorder.stop()
+        console.log('Stream end');
+      };
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  if (request.message === 'stop-record' && tracks && mediaRecorder) {
-    if (mediaRecorder.state !== 'inactive') {
-      tracks.forEach(track => track.stop());
-      mediaRecorder.stop()
-    }
-    openDownloadTab(chunks)
+  if (request.message === 'stop-record' && mediaRecorder) {
+    mediaRecorder.stop();
   }
 };
 

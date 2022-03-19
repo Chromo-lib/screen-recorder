@@ -1,35 +1,32 @@
 const btnRecord = document.getElementById('btn-record');
-const formConfig = document.getElementById('form-config')
+const formConfigEL = document.getElementById('form-config')
 
-const selectAudioDeviceID = document.getElementById('audioDeviceID')
-const videoMediaSource = document.getElementById('video-media-source')
-const withMicrophoneEl = document.getElementById('withMicrophone')
+const selectAudioDeviceIDEL = document.getElementById('audioDeviceID');
+const videoMediaSourceEL = document.getElementById('video-media-source')
+const enableAudioEl = document.getElementById('enableAudio')
 
 let config = {
-  video: 'tab',
-  audio: 'mixed',
+  videoMediaSource: 'tab',
   audioDeviceID: 'default',
-  quality: 'high',
-  notification: false,
-  withMicrophone: false
+  enableAudio: false,
+  mimeType: 'video/webm;codecs=vp8,opus'
 }
 
-selectAudioDeviceID.parentElement.style.display = config.withMicrophone ? 'block' : 'none';
+setMimeTypes();
+setAudioInputs();
 
-navigator.mediaDevices.enumerateDevices()
-  .then(enumerator => {
-    enumerator.forEach(input => {
-      if (input.kind === "audioinput" && input.label) {
-        const option = document.createElement('option')
-        option.textContent = input.label
-        option.value = input.deviceId
-        selectAudioDeviceID.appendChild(option)
-      }
-    });
+async function onStartRecord(e) {
+  e.preventDefault();
+  const target = e.target.elements,
+    audioDeviceID = target[0].value,
+    mimeType = target[1].value;
+
+  chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config, audioDeviceID, mimeType });
   });
+}
 
-function onVideMediaSource (e) {
-
+function onVideMediaSource(e) {
   let value = e.target.dataset.value || e.target.parentNode.dataset.value
 
   let liTarget = e.target.nodeName === 'LI'
@@ -37,9 +34,9 @@ function onVideMediaSource (e) {
       ? e.target.parentNode : null;
 
   if (liTarget && value) {
-    config = { ...config, video: value };
+    config = { ...config, videoMediaSource: value };
 
-    Array.from(videoMediaSource.children).forEach(li => {
+    Array.from(videoMediaSourceEL.children).forEach(li => {
       li.classList.remove('active-tab')
     });
 
@@ -47,39 +44,46 @@ function onVideMediaSource (e) {
   }
 }
 
-function toggleMicrophone (e) {
+function onToggleMicrophone(e) {
   const val = e.target.checked
-  config.withMicrophone = val;
-  selectAudioDeviceID.parentElement.style.display = val ? 'block' : 'none'
+  config.enableAudio = val;
+  selectAudioDeviceIDEL.parentElement.style.display = val ? 'block' : 'none'
 }
 
-async function onStartRecord (e) {
-  e.preventDefault();
+function setMimeTypes() {
+  const selectMimeTypeEL = document.getElementById('mimeType')
+  const mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm;codecs=h264,opus', 'video/mp4;codecs=h264,aac',];
 
-  const target = e.target.elements;
-
-  let audioDeviceID = target[0].value;
-  let notification = JSON.parse(target[1].checked);
-
-  await sendMsg({
-    message: 'start-record',
-    ...config,
-    audioDeviceID,
-    notification
-  });
+  mimeTypes.filter(mimeType => {
+    if (MediaRecorder.isTypeSupported(mimeType)) {
+      const option = document.createElement('option');
+      option.textContent = mimeType;
+      option.value = mimeType;
+      selectMimeTypeEL.appendChild(option);
+    }
+  })
 }
 
-function listenToBackgroundMessages (message, sender, sendResponse) { }
+function setAudioInputs() {
+  const selectAudioDeviceIDEL = document.getElementById('audioDeviceID');
+  selectAudioDeviceIDEL.parentElement.style.display = config.enableAudio ? 'block' : 'none';
 
-async function sendMsg (msg) {
-  chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-    let activeTab = tabs[0];
-    chrome.tabs.sendMessage(activeTab.id, msg);
-  });
+  navigator.mediaDevices.enumerateDevices()
+    .then(enumerator => {
+      enumerator.forEach(input => {
+        if (input.kind === "audioinput" && input.label) {
+          const option = document.createElement('option')
+          option.textContent = input.label
+          option.value = input.deviceId
+          selectAudioDeviceIDEL.appendChild(option)
+        }
+      });
+    });
 }
 
-withMicrophoneEl.addEventListener('change', toggleMicrophone)
-videoMediaSource.addEventListener('click', onVideMediaSource)
-formConfig.addEventListener('submit', onStartRecord)
+function listenToBackgroundMessages(message, sender, sendResponse) { }
 
+enableAudioEl.addEventListener('change', onToggleMicrophone)
+videoMediaSourceEL.addEventListener('click', onVideMediaSource)
+formConfigEL.addEventListener('submit', onStartRecord)
 chrome.runtime.onMessage.addListener(listenToBackgroundMessages);

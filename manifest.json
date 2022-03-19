@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Reco - Screen Recorder",
-  "description": "Screen Recorder tool",
-  "version": "1.0.3",
+  "name": "Screen Recorder",
+  "description": "Reco is screen Recorder tool",
+  "version": "1.0.4",
   "icons": {
     "512": "icons/512.png",
     "256": "icons/256.png",
@@ -17,9 +17,7 @@
   },
   "permissions": [
     "desktopCapture",
-    "activeTab",
-    "storage",
-    "notifications"
+    "activeTab"
   ],
   "background": {
     "scripts": [
