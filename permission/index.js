@@ -3,7 +3,8 @@
 const args = new URLSearchParams(location.search);
 
 window.addEventListener('DOMContentLoaded', () => navigator.mediaDevices.getUserMedia({
-  audio: true
+  audio: true,
+  video: true
 }).then(() => chrome.runtime.sendMessage({
   method: 'record',
   video: args.get('video'),

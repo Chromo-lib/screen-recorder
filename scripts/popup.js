@@ -9,6 +9,7 @@ let config = {
   videoMediaSource: 'tab',
   audioDeviceID: 'default',
   enableAudio: false,
+  enableCamera: false,
   mimeType: 'video/webm;codecs=vp8,opus'
 }
 
@@ -17,12 +18,15 @@ setAudioInputs();
 
 async function onStartRecord(e) {
   e.preventDefault();
-  const target = e.target.elements,
-    audioDeviceID = target[0].value,
-    mimeType = target[1].value;
+  const target = e.target.elements;
+
+  const audioDeviceID = target[0].value,
+    mimeType = target[1].value,
+    enableAudio = target[2].checked,
+    enableCamera = target[3].checked;
 
   chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config, audioDeviceID, mimeType });
+    chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config, audioDeviceID, mimeType, enableAudio, enableCamera });
   });
 }
 
@@ -42,12 +46,6 @@ function onVideMediaSource(e) {
 
     liTarget.classList.add('active-tab')
   }
-}
-
-function onToggleMicrophone(e) {
-  const val = e.target.checked
-  config.enableAudio = val;
-  selectAudioDeviceIDEL.parentElement.style.display = val ? 'block' : 'none'
 }
 
 function setMimeTypes() {
@@ -81,9 +79,13 @@ function setAudioInputs() {
     });
 }
 
-function listenToBackgroundMessages(message, sender, sendResponse) { }
+function onToggleMicrophone(e) {
+  const val = e.target.checked
+  config.enableAudio = val;
+  selectAudioDeviceIDEL.parentElement.style.display = val ? 'block' : 'none'
+}
 
 enableAudioEl.addEventListener('change', onToggleMicrophone)
 videoMediaSourceEL.addEventListener('click', onVideMediaSource)
 formConfigEL.addEventListener('submit', onStartRecord)
-chrome.runtime.onMessage.addListener(listenToBackgroundMessages);
+//chrome.runtime.onMessage.addListener(listenToBackgroundMessages);
