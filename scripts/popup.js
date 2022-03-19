@@ -1,5 +1,7 @@
 const btnStopRecord = document.getElementById('btn-stop-record');
-const formConfigEL = document.getElementById('form-config')
+const formConfigEL = document.getElementById('form-config');
+
+const enableAudioCameraEL = document.querySelector('.enableAudioCamera');
 
 const selectAudioDeviceIDEL = document.getElementById('audioDeviceID');
 const videoMediaSourceEL = document.getElementById('video-media-source');
@@ -54,11 +56,13 @@ function onVideMediaSource(e) {
 
     liTarget.classList.add('active-tab');
     btnStopRecord.style.display = !value && config.enableAudio ? 'flex' : 'none';
+    enableAudioCameraEL.style.display = value ? 'flex' : 'none';
   }
 }
 
 const onToggleMic = (e) => {
   btnStopRecord.style.display = e.target.checked && !config.videoMediaSource ? 'flex' : 'none';
+  enableAudioCameraEL.style.display = e.target.checked && config.videoMediaSource ? 'flex' : 'none';
 }
 
 function setMimeTypes() {
