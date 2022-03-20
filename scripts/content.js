@@ -1,6 +1,6 @@
 let stream;
 
-let videoEL, divWrapperEL, divControlsEL;
+let videoEL, divCameraEL, divControlsEL;
 let spanVideoOffEL, spanMuteEL, spanStopEL, spanPauseEL;
 let muted = false, videoOff = false, videoPause = false;
 
@@ -48,7 +48,6 @@ function createStopButton() {
   spanStopEL.innerHTML = svgStop;
 
   spanStopEL.onclick = () => {
-    destroy();
     chrome.runtime.sendMessage({ message: 'stop-record' });
   }
 }
@@ -70,18 +69,12 @@ function createPauseButton() {
   }
 }
 
-function createLocalVideo() {
-  divWrapperEL = document.createElement('div');
-  divWrapperEL.id = 'reco-recording';
-
-  videoEL = document.createElement('video');
-  videoEL.autoplay = true;
-  videoEL.srcObject = stream;
-
+function createLocalVideo(request) {
   createPauseButton();
   createStopButton();
 
   divControlsEL = document.createElement('div');
+  divControlsEL.id = 'reco-controls';
   divControlsEL.appendChild(spanPauseEL);
   divControlsEL.appendChild(spanMuteEL);
   divControlsEL.appendChild(spanVideoOffEL);
@@ -90,78 +83,73 @@ function createLocalVideo() {
   divControlsEL.style.cssText = `position: fixed; bottom: 15px; left: 15px; z-index: 99999;
   display: flex; align-items: center; flex-direction: column;`;
 
-  videoEL.style.cssText = `width: 100%; height: 100%;`;
 
-  divWrapperEL.style.cssText = `width: 170px; height:170px;
-  position: fixed; bottom: 15px; right: 15px; z-index: 99999; 
-  border-radius: 50%; overflow: hidden; background: black;`;
+  if (request.enableCamera) {
+    divCameraEL = document.createElement('div');
+    divCameraEL.id = 'reco-camera';
 
-  divWrapperEL.appendChild(videoEL);
+    divCameraEL.style.cssText = `width: 170px; height:170px;
+    position: fixed; bottom: 15px; right: 15px; z-index: 99999; 
+    border-radius: 50%; overflow: hidden; background: black;`;
+
+    videoEL = document.createElement('video');
+    videoEL.autoplay = true;
+    videoEL.srcObject = stream;
+    videoEL.style.cssText = `width: 100%; height: 100%;`;
+    divCameraEL.appendChild(videoEL);
+    document.body.appendChild(divCameraEL);
+  }
+
   document.body.appendChild(divControlsEL);
-  document.body.appendChild(divWrapperEL);
 }
 
 function destroy() {
-  if (stream) stream.getTracks().forEach((track) => { track.stop(); });
-  if (divWrapperEL) {
-    videoEL.srcObject = null;
-    divControlsEL.parentNode.removeChild(divControlsEL);
-    document.body.removeChild(divWrapperEL);
+  try {
+    if (stream) stream.getTracks().forEach((track) => { track.stop(); });
+    if (videoEL) videoEL.srcObject = null;
+    if (divControlsEL && divControlsEL.parentNode) divControlsEL.parentNode.removeChild(divControlsEL);
+    if (divCameraEL && divCameraEL.parentNode) divCameraEL.parentNode.removeChild(divCameraEL);
+
+    const el = document.getElementById('reco-camera');
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  } catch (error) {
+    console.log('Error from destroy recording....', error);
   }
-  const el = document.getElementById('reco-recording');
-  if (el) el.parentNode.removeChild(el);
 }
 
-async function receiver(request) {
-  if (request.message === 'start-record' && request.videoMediaSource) {
-    if (request.enableCamera || request.enableAudioCamera) {
-      const micState = await navigator.permissions.query({ name: 'microphone' });
-      const camState = await navigator.permissions.query({ name: 'camera' });
+async function onMessage(request) {
+  if (request.message === 'start-record' && request.enableCamera) {
+    const micState = await navigator.permissions.query({ name: 'microphone' });
+    const camState = await navigator.permissions.query({ name: 'camera' });
 
-      if (micState.state !== 'granted' || camState.state !== 'granted') {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        stream.getTracks().forEach((track) => { track.stop(); });
-      }
-
-      if (micState.state === 'granted' && camState.state === 'granted') chrome.runtime.sendMessage(request);
+    if (micState.state !== 'granted' || camState.state !== 'granted') {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: request.enableCamera,
+        audio: request.enableAudioCamera
+      });
+      stream.getTracks().forEach((track) => { track.stop(); });
+      chrome.runtime.sendMessage({ ...request, message: 'grant' });
     }
   }
 
-  // only share screen - without audio
-  if (request.message === 'start-record' && !request.enableAudio && !request.enableCamera) {
-    chrome.runtime.sendMessage(request);
-  }
-
-  // only audio recording
-  if (request.message === 'start-record' && request.enableAudio && !request.enableCamera) {
-    chrome.runtime.sendMessage(request);
-  }
-
-  if (request.message === 'stop-record') {
-    chrome.runtime.sendMessage(request);
-  }
-
-  if (request.message === 'background-start-record' && request.enableCamera) {
-
+  if (request.message === 'background-start-record' && request.enableAudio) {
     muted = request.enableAudioCamera || false;
     videoOff = request.enableCamera || false;
 
-    stream = await navigator.mediaDevices.getUserMedia({ video: muted, audio: videoOff });
+    stream = await navigator.mediaDevices.getUserMedia({ video: videoOff, audio: true });
     if (stream.getAudioTracks().length > 0) stream.getAudioTracks()[0].enabled = muted;
 
     spanMuteEL.innerHTML = muted ? svgMuted : svgVolumeUp;
     spanVideoOffEL.innerHTML = videoOff ? svgCamOFF : svgCamOn;
 
-    createLocalVideo();
+    createLocalVideo(request);
   }
 
-  if (request.message === 'background-stop-record') {
-    try {
-      destroy();
-    } catch (error) {
-      console.log('Error from recording....', error);
-    }
+  if (request.message.includes('stop-record')) {
+    destroy()
   }
+
+  chrome.runtime.sendMessage(request);
 }
 
-chrome.runtime.onMessage.addListener(receiver);
+chrome.runtime.onMessage.addListener(onMessage);

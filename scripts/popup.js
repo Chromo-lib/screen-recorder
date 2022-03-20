@@ -33,7 +33,7 @@ async function onStartRecord(e) {
   });
 }
 
-async function onStopRecord(e) {
+function onStopRecord() {
   chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
     chrome.tabs.sendMessage(tabs[0].id, { message: 'stop-record' });
   });
@@ -56,12 +56,7 @@ function onVideMediaSource(e) {
 
     liTarget.classList.add('active-tab');
     btnStopRecord.style.display = !value && config.enableAudio ? 'flex' : 'none';
-    enableAudioCameraEL.style.display = value ? 'flex' : 'none';
   }
-}
-
-const onToggleMic = (e) => {
-  enableAudioCameraEL.style.display = e.target.checked && config.videoMediaSource ? 'flex' : 'none';
 }
 
 function setMimeTypes() {
@@ -73,7 +68,9 @@ function setMimeTypes() {
     'video/webm;codecs=avc1',
     'video/webm;codecs=daala',
     'video/mp4;codecs=h264,aac',
-    'video/mpeg'
+    'video/mpeg',
+    'audio/webm',
+    'audio/wav'
   ];
 
   mimeTypes.filter(mimeType => {
@@ -108,7 +105,6 @@ function onMessage(request) {
   }
 }
 
-document.getElementById('enableAudio').addEventListener('change', onToggleMic, false);
 btnStopRecord.addEventListener('click', onStopRecord, false)
 videoMediaSourceEL.addEventListener('click', onVideMediaSource, false)
 formConfigEL.addEventListener('submit', onStartRecord, false)
