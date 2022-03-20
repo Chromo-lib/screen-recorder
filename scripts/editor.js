@@ -2,6 +2,7 @@ const contentElement = document.querySelector('.content');
 const formConvert = document.getElementById('form-convert');
 const btnConvert = formConvert.querySelector('button');
 const videoPlayer = document.getElementById('vid');
+const img = document.createElement('img')
 
 const btnClearCache = document.getElementById('btn-clear-cache');
 
@@ -34,6 +35,8 @@ const onDownloadVid = (e) => {
 const onConvertToGif = (e) => {
   e.preventDefault();
 
+  img.src = null;
+
   const videosElement = document.querySelectorAll('video')
   const target = e.target.elements;
 
@@ -62,8 +65,7 @@ const onConvertToGif = (e) => {
       btnConvert.textContent = 'Conversion (100%)';
       videosElement[0].classList.add('mb-20')
 
-      // preview anddownload gif
-      const img = document.createElement('img')
+      // preview video gif
       img.src = obj.image;
       img.alt = 'reco gif';
       img.classList.add('mb-10')

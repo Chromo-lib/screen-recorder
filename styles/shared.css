@@ -19,7 +19,7 @@ html {
 
 body {
   margin: 0;
-  min-width: 270px;
+  min-width: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,18 +35,27 @@ body {
   cursor: pointer;
   color: white;
   background-color: var(--black);
-  padding: 10px 25px;
+  padding: 12px 25px;
   outline: none;
   letter-spacing: 2px;
   line-height: 1.5;
   transition: opacity .25s;
 }
 
-input, select {
+input {
   padding: 10px 15px;
   width: 100%;
   border-radius: 4px;
   font-size: 14px;
+}
+
+input, select {
+  width: 100%;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  border: 0;
+  outline: none;
 }
 
 input[type="checkbox"] {padding: 0; width: 15px; margin-right: 15px;}

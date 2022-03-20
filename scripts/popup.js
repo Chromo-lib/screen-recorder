@@ -61,13 +61,20 @@ function onVideMediaSource(e) {
 }
 
 const onToggleMic = (e) => {
-  btnStopRecord.style.display = e.target.checked && !config.videoMediaSource ? 'flex' : 'none';
   enableAudioCameraEL.style.display = e.target.checked && config.videoMediaSource ? 'flex' : 'none';
 }
 
 function setMimeTypes() {
   const selectMimeTypeEL = document.getElementById('mimeType')
-  const mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm;codecs=h264,opus', 'video/mp4;codecs=h264,aac',];
+  const mimeTypes = [
+    'video/webm;codecs=vp9',
+    'video/webm;codecs=vp8',
+    'video/webm;codecs=h264',
+    'video/webm;codecs=avc1',
+    'video/webm;codecs=daala',
+    'video/mp4;codecs=h264,aac',
+    'video/mpeg'
+  ];
 
   mimeTypes.filter(mimeType => {
     if (MediaRecorder.isTypeSupported(mimeType)) {
@@ -95,8 +102,14 @@ function setAudioInputs() {
     });
 }
 
+function onMessage(request) {
+  if (request.message === 'start-record') {
+    btnStopRecord.style.display = 'flex';
+  }
+}
+
 document.getElementById('enableAudio').addEventListener('change', onToggleMic, false);
 btnStopRecord.addEventListener('click', onStopRecord, false)
 videoMediaSourceEL.addEventListener('click', onVideMediaSource, false)
 formConfigEL.addEventListener('submit', onStartRecord, false)
-//chrome.runtime.onMessage.addListener(listenToBackgroundMessages);
+chrome.runtime.onMessage.addListener(onMessage);

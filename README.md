@@ -11,7 +11,7 @@
 </div>
 
 <div align="center">
-  <img src="https://media.giphy.com/media/UvL5ixJCvDsBIBX2rf/giphy.gif">
+  <img src="https://i.giphy.com/media/WVNfkzbtf9gaXVQobR/giphy.webp">
 </div>
 
 ### Features

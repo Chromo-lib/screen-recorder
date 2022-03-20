@@ -15,4 +15,3 @@ window.addEventListener('DOMContentLoaded', () => navigator.mediaDevices.getUser
 }, () => chrome.tabs.create({
   url: 'chrome://settings/content/siteDetails?site=' + encodeURIComponent(location.href)
 }, () => window.close()))));
-
