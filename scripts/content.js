@@ -117,7 +117,7 @@ function destroy() {
   }
 }
 
-async function onMessage(request) {
+async function onMessage(request) {  
   if (request.message === 'start-record' && request.enableCamera) {
     const micState = await navigator.permissions.query({ name: 'microphone' });
     const camState = await navigator.permissions.query({ name: 'camera' });

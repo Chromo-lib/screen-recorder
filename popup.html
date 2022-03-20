@@ -18,7 +18,7 @@
     <fieldset>
       <legend>Screen sharing</legend>
       <ul class="w-100 d-flex justify-between" id="video-media-source">
-        <li class="active-tab" data-value="tab">
+        <li class="active-tab" data-value="tab" title="share tab">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path fill="currentColor"
               d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V192h416v234z" />
@@ -26,7 +26,7 @@
           <span>tab</span>
         </li>
 
-        <li data-value="window">
+        <li data-value="window" title="share window">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path fill="currentColor"
               d="M464 0H144c-26.5 0-48 21.5-48 48v48H48c-26.5 0-48 21.5-48 48v320c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48v-48h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-96 464H48V256h320v208zm96-96h-48V144c0-26.5-21.5-48-48-48H144V48h320v320z" />
@@ -34,7 +34,7 @@
           <span>window</span>
         </li>
 
-        <li data-value="screen">
+        <li data-value="screen" title="share screen">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
             <path fill="currentColor"
               d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z" />
@@ -42,7 +42,7 @@
           <span>desktop</span>
         </li>
 
-        <li data-value="off">
+        <li data-value="off" title="No screen sharing">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21">
@@ -72,7 +72,7 @@
       <fieldset id="camera">
         <legend>Camera</legend>
         
-        <div class="w-100 d-flex justify-between mb-10">
+        <div class="w-100 mb-10">
           <div class="vertical-align">
             <input type="checkbox" id="enableCamera" name="enableCamera" value="false">
             <label for="enableCamera"> video</label>
@@ -80,7 +80,7 @@
   
           <div class="vertical-align enableAudioCamera">
             <input type="checkbox" id="enableAudioCamera" name="enableAudioCamera" value="false">
-            <label for="enableAudioCamera"> Audio</label>
+            <label for="enableAudioCamera"> Background Audio</label>
           </div>
         </div>
 

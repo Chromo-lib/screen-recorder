@@ -3,6 +3,8 @@ let requestId;
 let stream;
 let mediaRecorder;
 
+let currentTabId;
+
 function delay(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
 
 async function chooseDesktopMedia(videoMediaSource) {
@@ -41,6 +43,8 @@ const grantPermission = async (request) => {
 }
 
 const onMessage = async (request) => {
+  currentTabId = request.tabId;
+
   // screen sharing recording
   if (request.message === 'start-record' && request.videoMediaSource) {
 
@@ -50,7 +54,7 @@ const onMessage = async (request) => {
     await delay(100);
     requestId = await chooseDesktopMedia(request.videoMediaSource);
 
-    await sendMessageToContent({ ...request, message: 'background-start-record' });
+    sendMessage({ ...request, message: 'background-start-record' });
 
     const constraints = {
       video: {
@@ -81,18 +85,17 @@ const onMessage = async (request) => {
     }
 
     mediaRecorder.onstop = async () => {
-      await sendMessageToContent({ ...request, message: 'background-stop-record' });
+      sendMessage({ ...request, message: 'background-stop-record' });
       onOpenEditorTab(chunks, request.mimeType);
     }
 
     mediaRecorder.onerror = async event => {
-      await sendMessageToContent({ message: 'background-stop-record' });
+      sendMessage({ ...request, message: 'background-stop-record' });
       console.error(`Error recording stream: ${event.error.name}`);
     }
 
     stream.getVideoTracks()[0].onended = async () => {
       mediaRecorder.stop();
-      if (request.enableCamera) await sendMessageToContent({ message: 'background-stop-record' });
     };
   }
 
@@ -111,15 +114,15 @@ const onMessage = async (request) => {
       mediaRecorder = new MediaRecorder(stream, { mimeType: request.mimeType });
 
       mediaRecorder.start();
-      await sendMessageToContent({ ...request, message: 'background-start-record' });
+      sendMessage({ ...request, message: 'background-start-record' });
 
       mediaRecorder.ondataavailable = (e) => {
         chunks.push(e.data);
       }
 
       mediaRecorder.onstop = async () => {
-        onOpenEditorTab(chunks, request.mimeType);        
-        await sendMessageToContent({ ...request, message: 'background-stop-record' });
+        onOpenEditorTab(chunks, request.mimeType);
+        sendMessage({ ...request, message: 'background-stop-record' });
       }
 
       mediaRecorder.onerror = event => {
@@ -138,7 +141,7 @@ const onMessage = async (request) => {
     try {
       if (stream) stream.getTracks().forEach((track) => { track.stop(); });
       if (mediaRecorder) mediaRecorder.stop();
-      await sendMessageToContent({ ...request, message: 'background-stop-record' });
+      sendMessage({ ...request, message: 'background-stop-record' })
     } catch (error) {
       console.log('Background stop-record', error);
     }
@@ -157,16 +160,20 @@ const onMessage = async (request) => {
   }
 
   if (request.message === 'grant') {
-    await sendMessageToContent({ ...request, message: 'start-record' })
+    sendMessage({ ...request, message: 'start-record' });
   }
 };
 
-function sendMessageToContent(message) {
-  return new Promise(resolve => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, message); resolve();
-    })
-  })
+function sendMessage(message) {
+  if (currentTabId) {
+    chrome.tabs.sendMessage(currentTabId, message);
+  }
+  else {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, message);
+    });
+  }
+  //chrome.runtime.sendMessage(message);
 }
 
 chrome.runtime.onMessage.addListener(onMessage);

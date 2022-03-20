@@ -31,12 +31,12 @@ function onStartRecord(e) {
     else config[element.name] = element.value;
   }
 
-  // send to content
-  // chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-  //   chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config });
-  // });
+  //send to content
+  chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+    //chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config });
+    chrome.runtime.sendMessage({ message: 'start-record', tabId: tabs[0].id, ...config });
+  });
 
-  chrome.runtime.sendMessage({ message: 'start-record', ...config });
 }
 
 function onStopRecord() {
@@ -100,7 +100,7 @@ function setAudioInputs() {
           audioinputEL.appendChild(option)
         }
 
-        if (input.kind === "videoinput" && input.label) {          
+        if (input.kind === "videoinput" && input.label) {
           const option = document.createElement('option')
           option.textContent = input.label
           option.value = input.deviceId
@@ -114,6 +114,9 @@ function onMessage(request) {
   if (request.message === 'start-record') {
     btnStopRecord.style.display = 'flex';
   }
+  // else {
+  //   chrome.runtime.sendMessage(request);
+  // }
 }
 
 btnStopRecord.addEventListener('click', onStopRecord, false)
