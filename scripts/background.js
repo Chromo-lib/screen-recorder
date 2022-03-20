@@ -165,15 +165,21 @@ const onMessage = async (request) => {
 };
 
 function sendMessage(message) {
-  if (currentTabId) {
-    chrome.tabs.sendMessage(currentTabId, message);
-  }
-  else {
+  try {
+    if (currentTabId) {
+      chrome.tabs.sendMessage(+currentTabId, message);
+    }
+    else {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, message);
+      });
+    }
+    //chrome.runtime.sendMessage(message);
+  } catch (error) {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       chrome.tabs.sendMessage(tabs[0].id, message);
     });
   }
-  //chrome.runtime.sendMessage(message);
 }
 
 chrome.runtime.onMessage.addListener(onMessage);
