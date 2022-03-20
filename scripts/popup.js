@@ -3,15 +3,18 @@ const formConfigEL = document.getElementById('form-config');
 
 const enableAudioCameraEL = document.querySelector('.enableAudioCamera');
 
-const selectAudioDeviceIDEL = document.getElementById('audioDeviceID');
+const audioinputEL = document.getElementById('microphoneID');
+const videoinputEL = document.getElementById('cameraID');
+
 const videoMediaSourceEL = document.getElementById('video-media-source');
 
 btnStopRecord.style.display = 'none';
 
 let config = {
   videoMediaSource: 'tab',
-  audioDeviceID: 'default',
-  enableAudio: false,
+  microphoneID: 'default',
+  cameraID: 'default',
+  microphone: false,
   enableCamera: false,
   enableAudioCamera: false,
   mimeType: 'video/webm;codecs=vp8,opus'
@@ -20,7 +23,7 @@ let config = {
 setMimeTypes();
 setAudioInputs();
 
-async function onStartRecord(e) {
+function onStartRecord(e) {
   e.preventDefault();
 
   for (const element of e.target.elements) {
@@ -28,15 +31,16 @@ async function onStartRecord(e) {
     else config[element.name] = element.value;
   }
 
-  chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config });
-  });
+  // send to content
+  // chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+  //   chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config });
+  // });
+
+  chrome.runtime.sendMessage({ message: 'start-record', ...config });
 }
 
 function onStopRecord() {
-  chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, { message: 'stop-record' });
-  });
+  chrome.runtime.sendMessage({ message: 'stop-record' });
 }
 
 function onVideMediaSource(e) {
@@ -55,7 +59,7 @@ function onVideMediaSource(e) {
     });
 
     liTarget.classList.add('active-tab');
-    btnStopRecord.style.display = !value && config.enableAudio ? 'flex' : 'none';
+    btnStopRecord.style.display = !value && config.microphone ? 'flex' : 'none';
   }
 }
 
@@ -84,7 +88,7 @@ function setMimeTypes() {
 }
 
 function setAudioInputs() {
-  const selectAudioDeviceIDEL = document.getElementById('audioDeviceID');
+  const audioinputEL = document.getElementById('microphoneID');
 
   navigator.mediaDevices.enumerateDevices()
     .then(enumerator => {
@@ -93,7 +97,14 @@ function setAudioInputs() {
           const option = document.createElement('option')
           option.textContent = input.label
           option.value = input.deviceId
-          selectAudioDeviceIDEL.appendChild(option)
+          audioinputEL.appendChild(option)
+        }
+
+        if (input.kind === "videoinput" && input.label) {          
+          const option = document.createElement('option')
+          option.textContent = input.label
+          option.value = input.deviceId
+          videoinputEL.appendChild(option)
         }
       });
     });

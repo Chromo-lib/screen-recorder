@@ -22,7 +22,7 @@ function onOpenEditorTab(recordedChunks, vidMimeType) {
   mediaRecorder = null;
 }
 
-const grantMicrophonePermission = async (request) => {
+const grantPermission = async (request) => {
   const permission = await navigator.permissions.query({ name: 'microphone' });
   if (permission.state !== 'granted') {
     let params = '';
@@ -44,7 +44,7 @@ const onMessage = async (request) => {
   // screen sharing recording
   if (request.message === 'start-record' && request.videoMediaSource) {
 
-    const permissionState = await grantMicrophonePermission(request);
+    const permissionState = await grantPermission(request);
     if (permissionState !== 'granted') return;
 
     await delay(100);
@@ -68,9 +68,9 @@ const onMessage = async (request) => {
     stream = await navigator.mediaDevices.getUserMedia(constraints);
     mediaRecorder = new MediaRecorder(stream, { mimeType: request.mimeType });
 
-    if (request.enableAudio) {
-      const audioStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: request.audioDeviceID } });
-      audioStream.getAudioTracks()[0].enabled = request.enableAudio;
+    if (request.microphone) {
+      const audioStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: request.microphoneID } });
+      audioStream.getAudioTracks()[0].enabled = request.microphone;
       stream.addTrack(audioStream.getAudioTracks()[0]);
     }
 
@@ -97,15 +97,15 @@ const onMessage = async (request) => {
   }
 
   // // only audio recording
-  if (request.message === 'start-record' && request.enableAudio && !request.videoMediaSource) {
+  if (request.message === 'start-record' && request.microphone && !request.videoMediaSource) {
     try {
-      const permissionState = await grantMicrophonePermission(request);
+      const permissionState = await grantPermission(request);
       if (permissionState !== 'granted') return;
 
       await delay(100);
 
       stream = await navigator.mediaDevices.getUserMedia({
-        video: false, audio: request.enableAudio
+        video: false, audio: request.microphone
       });
 
       mediaRecorder = new MediaRecorder(stream, { mimeType: request.mimeType });

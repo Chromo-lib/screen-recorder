@@ -63,23 +63,28 @@
       <fieldset>
         <legend>Microphone</legend>
         <div class="vertical-align mb-10">
-          <input type="checkbox" id="enableAudio" name="enableAudio" value="false">
-          <label for="enableAudio"> enable</label>
+          <input type="checkbox" id="microphone" name="microphone" value="false">
+          <label for="microphone"> enable</label>
         </div>
-        <select name="audioDeviceID" id="audioDeviceID"></select>
+        <select name="microphoneID" id="microphoneID"></select>
       </fieldset>
 
-      <fieldset class="d-flex justify-between" id="camera">
+      <fieldset id="camera">
         <legend>Camera</legend>
-        <div class="vertical-align">
-          <input type="checkbox" id="enableCamera" name="enableCamera" value="false">
-          <label for="enableCamera"> video</label>
+        
+        <div class="w-100 d-flex justify-between mb-10">
+          <div class="vertical-align">
+            <input type="checkbox" id="enableCamera" name="enableCamera" value="false">
+            <label for="enableCamera"> video</label>
+          </div>
+  
+          <div class="vertical-align enableAudioCamera">
+            <input type="checkbox" id="enableAudioCamera" name="enableAudioCamera" value="false">
+            <label for="enableAudioCamera"> Audio</label>
+          </div>
         </div>
 
-        <div class="vertical-align enableAudioCamera">
-          <input type="checkbox" id="enableAudioCamera" name="enableAudioCamera" value="false">
-          <label for="enableAudioCamera"> Audio</label>
-        </div>
+        <select name="cameraID" id="cameraID"></select>
       </fieldset>
 
       <button type="submit" class="w-100 d-flex">

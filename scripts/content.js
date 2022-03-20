@@ -130,26 +130,32 @@ async function onMessage(request) {
       stream.getTracks().forEach((track) => { track.stop(); });
       chrome.runtime.sendMessage({ ...request, message: 'grant' });
     }
+    else {
+      chrome.runtime.sendMessage(request);
+    }
   }
 
-  if (request.message === 'background-start-record' && request.enableAudio) {
+  if (request.message === 'background-start-record' && request.microphone) {
     muted = request.enableAudioCamera || false;
     videoOff = request.enableCamera || false;
 
-    stream = await navigator.mediaDevices.getUserMedia({ video: videoOff, audio: true });
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: videoOff,
+      audio: true
+    });
+
     if (stream.getAudioTracks().length > 0) stream.getAudioTracks()[0].enabled = muted;
 
     spanMuteEL.innerHTML = muted ? svgMuted : svgVolumeUp;
     spanVideoOffEL.innerHTML = videoOff ? svgCamOFF : svgCamOn;
 
     createLocalVideo(request);
+    chrome.runtime.sendMessage(request);
   }
 
   if (request.message.includes('stop-record')) {
     destroy()
   }
-
-  chrome.runtime.sendMessage(request);
 }
 
 chrome.runtime.onMessage.addListener(onMessage);
