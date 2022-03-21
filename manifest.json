@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Screen Recorder",
   "description": "Reco is screen Recorder tool",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "icons": {
     "512": "icons/512.png",
     "256": "icons/256.png",

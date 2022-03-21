@@ -37,7 +37,7 @@ function createMuteButton() {
       stream.getAudioTracks()[0].enabled = muted;
     }
     spanMuteEL.innerHTML = muted ? svgMuted : svgVolumeUp;
-    chrome.runtime.sendMessage({ message: 'content-microphone', muted });
+    chrome.runtime.sendMessage({ message: 'mute-microphone', muted });
   }
 }
 
@@ -113,47 +113,57 @@ function destroy() {
     const el = document.getElementById('reco-camera');
     if (el && el.parentNode) el.parentNode.removeChild(el);
   } catch (error) {
-    console.log('Error from destroy recording....', error);
+    console.log('Error destroy....', error);
   }
 }
 
-async function onMessage(request) {  
-  if (request.message === 'start-record' && request.enableCamera) {
-    const micState = await navigator.permissions.query({ name: 'microphone' });
-    const camState = await navigator.permissions.query({ name: 'camera' });
+async function onMessage(request) {
+  const { message, videoMediaSource, enableCamera, microphone, enableAudioCamera } = request;
 
-    if (micState.state !== 'granted' || camState.state !== 'granted') {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: request.enableCamera,
-        audio: request.enableAudioCamera
-      });
-      stream.getTracks().forEach((track) => { track.stop(); });
-      chrome.runtime.sendMessage({ ...request, message: 'grant' });
+  const isOnlySharinScreenAndCamera = videoMediaSource && enableCamera && microphone;
+  const isOnlyAudio = microphone && !videoMediaSource;
+
+  if (message === 'start-record' && (isOnlySharinScreenAndCamera || isOnlyAudio)) {
+    try {
+      const micState = await navigator.permissions.query({ name: 'microphone' });
+      const camState = await navigator.permissions.query({ name: 'camera' });
+
+      if (micState.state !== 'granted' || camState.state !== 'granted') {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: enableCamera,
+          audio: enableAudioCamera
+        });
+        stream.getTracks().forEach((track) => { track.stop(); });
+        chrome.runtime.sendMessage({ ...request, message: 'grant' });
+      }
+      else {
+        chrome.runtime.sendMessage(request);
+      }
+    } catch (error) {
+      console.log('start-record', error);
     }
-    else {
+  }
+
+  if (message === 'background-start-record' && (isOnlySharinScreenAndCamera || isOnlyAudio)) {
+    try {
+      muted = enableAudioCamera || false;
+      videoOff = enableCamera || false;
+
+      stream = await navigator.mediaDevices.getUserMedia({ video: videoOff, audio: true });
+
+      if (stream.getAudioTracks().length > 0) stream.getAudioTracks()[0].enabled = muted;
+
+      spanMuteEL.innerHTML = muted ? svgMuted : svgVolumeUp;
+      spanVideoOffEL.innerHTML = videoOff ? svgCamOFF : svgCamOn;
+
+      createLocalVideo(request);
       chrome.runtime.sendMessage(request);
+    } catch (error) {
+      console.log('background-start-record', error);
     }
   }
 
-  if (request.message === 'background-start-record' && request.microphone) {
-    muted = request.enableAudioCamera || false;
-    videoOff = request.enableCamera || false;
-
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: videoOff,
-      audio: true
-    });
-
-    if (stream.getAudioTracks().length > 0) stream.getAudioTracks()[0].enabled = muted;
-
-    spanMuteEL.innerHTML = muted ? svgMuted : svgVolumeUp;
-    spanVideoOffEL.innerHTML = videoOff ? svgCamOFF : svgCamOn;
-
-    createLocalVideo(request);
-    chrome.runtime.sendMessage(request);
-  }
-
-  if (request.message.includes('stop-record')) {
+  if (message.includes('stop-record')) {
     destroy()
   }
 }

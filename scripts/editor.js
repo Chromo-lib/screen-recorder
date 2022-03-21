@@ -12,7 +12,7 @@ var blobUrl;
 
 if (window.recordedChunks) {
   tmpRecordedChunks = window.recordedChunks.slice(0);
-  blob = new Blob(tmpRecordedChunks, { type: window.vidMimeType });
+  blob = new Blob(tmpRecordedChunks, { type: window.mimeType });
   blobUrl = window.URL.createObjectURL(blob);
 }
 
@@ -24,7 +24,7 @@ const onDownloadVid = (e) => {
     const target = e.target.elements;
 
     let filename = target[0].value || 'reco';
-    let vidType = window.vidMimeType || 'webm';
+    let vidType = window.mimeType || 'webm';
 
     download(tmpRecordedChunks, filename, vidType)
   } catch (error) {
@@ -94,15 +94,6 @@ const onConvertToGif = (e) => {
   });
 }
 
-const onSaveForLater = () => {
-  const videos = localStorage.getItem('videos')
-    ? JSON.parse(localStorage.getItem('videos'))
-    : [];
-
-  videos.push(tmpRecordedChunks);
-  localStorage.setItem('videos', JSON.stringify(videos));
-}
-
 function loadStoredVideos() {
   const videos = localStorage.getItem('videos')
     ? JSON.parse(localStorage.getItem('videos'))
@@ -113,7 +104,7 @@ function loadStoredVideos() {
     for (const records of videos) {
       const videoEL = document.createElement('video')
       videoEL.controls = true;
-      const videoBlob = new Blob(records, { type: window.vidMimeType });
+      const videoBlob = new Blob(records, { type: window.mimeType });
       videoEL.src = window.URL.createObjectURL(videoBlob);
       listVideos.appendChild(videoEL);
     }
@@ -147,6 +138,5 @@ window.onbeforeunload = function (e) {
 };
 
 formConvert.addEventListener('submit', onConvertToGif, false)
-btnClearCache.addEventListener('click', onClearCache)
-//document.getElementById('btn-save').addEventListener('click', onSaveForLater)
+btnClearCache.addEventListener('click', onClearCache);
 document.getElementById('form-download').addEventListener('submit', onDownloadVid, false)
