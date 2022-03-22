@@ -2,7 +2,7 @@
   <img src="icons/icon128.png"><br /><br />
   <img src="https://i.ibb.co/NtPFvJ9/New-Project.png">
   <h4 style="margin-top:0">A Free And Lightweight</h4>
-  <p>🔥 Chrome extension to record screen, tab and desktop 🔥</p>
+  <p>🔥 Browser extension to record audio, camera, window, screen and tab 🔥</p>
 
 <hr>
 
