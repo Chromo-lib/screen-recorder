@@ -7,25 +7,15 @@ let winTabId;
 
 function delay(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
 
-async function chooseDesktopMedia(videoMediaSource) {
-  return new Promise(resolve => {
-    chrome.desktopCapture.chooseDesktopMedia([videoMediaSource || 'window', 'screen', 'tab'],
-      async (id) => { resolve(id) })
-  })
-}
-
-function onOpenEditorTab(recordedChunks, mimeType) {  
-  let newwindow = window.open('../editor.html');
-  newwindow.recordedChunks = recordedChunks;
-  newwindow.mimeType = mimeType;
-  chunks = [];
-  requestId = 0;
-  stream = null;
-  mediaRecorder = null;
-}
-
-const grantPermission = async (request) => {
+async function grantMicPermission(request) {
+  const { authorize } = request;
   const permission = await navigator.permissions.query({ name: 'microphone' });
+
+  permission.onchange = function () {
+    if (this.state) sendMessage({ ...request, message: 'start-record' });
+    else sendMessage({ ...request, message: 'permission-fail' });
+  }
+
   if (permission.state !== 'granted') {
     let params = '';
     let len = Object.keys(request).length - 1;
@@ -35,90 +25,106 @@ const grantPermission = async (request) => {
       len--;
     }
 
+    params += '&audio=' + authorize.audio + '&video=' + authorize.video;
+
     chrome.windows.create({
       url: chrome.extension.getURL('../permission/index.html?' + params), width: 400, height: 400, type: 'popup'
     });
   }
-  return permission.state;
+  else {
+    sendMessage({ ...request, message: 'start-record' });
+  }
+}
+
+async function chooseDesktopMedia(videoMediaSource) {
+  return new Promise(resolve => {
+    chrome.desktopCapture.chooseDesktopMedia([videoMediaSource || 'window', 'screen', 'tab'],
+      async (id) => { resolve(id) })
+  })
+}
+
+function onOpenEditorTab(recordedChunks, mimeType) {
+  let newwindow = window.open('../editor.html');
+  newwindow.recordedChunks = recordedChunks;
+  newwindow.mimeType = mimeType;
+  chunks = [];
+  requestId = 0;
+  stream = null;
+  mediaRecorder = null;
 }
 
 const onMessage = async (request) => {
-
-  const { tabId, message, videoMediaSource, enableCamera, microphone, mimeType, microphoneID } = request;
+  const { tabId, message, videoMediaSource, enableCamera, microphone, mimeType, microphoneID, authorize } = request;
   winTabId = tabId;
 
-  const isOnlySharinScreen = videoMediaSource && !microphone && !enableCamera;
-  const isOnlySharinScreenAndAudio = videoMediaSource && microphone  && !enableCamera;
-  const isOnlySharinScreenAndCamera = videoMediaSource && enableCamera && microphone;
+  // const isOnlySharinScreen = videoMediaSource && !microphone && !enableCamera;
+  const isSharinScreenAndAudio = videoMediaSource && microphone && !enableCamera;
+  const isSharingScreenAndCamera = videoMediaSource && (enableCamera || microphone);
   const isOnlyAudio = microphone && !videoMediaSource;
 
   // screen sharing recording + audio (optional)
-  if (message === 'start-record' && (isOnlySharinScreen || isOnlySharinScreenAndAudio || isOnlySharinScreenAndCamera)) {
-    if (microphone) {
-      const permissionState = await grantPermission(request);
-      if (permissionState !== 'granted') return;
+  if (message === 'start-record' && videoMediaSource) {
+    try {
+      await delay(100);
+      requestId = await chooseDesktopMedia(videoMediaSource);
+
+      if ((isOnlyAudio || isSharingScreenAndCamera) && !isSharinScreenAndAudio) {
+        sendMessage({ ...request, message: 'background-start-record' });
+      }
+
+      const constraints = {
+        video: {
+          mandatory: {
+            chromeMediaSource: 'desktop',
+            chromeMediaSourceId: requestId,
+          },
+          // width: { min: 640, ideal: 1920, max: 3840, },
+          // height: { min: 480, ideal: 1080, max: 2160, },
+          // aspectRatio: 1.777,
+          // frameRate: { min: 5, ideal: 15, max: 30, }
+        }, audio: false
+      };
+
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
+      mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+
+      if (microphone) {
+        const audioStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: microphoneID } });
+        audioStream.getAudioTracks()[0].enabled = microphone;
+        stream.addTrack(audioStream.getAudioTracks()[0]);
+      }
+
+      mediaRecorder.start();
+
+      mediaRecorder.ondataavailable = (e) => {
+        chunks.push(e.data);
+      }
+
+      mediaRecorder.onstop = async () => {
+        sendMessage({ ...request, message: 'background-stop-record' });
+        onOpenEditorTab(chunks, request.mimeType);
+      }
+
+      mediaRecorder.onerror = async event => {
+        sendMessage({ ...request, message: 'background-stop-record' });
+        console.error(`Error recording stream: ${event.error.name}`);
+      }
+
+      stream.getVideoTracks()[0].onended = async () => {
+        mediaRecorder.stop();
+      };
+    } catch (error) {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+      console.log('Probaly cancel share screen...', error);
     }
-
-    await delay(100);
-    requestId = await chooseDesktopMedia(videoMediaSource);
-
-    sendMessage({ ...request, message: 'background-start-record' });
-
-    const constraints = {
-      video: {
-        mandatory: {
-          chromeMediaSource: 'desktop',
-          chromeMediaSourceId: requestId,
-        },
-        // width: { min: 640, ideal: 1920, max: 3840, },
-        // height: { min: 480, ideal: 1080, max: 2160, },
-        // aspectRatio: 1.777,
-        // frameRate: { min: 5, ideal: 15, max: 30, }
-      }, audio: false
-    };
-
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
-    mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
-
-    if (microphone) {
-      const audioStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: microphoneID } });
-      audioStream.getAudioTracks()[0].enabled = microphone;
-      stream.addTrack(audioStream.getAudioTracks()[0]);
-    }
-
-    mediaRecorder.start();
-
-    mediaRecorder.ondataavailable = (e) => {
-      chunks.push(e.data);
-    }
-
-    mediaRecorder.onstop = async () => {      
-      sendMessage({ ...request, message: 'background-stop-record' });
-      onOpenEditorTab(chunks, request.mimeType);
-    }
-
-    mediaRecorder.onerror = async event => {
-      sendMessage({ ...request, message: 'background-stop-record' });
-      console.error(`Error recording stream: ${event.error.name}`);
-    }
-
-    stream.getVideoTracks()[0].onended = async () => {
-      mediaRecorder.stop();
-    };
   }
 
   // // only audio recording
-  if (message === 'start-record' && isOnlyAudio) {
+  if (message === 'start-record' && isOnlyAudio && microphone) {
     try {
-      const permissionState = await grantPermission(request);
-      if (permissionState !== 'granted') return;
-
       await delay(100);
 
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: false, audio: microphone
-      });
-
+      stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: microphone });
       mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
 
       mediaRecorder.start();
@@ -137,7 +143,7 @@ const onMessage = async (request) => {
         console.error(`Error recording stream: ${event.error.name}`);
       }
 
-      stream.getVideoTracks()[0].onended = async () => {
+      stream.getAudioTracks()[0].onended = async () => {
         mediaRecorder.stop();
       };
     } catch (error) {
@@ -148,7 +154,7 @@ const onMessage = async (request) => {
   if (message.includes('stop-record')) {
     try {
       if (stream) stream.getTracks().forEach((track) => { track.stop(); });
-      if (mediaRecorder) mediaRecorder.stop();
+      if (mediaRecorder && mediaRecorder !== 'inactive') mediaRecorder.stop();
       sendMessage({ ...request, message: 'background-stop-record' })
     } catch (error) {
       console.log('Background stop-record', error);
@@ -164,11 +170,22 @@ const onMessage = async (request) => {
   }
 
   if (message === 'mute-microphone' && stream && stream.getAudioTracks().length > 0) {
-    stream.getAudioTracks()[0].enabled = request.muted;
+    stream.getAudioTracks().forEach(track => { track.enabled = request.muted; });
   }
 
-  if (message === 'grant') {
-    sendMessage({ ...request, message: 'start-record' });
+  // permission: share screen + audio
+  if (message === 'share-screen-audio-permission') {
+    grantMicPermission(request);
+  }
+
+  // permission: current open page camera and mic
+  if (message === 'audio-or-camera-permission') {
+    sendMessage({ ...request, message: 'background-ask-audio-or-camera-permission' });
+  }
+
+  if (message === 'permission-fail') {
+    if (stream && stream.getTracks().length > 0) stream.getTracks().forEach(track => { track.stop(); });
+    if(mediaRecorder) mediaRecorder.stop();
   }
 };
 

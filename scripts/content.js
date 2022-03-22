@@ -12,6 +12,61 @@ const svgCamOFF = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24
 createMuteButton();
 createVideoOffButton();
 
+async function onMessage(request) {
+  const { message, enableCamera, microphone, enableAudioCamera } = request;
+
+  if (message === 'background-ask-audio-or-camera-permission') {
+    try {
+      const micState = await navigator.permissions.query({ name: 'microphone' });
+      const camState = await navigator.permissions.query({ name: 'camera' });
+
+      micState.onchange = function () {
+        if (this.state === 'granted') chrome.runtime.sendMessage({ ...request, message: 'start-record' });
+        else chrome.runtime.sendMessage({ ...request, message: 'permission-fail' });
+      }
+
+      if (micState.state === 'granted' || camState.state === 'granted') {
+        chrome.runtime.sendMessage({ ...request, message: 'start-record' });
+      }
+      else {
+        stream = await navigator.mediaDevices.getUserMedia({ video: enableCamera, audio: enableAudioCamera || microphone });
+        stream.getTracks().forEach((track) => { track.stop(); });
+      }
+    } catch (error) {
+      chrome.runtime.sendMessage({ ...request, message: 'permission-fail' });
+      console.log('background-ask-audio-or-camera-permission', error);
+    }
+  }
+
+  if (message === 'background-start-record') {
+    try {
+      muted = enableAudioCamera || microphone;
+      videoOff = enableCamera || false;
+
+      stream = await navigator.mediaDevices.getUserMedia({ video: videoOff, audio: true });
+
+      if (stream.getAudioTracks().length > 0) stream.getAudioTracks()[0].enabled = muted;
+
+      spanMuteEL.innerHTML = muted ? svgMuted : svgVolumeUp;
+      spanVideoOffEL.innerHTML = videoOff ? svgCamOFF : svgCamOn;
+
+      createLocalVideo(request);
+      chrome.runtime.sendMessage(request);
+    } catch (error) {
+      destroy();
+      console.log('background-start-record', error);
+    }
+  }
+
+  if (message.includes('stop-record')) {
+    destroy()
+  }
+  else {
+    chrome.runtime.sendMessage(request);
+  }
+}
+
+// ui
 function createVideoOffButton() {
   spanVideoOffEL = document.createElement('span');
   spanVideoOffEL.style.cssText = `margin-bottom: 10px; background: #ffffffd1; display: flex; align-items:center; justify-content: center; cursor: pointer; padding: 5px 8px; border-radius: 50%;  box-shadow: 2px 2px 7px 0 rgb(0 0 0 / 13%);`;
@@ -20,7 +75,9 @@ function createVideoOffButton() {
   spanVideoOffEL.onclick = () => {
     videoOff = !videoOff;
     if (stream.getVideoTracks().length > 0) {
-      stream.getVideoTracks()[0].enabled = videoOff;
+      stream.getVideoTracks().forEach(track => {
+        track.enabled = videoOff;
+      });
     }
     spanVideoOffEL.innerHTML = videoOff ? svgCamOFF : svgCamOn;
   }
@@ -33,11 +90,13 @@ function createMuteButton() {
 
   spanMuteEL.onclick = () => {
     muted = !muted;
+    chrome.runtime.sendMessage({ message: 'mute-microphone', muted });
     if (stream.getAudioTracks().length > 0) {
-      stream.getAudioTracks()[0].enabled = muted;
+      stream.getAudioTracks().forEach(track => {
+        track.enabled = muted;
+      });
     }
     spanMuteEL.innerHTML = muted ? svgMuted : svgVolumeUp;
-    chrome.runtime.sendMessage({ message: 'mute-microphone', muted });
   }
 }
 
@@ -75,6 +134,7 @@ function createLocalVideo(request) {
 
   divControlsEL = document.createElement('div');
   divControlsEL.id = 'reco-controls';
+
   divControlsEL.appendChild(spanPauseEL);
   divControlsEL.appendChild(spanMuteEL);
   divControlsEL.appendChild(spanVideoOffEL);
@@ -82,7 +142,6 @@ function createLocalVideo(request) {
 
   divControlsEL.style.cssText = `position: fixed; bottom: 15px; left: 15px; z-index: 99999;
   display: flex; align-items: center; flex-direction: column;`;
-
 
   if (request.enableCamera) {
     divCameraEL = document.createElement('div');
@@ -99,7 +158,6 @@ function createLocalVideo(request) {
     divCameraEL.appendChild(videoEL);
     document.body.appendChild(divCameraEL);
   }
-
   document.body.appendChild(divControlsEL);
 }
 
@@ -113,58 +171,8 @@ function destroy() {
     const el = document.getElementById('reco-camera');
     if (el && el.parentNode) el.parentNode.removeChild(el);
   } catch (error) {
+    chrome.runtime.sendMessage({ ...request, message: 'stop-record' });
     console.log('Error destroy....', error);
-  }
-}
-
-async function onMessage(request) {
-  const { message, videoMediaSource, enableCamera, microphone, enableAudioCamera } = request;
-
-  const isOnlySharinScreenAndCamera = videoMediaSource && enableCamera && microphone;
-  const isOnlyAudio = microphone && !videoMediaSource;
-
-  if (message === 'start-record' && (isOnlySharinScreenAndCamera || isOnlyAudio)) {
-    try {
-      const micState = await navigator.permissions.query({ name: 'microphone' });
-      const camState = await navigator.permissions.query({ name: 'camera' });
-
-      if (micState.state !== 'granted' || camState.state !== 'granted') {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: enableCamera,
-          audio: enableAudioCamera
-        });
-        stream.getTracks().forEach((track) => { track.stop(); });
-        chrome.runtime.sendMessage({ ...request, message: 'grant' });
-      }
-      else {
-        chrome.runtime.sendMessage(request);
-      }
-    } catch (error) {
-      console.log('start-record', error);
-    }
-  }
-
-  if (message === 'background-start-record' && (isOnlySharinScreenAndCamera || isOnlyAudio)) {
-    try {
-      muted = enableAudioCamera || false;
-      videoOff = enableCamera || false;
-
-      stream = await navigator.mediaDevices.getUserMedia({ video: videoOff, audio: true });
-
-      if (stream.getAudioTracks().length > 0) stream.getAudioTracks()[0].enabled = muted;
-
-      spanMuteEL.innerHTML = muted ? svgMuted : svgVolumeUp;
-      spanVideoOffEL.innerHTML = videoOff ? svgCamOFF : svgCamOn;
-
-      createLocalVideo(request);
-      chrome.runtime.sendMessage(request);
-    } catch (error) {
-      console.log('background-start-record', error);
-    }
-  }
-
-  if (message.includes('stop-record')) {
-    destroy()
   }
 }
 

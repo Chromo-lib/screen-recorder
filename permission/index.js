@@ -1,5 +1,6 @@
 window.addEventListener('DOMContentLoaded', async () => {
   const params = new URL(window.location.href).searchParams;
+  
   let config = {};
 
   for (const [key, value] of params) {
@@ -7,7 +8,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    await navigator.mediaDevices.getUserMedia({ audio: config.audio, video: config.video });
     chrome.runtime.sendMessage({ ...config, message: 'start-record' });
     window.close();
   } catch (error) {

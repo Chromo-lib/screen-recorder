@@ -10,6 +10,9 @@ const videoMediaSourceEL = document.getElementById('video-media-source');
 
 btnStopRecord.style.display = 'none';
 
+// permission for audio and video
+const authorize = { audio: false, camera: false }
+
 let config = {
   videoMediaSource: 'tab',
   microphoneID: 'default',
@@ -17,7 +20,7 @@ let config = {
   microphone: false,
   enableCamera: false,
   enableAudioCamera: false,
-  mimeType: 'video/webm;codecs=vp8,opus'
+  mimeType: 'video/webm;codecs=vp8,opus',
 }
 
 setMimeTypes();
@@ -34,9 +37,28 @@ function onStartRecord(e) {
   //send to content
   chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
     //chrome.tabs.sendMessage(tabs[0].id, { message: 'start-record', ...config });
-    chrome.runtime.sendMessage({ message: 'start-record', tabId: tabs[0].id, ...config });
-  });
 
+    const isOnlySharingScreen = config.videoMediaSource && !config.microphone && !config.enableCamera;
+    const isSharingScreenAndAudio = config.videoMediaSource && config.microphone && !config.enableCamera;
+    const isSharingScreenAndCamera = config.videoMediaSource && (config.enableCamera || config.microphone);
+    const isOnlyAudio = config.microphone && !config.videoMediaSource;
+
+    if (isOnlyAudio || isSharingScreenAndCamera) {
+      message = 'audio-or-camera-permission';
+      authorize.audio = true;
+    }
+
+    if (isSharingScreenAndAudio) {
+      message = 'share-screen-audio-permission';
+      authorize.audio = true;
+    }
+
+    if (isOnlySharingScreen) {
+      message = 'start-record';
+    }
+
+    chrome.runtime.sendMessage({ message, tabId: tabs[0].id, ...config, authorize });
+  });
 }
 
 function onStopRecord() {
@@ -59,6 +81,8 @@ function onVideMediaSource(e) {
     });
 
     liTarget.classList.add('active-tab');
+
+    if(!config.videoMediaSource) document.getElementById('microphone').checked = true;
     btnStopRecord.style.display = !value && config.microphone ? 'flex' : 'none';
   }
 }
