@@ -11,22 +11,32 @@ const svgCamOFF = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24
 
 createMuteButton();
 createVideoOffButton();
+createPauseButton();
+createStopButton();
 
 async function onMessage(request) {
   const { message, enableCamera, microphone, enableAudioCamera } = request;
 
-  if (message === 'background-ask-audio-or-camera-permission') {
+  if (message === 'audio-or-camera-permission') {
     try {
       const micState = await navigator.permissions.query({ name: 'microphone' });
       const camState = await navigator.permissions.query({ name: 'camera' });
+      let permissionState = micState.state !== 'granted' ? micState : camState;
 
-      micState.onchange = function () {
-        if (this.state === 'granted') chrome.runtime.sendMessage({ ...request, message: 'start-record' });
-        else chrome.runtime.sendMessage({ ...request, message: 'permission-fail' });
+      permissionState.onchange = function () {
+        console.log(this.state);
+        if (this.state === 'granted') {
+          chrome.runtime.sendMessage({ ...request, message: 'content-granted' });
+        }
+        else {
+          if (chrome.runtime?.id) {
+            chrome.runtime.sendMessage({ ...request, message: 'permission-fail' });
+          }
+        }
       }
 
       if (micState.state === 'granted' || camState.state === 'granted') {
-        chrome.runtime.sendMessage({ ...request, message: 'start-record' });
+        chrome.runtime.sendMessage({ ...request, message: 'content-granted' });
       }
       else {
         stream = await navigator.mediaDevices.getUserMedia({ video: enableCamera, audio: enableAudioCamera || microphone });
@@ -40,12 +50,16 @@ async function onMessage(request) {
 
   if (message === 'background-start-record') {
     try {
-      muted = enableAudioCamera || microphone;
-      videoOff = enableCamera || false;
+      videoOff = enableCamera;
+      muted = enableAudioCamera;
 
-      stream = await navigator.mediaDevices.getUserMedia({ video: videoOff, audio: true });
+      if (!muted && !videoOff) muted = true;
 
-      if (stream.getAudioTracks().length > 0) stream.getAudioTracks()[0].enabled = muted;
+      stream = await navigator.mediaDevices.getUserMedia({ video: videoOff, audio: muted });
+
+      if (stream.getAudioTracks().length > 0) {
+        stream.getAudioTracks().forEach(track => { track.enabled = muted; });
+      }
 
       spanMuteEL.innerHTML = muted ? svgMuted : svgVolumeUp;
       spanVideoOffEL.innerHTML = videoOff ? svgCamOFF : svgCamOn;
@@ -58,11 +72,9 @@ async function onMessage(request) {
     }
   }
 
-  if (message.includes('stop-record')) {
+  if (message && message.includes('stop-record')) {
     destroy()
-  }
-  else {
-    chrome.runtime.sendMessage(request);
+    console.log('Recording is stoped');
   }
 }
 
@@ -129,9 +141,6 @@ function createPauseButton() {
 }
 
 function createLocalVideo(request) {
-  createPauseButton();
-  createStopButton();
-
   divControlsEL = document.createElement('div');
   divControlsEL.id = 'reco-controls';
 
@@ -163,15 +172,23 @@ function createLocalVideo(request) {
 
 function destroy() {
   try {
-    if (stream) stream.getTracks().forEach((track) => { track.stop(); });
+    if (stream) {
+      stream.getTracks().forEach((track) => {
+        track.enabled = false;
+        track.stop();
+      });
+      stream = null;
+    }
     if (videoEL) videoEL.srcObject = null;
-    if (divControlsEL && divControlsEL.parentNode) divControlsEL.parentNode.removeChild(divControlsEL);
-    if (divCameraEL && divCameraEL.parentNode) divCameraEL.parentNode.removeChild(divCameraEL);
+    if (divControlsEL && divControlsEL.parentNode) document.body.removeChild(divControlsEL);
+    if (divCameraEL && divCameraEL.parentNode) document.body.removeChild(divCameraEL);
+
+    const elcontrol = document.getElementById('reco-controls');
+    if (elcontrol && elcontrol.parentNode) elcontrol.parentNode.removeChild(elcontrol);
 
     const el = document.getElementById('reco-camera');
     if (el && el.parentNode) el.parentNode.removeChild(el);
   } catch (error) {
-    chrome.runtime.sendMessage({ ...request, message: 'stop-record' });
     console.log('Error destroy....', error);
   }
 }

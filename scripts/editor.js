@@ -133,7 +133,7 @@ window.onbeforeunload = function (e) {
     if (blobUrl) { window.URL.revokeObjectURL(blobUrl) }
     return confirmationMessage;
   } catch (error) {
-    window.URL.revokeObjectURL(blobUrl);
+    if(blobUrl) window.URL.revokeObjectURL(blobUrl);
   }
 };
 
