@@ -1,48 +1,41 @@
 const onMessage = async (request) => {
-  const { message, videoMediaSource, enableCamera, microphone, enableAudioCamera } = request;
+  const { message, videoMediaSource, enableCamera, microphone } = request;
   // recording
-  if (message === 'start-record') {
+  if (message === 'start-record' && videoMediaSource) {
     // only share screen
-    if (videoMediaSource && !microphone && !enableCamera) {
+    if (!microphone && !enableCamera) {
       videoRecord(request);
-    }
-
-    // share screen + audio
-    if (videoMediaSource && microphone && !enableCamera) {
-      videoRecord(request);
-    }
-
-    // share screen + (audio || camera)
-    if (videoMediaSource && (enableCamera || microphone)) {
-      sendMessage({ ...request, to: 'content', message: 'background-start-record' });
+    }    
+    else {
+      // share screen + audio
+      const isGranted = await grantMicPermission(request);
+      if(isGranted) videoRecord(request);
     }
   }
 
   // permissions
-  if (message === 'share-screen-audio-permission') {
-    grantMicPermission(request);
-  }
-
-  if (message && message.includes('camera-permission')) {
+  if (message && message === 'camera-permission') {
     sendMessage({ ...request, to: 'content', message: 'audio-or-camera-permission' });
   }
 
   if (message === 'content-granted') {
     const isGranted = await grantMicPermission(request);
-    if(!isGranted) return;
-    if (!videoMediaSource && microphone) {
+        
+    if (isGranted && !videoMediaSource && microphone) {
       audioRecord(request);
       sendMessage({ ...request, to: 'content', message: 'background-start-record' });
     }
-    else {
+
+    if (isGranted && videoMediaSource) {
       videoRecord(request);
+      sendMessage({ ...request, to: 'content', message: 'background-start-record' });
     }
   }
   // end permissions
 
   if (message && message.includes('stop-record')) {
     try {
-      if (stream) stream.getTracks().forEach((track) => { track.stop(); });
+      if (stream) stream.getTracks().forEach((track) => { track.enabled = false; track.stop(); });
       if (mediaRecorder && mediaRecorder !== 'inactive') mediaRecorder.stop();
     } catch (error) {
       console.log('Background stop-record', error);

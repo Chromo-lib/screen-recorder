@@ -46,21 +46,10 @@ function onStartRecord(e) {
 
     // share screen + audio
     if (videoMediaSource && microphone && !enableCamera) {
-      message = 'share-screen-audio-permission'
+      message = 'start-record'
     }
-
-    // // share screen + audio + camera
-    if (videoMediaSource && microphone && enableCamera) {
-      message = 'share-screen-audio-camera-permission'
-    }
-
-    if (videoMediaSource && !microphone && enableCamera) {
-      message = 'share-screen-camera-permission';
-    }
-
-    if (!videoMediaSource && microphone) {
-      message = 'audio-camera-permission';
-      config.microphone = true;
+    else {
+      message = 'camera-permission'
     }
 
     chrome.runtime.sendMessage({ message, from: 'popup', tabId: tabs[0].id, ...config, authorize });
@@ -140,20 +129,7 @@ function setAudioInputs() {
     });
 }
 
-function onMessage(request) {
-  const { message } = request;
-
-  if (message === 'start-record') {
-    btnStopRecord.style.display = 'flex';
-    chrome.runtime.sendMessage(request);
-  }
-
-  if (message && message.includes('stop-record')) {
-    chrome.runtime.sendMessage(request);
-  }
-}
-
 btnStopRecord.addEventListener('click', onStopRecord, false)
 videoMediaSourceEL.addEventListener('click', onVideMediaSource, false)
 formConfigEL.addEventListener('submit', onStartRecord, false)
-chrome.runtime.onMessage.addListener(onMessage);
+//chrome.runtime.onMessage.addListener(onMessage);

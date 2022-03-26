@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Reco",
   "description": "Reco is screen, audio and camera recorder extension tool",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "icons": {
     "512": "icons/512.png",
     "256": "icons/256.png",

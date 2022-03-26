@@ -65,16 +65,18 @@ async function onMessage(request) {
       spanVideoOffEL.innerHTML = videoOff ? svgCamOFF : svgCamOn;
 
       createLocalVideo(request);
-      chrome.runtime.sendMessage(request);
+      //chrome.runtime.sendMessage(request);
     } catch (error) {
       destroy();
       console.log('background-start-record', error);
     }
   }
 
-  if (message && message.includes('stop-record')) {
-    destroy()
-    console.log('Recording is stoped');
+  if (message && message === 'stop-record') {
+    if (stream) {
+      destroy();
+      console.log('Recording is stoped');
+    }
   }
 }
 
@@ -120,6 +122,8 @@ function createStopButton() {
 
   spanStopEL.onclick = () => {
     chrome.runtime.sendMessage({ message: 'stop-record' });
+    destroy();
+    console.log('Recording is stoped');
   }
 }
 
@@ -172,13 +176,11 @@ function createLocalVideo(request) {
 
 function destroy() {
   try {
-    if (stream) {
-      stream.getTracks().forEach((track) => {
-        track.enabled = false;
-        track.stop();
-      });
-      stream = null;
-    }
+    if (stream) stream.getTracks().forEach((track) => {
+      track.enabled = false;
+      track.stop();
+    });
+
     if (videoEL) videoEL.srcObject = null;
     if (divControlsEL && divControlsEL.parentNode) document.body.removeChild(divControlsEL);
     if (divCameraEL && divCameraEL.parentNode) document.body.removeChild(divCameraEL);

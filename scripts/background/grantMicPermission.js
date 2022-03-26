@@ -2,15 +2,7 @@ async function grantMicPermission(request) {
   const { authorize } = request;
   const permission = await navigator.permissions.query({ name: 'microphone' });
 
-  permission.onchange = function () {    
-    if (this.state === 'granted') { sendMessage({ ...request, to: 'popup', message: 'start-record' }); }
-    else sendMessage({ ...request, to: 'popup', message: 'permission-fail' });
-  }
-
-  if (permission.state === 'granted') {
-    sendMessage({ ...request, to: 'popup', message: 'start-record' });
-  }
-  else {
+  if (permission.state !== 'granted') {
     let params = '';
     let len = Object.keys(request).length - 1;
 

@@ -1,6 +1,6 @@
 async function videoRecord(request) {
   const { videoMediaSource, microphone, mimeType, microphoneID } = request;
-  
+
   try {
     await delay(100);
     requestId = await chooseDesktopMedia(videoMediaSource);
@@ -34,12 +34,12 @@ async function videoRecord(request) {
     }
 
     mediaRecorder.onstop = async () => {
-      sendMessage({ ...request, to: 'content', message: 'background-stop-record' });
+      sendMessage({ ...request, to: 'content', message: 'stop-record' });
       onOpenEditorTab(chunks, request.mimeType);
     }
 
     mediaRecorder.onerror = async event => {
-      sendMessage({ ...request, to: 'content', message: 'background-stop-record' });
+      sendMessage({ ...request, to: 'content', message: 'stop-record' });
       console.error(`Error recording stream: ${event.error.name}`);
     }
 
@@ -47,6 +47,7 @@ async function videoRecord(request) {
       mediaRecorder.stop();
     };
   } catch (error) {
+    sendMessage({ ...request, to: 'content', message: 'stop-record' });
     if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
     console.log('Probaly cancel share screen...', error);
   }
@@ -61,7 +62,6 @@ async function audioRecord(request) {
     mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
 
     mediaRecorder.start();
-    sendMessage({ ...request, to: 'content', message: 'background-start-record' });
 
     mediaRecorder.ondataavailable = (e) => {
       chunks.push(e.data);
@@ -69,11 +69,9 @@ async function audioRecord(request) {
 
     mediaRecorder.onstop = async () => {
       onOpenEditorTab(chunks, mimeType);
-      sendMessage({ ...request, to: 'content', message: 'background-stop-record' });
     }
 
     mediaRecorder.onerror = event => {
-      sendMessage({ ...request, to: 'content', message: 'background-stop-record' });
       console.error(`Error recording stream: ${event.error.name}`);
     }
 
@@ -81,6 +79,7 @@ async function audioRecord(request) {
       mediaRecorder.stop();
     };
   } catch (error) {
+    sendMessage({ ...request, to: 'content', message: 'stop-record' });
     console.log('start-record audio', error);
   }
 }
