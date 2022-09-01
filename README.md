@@ -14,12 +14,6 @@
   <img src="https://i.giphy.com/media/WVNfkzbtf9gaXVQobR/giphy.webp">
 </div>
 
-### Features
-- [x] Screen recorder.
-- [x] Video to gif.
-- [ ] Video editor.
-- [ ] Take snapshot.
-
 ### Similar Apps
 - [fullpage Screenshot](https://github.com/Chromo-lib/screenshot-fullpage-extension)
 

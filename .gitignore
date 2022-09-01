@@ -1,5 +1,7 @@
 node_modules/
 testr/
+dist/
+build/
 
 .github
 .vscode
@@ -8,4 +10,5 @@ testr/
 *.zip
 *.rar
 
+yarn.lock
 save-drive.js

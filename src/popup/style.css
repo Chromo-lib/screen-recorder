@@ -1,5 +1,5 @@
 :root {
-  --light:#7a7a7a;
+  --light:#999999;
   --black:#181717;
   --green:#4CAF50;
 }
@@ -17,6 +17,7 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+
 body {
   margin: 0;
   min-width: 300px;
@@ -26,6 +27,7 @@ body {
   justify-content: center;
   font-size: 14px;
   font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 0.6px;
 }
 
  button {
@@ -79,7 +81,7 @@ button:hover {opacity: 0.8;}
 ul { list-style: none; margin: 0; padding: 0; }
 
 hr {
-  border: 1px solid #f3f3f3;
+  border: 1px solid #ebebeb;
   width: 50%;
   margin: 17px auto;
 }
@@ -91,18 +93,12 @@ hr {
   color: var(--light);
 }
 
-#video-media-source li svg { 
-  width: 35px;
-}
+#video-media-source li svg { width: 35px; }
 
 .d-flex { display: flex; justify-content: center; align-items: center; }
-
 .flex-column {flex-direction: column;}
-
 .align-center {align-items: center;}
-
 .justify-between {justify-content: space-between;}
-
 .flex-wrap {flex-wrap: wrap;}
 
 .grid-2 {
@@ -115,7 +111,7 @@ hr {
 
 .w-100 { width: 100%; }
 
-.cl-green { background-color: #4CAF50 }
+.green { background-color: #4CAF50 }
 .danger {background-color: #e91e63;}
 
 .active-tab svg path{fill: var(--black);}
@@ -123,22 +119,19 @@ hr {
 .border-bottom { border-bottom: 1px solid var(--light); }
 
 .p-20 {padding: 0.9rem;}
+.p-5 {padding: 5px;}
 
-.mr-10 {
-  margin-right: 10px
-}
+.mr-10 { margin-right: 10px }
+.mb-10 { margin-bottom: 10px }
+.mt-10 { margin-top: 10px }
 
-.mb-10 {
-  margin-bottom: 10px
-}
+.mb-20 { margin-bottom: 20px }
 
-.mb-20 {
-  margin-bottom: 20px
-}
+.mt-0 {margin-top: 0;}
 
-.mt-10 {
-  margin-top: 10px
-}
+.br7 {border-radius: 7px;}
+
+.text-uppercase {text-transform: uppercase;}
 
 small {color: #afafaf;}
 
