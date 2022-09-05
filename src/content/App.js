@@ -1,5 +1,5 @@
 import { h, Fragment } from 'preact';
-import { useState, useEffect, useRef } from 'preact/hooks';
+import { useCallback, useState, useEffect, useRef } from 'preact/hooks';
 import ButtonPause from './components/ButtonPause';
 import ButtonPlay from './components/ButtonPlay';
 import ButtonResume from './components/ButtonResume';
@@ -7,9 +7,11 @@ import ButtonStop from './components/ButtonStop';
 import Draggable from './components/Draggable';
 import Timer from './components/Timer';
 import { btnStyle, containerStyle, videoContainer, videoStyle } from './styles';
+import download from './utils/download';
 import record from './utils/record';
 
 function App({ request }) {
+
   const videoEl = useRef();
   const [localStream, setLocalStream] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -17,15 +19,36 @@ function App({ request }) {
   const [isRecordingPlay, setIsRecordingPlay] = useState(false);
   const [isRecordingPaused, setIsRecordingPaused] = useState(false);
 
-  const onPlay = async () => {
-    if (!request || !request.chromeMediaSourceId) return;
+  const chunks = [];
 
+  const onPlay = useCallback(async () => {
     if (mediaRecorder === null) {
-      const mdr = await record(request);
-      setMediaRecorder(mdr);
+      const { mediaRecorder, stream } = await record(request);
+
+      setMediaRecorder(mediaRecorder);
       setIsRecordingPlay(true);
+
+      mediaRecorder.onstop = async () => {
+    
+        if (localStream) {
+          localStream.getTracks().forEach((track) => { track.stop(); });
+          setLocalStream(null);
+        }
+
+        stream.getTracks().forEach(track => { track.stop(); });
+        download(chunks, 'reco', 'video/webm');
+
+        setMediaRecorder(null);
+        setIsRecordingPlay(false);
+
+        console.log('mediaRecorder.onstop: recording is stopped');
+      }
+
+      mediaRecorder.ondataavailable = (e) => {
+        chunks.push(e.data);
+      }
     }
-  }
+  }, []);
 
   const onStop = () => {
     if (localStream) {
@@ -35,10 +58,7 @@ function App({ request }) {
     
     if (mediaRecorder) {
       mediaRecorder.stop();
-      setMediaRecorder(null);
     }
-
-    setIsRecordingPlay(false);
   }
 
   const onPause = async () => {
@@ -66,6 +86,9 @@ function App({ request }) {
       });
 
     return () => {
+      if (localStream) {
+        localStream.getTracks().forEach((track) => { track.stop(); });
+      }
     }
   }, []);
 

@@ -1,23 +1,3 @@
-function download(data, filename, type, vidExtension = 'webm') {
-  let url = null;
-
-  const nblob = new Blob(data, { type });
-  url = window.URL.createObjectURL(nblob);
-
-  let link = document.createElement('a');
-  link.href = url;
-  link.download = `${filename}.${vidExtension}`;
-
-  document.body.appendChild(link);
-  link.click();
-
-  setTimeout(() => {
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  }, 1000);
-}
-
-
 async function record(request) {
   const { chromeMediaSourceId, videoMediaSource, mimeType, enableMicrophone } = request;
 
@@ -36,7 +16,6 @@ async function record(request) {
     }
     : { video: true, audio: true };
 
-  const chunks = [];
   const stream = await navigator.mediaDevices.getUserMedia(constraints);
   const mediaRecorder = new MediaRecorder(stream, { mimeType });
 
@@ -50,21 +29,9 @@ async function record(request) {
     mediaRecorder.start();
 
     mediaRecorder.onstart = () => {
-      resolve(mediaRecorder);
+      resolve({ mediaRecorder, stream });
     };
-
-    mediaRecorder.ondataavailable = (e) => {
-      chunks.push(e.data);
-      resolve(mediaRecorder)
-    }
-
-    mediaRecorder.onstop = async () => {
-      stream.getTracks().forEach(track => { track.stop(); });
-      download(chunks, 'reco', 'video/webm');
-      console.log('mediaRecorder.onstop: recording is stopped');
-      resolve(null)
-    }
-
+    
     mediaRecorder.onerror = async event => {
       console.error(`Error recording stream: ${event.error.name}`);
       reject(event.error.name)
