@@ -1,10 +1,9 @@
+import createLink from "./createLink";
+
 export default function download(data, filename, type, vidExtension = 'webm') {
-  let url = null;
+  const url = createLink(data, type);
 
-  const nblob = new Blob(data, { type });
-  url = window.URL.createObjectURL(nblob);
-
-  let link = document.createElement('a');
+  const link = document.createElement('a');
   link.href = url;
   link.download = `${filename}.${vidExtension}`;
 

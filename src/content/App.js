@@ -50,7 +50,7 @@ function App({ request }) {
     }
   }, []);
 
-  const onStop = () => {
+  const onStop = useCallback(() => {
     if (localStream) {
       localStream.getTracks().forEach((track) => { track.stop(); });
       setLocalStream(null);
@@ -59,16 +59,16 @@ function App({ request }) {
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
-  }
+  }, []);
 
-  const onPause = async () => {
+  const onPause = () => {
     if (mediaRecorder) {
       mediaRecorder.pause();
       setIsRecordingPaused(true);
     }
   }
 
-  const onResume = async () => {
+  const onResume = () => {
     if (mediaRecorder) {
       mediaRecorder.resume();
       setIsRecordingPaused(false);

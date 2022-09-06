@@ -41,3 +41,7 @@ export const videoStyle = {
   borderRadius: '50%',
   objectFit:'cover'
 }
+
+export const greenColor = {
+  color:'#4caf50'
+}
