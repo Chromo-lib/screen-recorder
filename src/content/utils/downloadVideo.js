@@ -1,6 +1,6 @@
 import createLink from "./createLink";
 
-export default function download(data, filename, type, vidExtension = 'webm') {
+export default function downloadVideo(data, filename, type, vidExtension = 'webm') {
   const url = createLink(data, type);
 
   const link = document.createElement('a');

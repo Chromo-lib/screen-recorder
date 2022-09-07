@@ -1,21 +1,25 @@
 import { h, Fragment } from 'preact';
 import { useCallback, useState, useEffect, useRef } from 'preact/hooks';
+import { signal } from "@preact/signals";
 import ButtonPause from './components/ButtonPause';
 import ButtonPlay from './components/ButtonPlay';
 import ButtonResume from './components/ButtonResume';
 import ButtonStop from './components/ButtonStop';
 import Draggable from './components/Draggable';
 import Timer from './components/Timer';
-import { btnStyle, containerStyle, videoContainer, videoStyle } from './styles';
-import download from './utils/download';
+import { btnStyle, containerStyle, greenColor, videoContainer, videoStyle } from './styles';
+
 import record from './utils/record';
+import createLink from './utils/createLink';
 
 function App({ request }) {
 
   const videoEl = useRef();
-  const [localStream, setLocalStream] = useState(null);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const localStream = signal(null);
 
+  const [videoLink, setVideoLink] = useState(null)
+
+  const [mediaRecorder, setMediaRecorder] = useState(null);
   const [isRecordingPlay, setIsRecordingPlay] = useState(false);
   const [isRecordingPaused, setIsRecordingPaused] = useState(false);
 
@@ -29,18 +33,17 @@ function App({ request }) {
       setIsRecordingPlay(true);
 
       mediaRecorder.onstop = async () => {
-    
-        if (localStream) {
-          localStream.getTracks().forEach((track) => { track.stop(); });
-          setLocalStream(null);
+        if (localStream.value) {
+          localStream.value.getTracks().forEach((track) => { track.stop(); });
+          localStream.value = null;
         }
 
         stream.getTracks().forEach(track => { track.stop(); });
-        download(chunks, 'reco', 'video/webm');
 
         setMediaRecorder(null);
         setIsRecordingPlay(false);
 
+        setVideoLink(createLink(chunks));
         console.log('mediaRecorder.onstop: recording is stopped');
       }
 
@@ -50,16 +53,16 @@ function App({ request }) {
     }
   }, []);
 
-  const onStop = useCallback(() => {
-    if (localStream) {
-      localStream.getTracks().forEach((track) => { track.stop(); });
-      setLocalStream(null);
+  const onStop = () => {
+    if (localStream.value) {
+      localStream.value.getTracks().forEach((track) => { track.stop(); });
+      localStream.value = null;
     }
-    
+
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
-  }, []);
+  }
 
   const onPause = () => {
     if (mediaRecorder) {
@@ -82,15 +85,29 @@ function App({ request }) {
       .then(stream => {
         videoEl.current.autoplay = true;
         videoEl.current.srcObject = stream;
-        setLocalStream(stream);
+        localStream.value = stream;
       });
 
     return () => {
-      if (localStream) {
-        localStream.getTracks().forEach((track) => { track.stop(); });
+      if (localStream.value) {
+        localStream.value.getTracks().forEach((track) => { track.stop(); });
       }
     }
   }, []);
+
+  const onDownload = () => {
+    const link = document.createElement('a');
+    link.href = videoLink;
+    link.download = `reco.webm`;
+
+    document.body.appendChild(link);
+    link.click();
+
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(videoLink);
+    }, 1000);
+  }
 
   return <Fragment>
     <div style={containerStyle}>
@@ -107,10 +124,12 @@ function App({ request }) {
         </Fragment>
 
         : <ButtonPlay style={btnStyle} onClick={onPlay} />}
+
+      {videoLink && <button onClick={onDownload} style={greenColor}>Download</button>}
     </div>
 
     <Draggable style={videoContainer}>
-      <video src="" ref={videoEl} style={videoStyle}></video>
+      <video src={videoLink} ref={videoEl} style={videoStyle} controls={videoLink !== null}></video>
     </Draggable>
   </Fragment>
 }

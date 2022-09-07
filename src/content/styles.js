@@ -43,5 +43,6 @@ export const videoStyle = {
 }
 
 export const greenColor = {
-  color:'#4caf50'
+  color:'#4caf50',
+  cursor:'pointer'
 }
