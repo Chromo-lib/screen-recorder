@@ -42,7 +42,10 @@ export const videoStyle = {
   objectFit:'cover'
 }
 
-export const greenColor = {
-  color:'#4caf50',
-  cursor:'pointer'
+export const btnDownload = {
+  background:'#4caf50',
+  cursor:'pointer',
+  textTransform: 'uppercase',
+  letterSpacing: '4px',
+  borderRadius:'7px'
 }

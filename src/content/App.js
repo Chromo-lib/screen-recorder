@@ -7,7 +7,7 @@ import ButtonResume from './components/ButtonResume';
 import ButtonStop from './components/ButtonStop';
 import Draggable from './components/Draggable';
 import Timer from './components/Timer';
-import { btnStyle, containerStyle, greenColor, videoContainer, videoStyle } from './styles';
+import { btnStyle, containerStyle, btnDownload, videoContainer, videoStyle } from './styles';
 
 import record from './utils/record';
 import createLink from './utils/createLink';
@@ -103,10 +103,9 @@ function App({ request }) {
     document.body.appendChild(link);
     link.click();
 
-    setTimeout(() => {
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(videoLink);
-    }, 1000);
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(videoLink);
+    setVideoLink(null);
   }
 
   return <Fragment>
@@ -114,22 +113,25 @@ function App({ request }) {
 
       <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />
 
-      {isRecordingPlay
-        ? <Fragment>
-          <ButtonStop style={btnStyle} onClick={onStop} />
+      {isRecordingPlay && <Fragment>
+        <ButtonStop style={btnStyle} onClick={onStop} />
 
-          {isRecordingPaused
-            ? <ButtonResume style={btnStyle} onClick={onResume} />
-            : <ButtonPause style={btnStyle} onClick={onPause} />}
-        </Fragment>
+        {isRecordingPaused
+          ? <ButtonResume style={btnStyle} onClick={onResume} />
+          : <ButtonPause style={btnStyle} onClick={onPause} />}
+      </Fragment>}
 
-        : <ButtonPlay style={btnStyle} onClick={onPlay} />}
+      {!isRecordingPlay && !videoLink && <ButtonPlay style={btnStyle} onClick={onPlay} />}
 
-      {videoLink && <button onClick={onDownload} style={greenColor}>Download</button>}
+      {videoLink && <button onClick={onDownload} style={btnDownload}>Download</button>}
     </div>
 
-    <Draggable style={videoContainer}>
-      <video src={videoLink} ref={videoEl} style={videoStyle} controls={videoLink !== null}></video>
+    <Draggable style={videoLink ? { ...videoContainer, width: '50vw', height: '50vh' } : videoContainer}>
+      <video src={videoLink}
+        ref={videoEl}
+        style={videoLink ? { ...videoStyle, borderRadius: 0 } : videoStyle}
+        controls={videoLink !== null}>
+      </video>
     </Draggable>
   </Fragment>
 }
