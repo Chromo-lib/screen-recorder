@@ -7,17 +7,13 @@ import ButtonResume from './components/ButtonResume';
 import ButtonStop from './components/ButtonStop';
 import Draggable from './components/Draggable';
 import Timer from './components/Timer';
-import { btnStyle, containerStyle, btnDownload, videoContainer, videoStyle } from './styles';
-
+import { btnStyle, containerStyle, videoContainer, videoStyle } from './styles';
+import downloadVideo from './utils/downloadVideo';
 import record from './utils/record';
-import createLink from './utils/createLink';
 
 function App({ request }) {
-
   const videoEl = useRef();
   const localStream = signal(null);
-
-  const [videoLink, setVideoLink] = useState(null)
 
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [isRecordingPlay, setIsRecordingPlay] = useState(false);
@@ -39,11 +35,11 @@ function App({ request }) {
         }
 
         stream.getTracks().forEach(track => { track.stop(); });
+        downloadVideo(chunks, 'reco', 'video/webm');
 
         setMediaRecorder(null);
-        setIsRecordingPlay(false);
+        setIsRecordingPlay(false);      
 
-        setVideoLink(createLink(chunks));
         console.log('mediaRecorder.onstop: recording is stopped');
       }
 
@@ -95,43 +91,25 @@ function App({ request }) {
     }
   }, []);
 
-  const onDownload = () => {
-    const link = document.createElement('a');
-    link.href = videoLink;
-    link.download = `reco.webm`;
-
-    document.body.appendChild(link);
-    link.click();
-
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(videoLink);
-    setVideoLink(null);
-  }
-
   return <Fragment>
     <div style={containerStyle}>
 
       <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />
 
-      {isRecordingPlay && <Fragment>
-        <ButtonStop style={btnStyle} onClick={onStop} />
+      {isRecordingPlay
+        ? <Fragment>
+          <ButtonStop style={btnStyle} onClick={onStop} />
 
-        {isRecordingPaused
-          ? <ButtonResume style={btnStyle} onClick={onResume} />
-          : <ButtonPause style={btnStyle} onClick={onPause} />}
-      </Fragment>}
+          {isRecordingPaused
+            ? <ButtonResume style={btnStyle} onClick={onResume} />
+            : <ButtonPause style={btnStyle} onClick={onPause} />}
+        </Fragment>
 
-      {!isRecordingPlay && !videoLink && <ButtonPlay style={btnStyle} onClick={onPlay} />}
-
-      {videoLink && <button onClick={onDownload} style={btnDownload}>Download</button>}
+        : <ButtonPlay style={btnStyle} onClick={onPlay} />}
     </div>
 
-    <Draggable style={videoLink ? { ...videoContainer, width: '50vw', height: '50vh' } : videoContainer}>
-      <video src={videoLink}
-        ref={videoEl}
-        style={videoLink ? { ...videoStyle, borderRadius: 0 } : videoStyle}
-        controls={videoLink !== null}>
-      </video>
+    <Draggable style={videoContainer}>
+      <video src="" ref={videoEl} style={videoStyle}></video>
     </Draggable>
   </Fragment>
 }
