@@ -1,0 +1,8 @@
+button {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+button, video {
+  width: 100%;
+}

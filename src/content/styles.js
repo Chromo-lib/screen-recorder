@@ -41,11 +41,3 @@ export const videoStyle = {
   borderRadius: '50%',
   objectFit:'cover'
 }
-
-export const btnDownload = {
-  background:'#4caf50',
-  cursor:'pointer',
-  textTransform: 'uppercase',
-  letterSpacing: '4px',
-  borderRadius:'7px'
-}
