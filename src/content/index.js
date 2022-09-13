@@ -2,17 +2,16 @@ import { h, render } from "preact";
 import App from "./App";
 
 const onMessage = async (request, _, sendResponse) => {
-  try {
-    sendResponse(request);
-
+  try {    
     if (request.message === 'start-record') {
       const div = document.createElement('div')
       document.body.appendChild(div);
       render(<App request={request} />, div);
+      sendResponse(request);
     }
 
     if (request.message === 'stop-record') {
-
+      sendResponse(request);
     }
   } catch (error) {
     const permission = await navigator.permissions.query({ name: 'microphone' });

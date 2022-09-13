@@ -16,7 +16,9 @@
   },
   "permissions": [
     "desktopCapture",
-    "activeTab"
+    "activeTab",
+    "tabs",
+    "contentSettings"
   ],
   "host_permissions": [
     "<all_urls>"

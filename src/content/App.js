@@ -19,6 +19,8 @@ function App({ request }) {
   const [isRecordingPlay, setIsRecordingPlay] = useState(false);
   const [isRecordingPaused, setIsRecordingPaused] = useState(false);
 
+  const [isRecordingFinished, setIsRecordingFinished] = useState(false);
+
   const chunks = [];
 
   const onPlay = useCallback(async () => {
@@ -38,8 +40,8 @@ function App({ request }) {
         downloadVideo(chunks, 'reco', 'video/webm');
 
         setMediaRecorder(null);
-        setIsRecordingPlay(false);      
-
+        setIsRecordingPlay(false);
+        setIsRecordingFinished(true);
         console.log('mediaRecorder.onstop: recording is stopped');
       }
 
@@ -91,27 +93,32 @@ function App({ request }) {
     }
   }, []);
 
-  return <Fragment>
-    <div style={containerStyle}>
+  if (isRecordingFinished) {
+    return <Fragment></Fragment>
+  }
+  else {
+    return <Fragment>
+      <Draggable style={containerStyle}>
 
-      <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />
+        <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />
 
-      {isRecordingPlay
-        ? <Fragment>
-          <ButtonStop style={btnStyle} onClick={onStop} />
+        {isRecordingPlay
+          ? <Fragment>
+            <ButtonStop style={btnStyle} onClick={onStop} />
 
-          {isRecordingPaused
-            ? <ButtonResume style={btnStyle} onClick={onResume} />
-            : <ButtonPause style={btnStyle} onClick={onPause} />}
-        </Fragment>
+            {isRecordingPaused
+              ? <ButtonResume style={btnStyle} onClick={onResume} />
+              : <ButtonPause style={btnStyle} onClick={onPause} />}
+          </Fragment>
 
-        : <ButtonPlay style={btnStyle} onClick={onPlay} />}
-    </div>
+          : <ButtonPlay style={btnStyle} onClick={onPlay} />}
+      </Draggable>
 
-    <Draggable style={videoContainer}>
-      <video src="" ref={videoEl} style={videoStyle}></video>
-    </Draggable>
-  </Fragment>
+      <Draggable style={videoContainer}>
+        <video src="" ref={videoEl} style={videoStyle}></video>
+      </Draggable>
+    </Fragment>
+  }
 }
 
 export default App;

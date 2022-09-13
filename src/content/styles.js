@@ -1,4 +1,6 @@
 export const containerStyle = {
+  maxWidth: '200px',
+  height: '50px',
   position: 'fixed',
   bottom: '10px',
   left: '10px',
@@ -7,7 +9,8 @@ export const containerStyle = {
   borderRadius: '7px',
   background: '#000000c9',
   textTransform: 'uppercase',
-  zIndex: 2147483647
+  zIndex: 2147483647,
+  cursor:'move'
 };
 
 export const btnStyle = {
