@@ -1,5 +1,4 @@
-mkdir -p dist \
-  && cp src/content/index.html dist/content \
+mkdir -p dist \  
   && cp src/manifest.json dist \
   && cp -r src/icons dist \
   && cp -r src/background dist \
