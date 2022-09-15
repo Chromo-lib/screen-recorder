@@ -1,6 +1,6 @@
 export const containerStyle = {
   maxWidth: '200px',
-  height: '50px',
+  height: '40px',
   position: 'fixed',
   bottom: '10px',
   left: '10px',
@@ -15,14 +15,13 @@ export const containerStyle = {
 
 export const btnStyle = {
   border: 0,
-  fontSize: '14px',
+  fontSize: '16px',
   color: '#fff',
   background: 'transparent',
   boxShadow: 'none',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '12px',
+  justifyContent: 'center',  
   cursor: 'pointer',
   margin: '0 5px',
   padding: '5px 8px'

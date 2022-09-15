@@ -3,7 +3,7 @@ async function record(request) {
 
   const constraints = videoMediaSource !== 'webcam'
     ? {
-      video: {
+      video: {        
         mandatory: {
           chromeMediaSource: 'desktop',
           chromeMediaSourceId: chromeMediaSourceId,
@@ -31,7 +31,7 @@ async function record(request) {
     mediaRecorder.onstart = () => {
       resolve({ mediaRecorder, stream });
     };
-    
+
     mediaRecorder.onerror = async event => {
       console.error(`Error recording stream: ${event.error.name}`);
       reject(event.error.name)

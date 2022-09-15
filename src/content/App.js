@@ -10,6 +10,7 @@ import Timer from './components/Timer';
 import { btnStyle, containerStyle, videoContainer, videoStyle } from './styles';
 import downloadVideo from './utils/downloadVideo';
 import record from './utils/record';
+import ButtonMove from './components/ButtonMove';
 
 function App({ request }) {
   const videoEl = useRef();
@@ -79,7 +80,12 @@ function App({ request }) {
   useEffect(() => {
     if (!request.enableCamera) return;
 
-    navigator.mediaDevices.getUserMedia({ video: true, audio: request.enableAudioCamera })
+    const constraints = {
+      audio: request.enableAudioCamera,
+      video: { deviceId: request.cameraID, facingMode: 'user' }
+    }
+
+    navigator.mediaDevices.getUserMedia(constraints)
       .then(stream => {
         videoEl.current.autoplay = true;
         videoEl.current.srcObject = stream;
@@ -99,6 +105,8 @@ function App({ request }) {
   else {
     return <Fragment>
       <Draggable style={containerStyle}>
+
+        <ButtonMove style={btnStyle} />
 
         <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />
 
