@@ -108,7 +108,7 @@ function App({ request }) {
 
         <ButtonMove style={btnStyle} />
 
-        <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />
+        {request.enableTimer && <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />}
 
         {isRecordingPlay
           ? <Fragment>

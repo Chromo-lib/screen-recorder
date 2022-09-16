@@ -9,7 +9,9 @@ let recordOptions = {
   enableCamera: false,
   enableAudioCamera: false,
 
-  mimeType: 'video/webm;codecs=vp8,opus'
+  mimeType: 'video/webm;codecs=vp8,opus',
+
+  enableTimer: true
 }
 
 const getCurrentTabId = async () => {
