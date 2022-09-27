@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,7 +89,14 @@
         <div class="w-100 mb-10">
           <div class="vertical-align">
             <input type="checkbox" id="enableTimer" name="enableTimer" checked value="true">
-            <label for="enableTimer">timer</label>
+            <label for="enableTimer">enable timer</label>
+          </div>
+        </div>
+
+        <div class="w-100">
+          <div class="vertical-align">
+            <input type="checkbox" id="autoDownload" name="autoDownload" checked value="true">
+            <label for="autoDownload">auto Download video</label>
           </div>
         </div>
 
@@ -100,10 +106,11 @@
         <img src="record.svg" alt="record" width="20" height="20" class="mr-10" /> start record
       </button>
     </form>
+    
+    <pre class="alert"></pre>
   </div>
 
   <script src="config.js"></script>
   <script src="index.js" defer></script>
 </body>
-
 </html>

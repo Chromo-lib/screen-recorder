@@ -3,14 +3,14 @@ import App from "./App";
 
 const onMessage = async (request, _, sendResponse) => {
   try {    
-    if (request.message === 'start-record') {
+    if (request.message === 'start-record' && request.from === 'worker') {
       const div = document.createElement('div')
       document.body.appendChild(div);
       render(<App request={request} />, div);
       sendResponse(request);
     }
 
-    if (request.message === 'stop-record') {
+    if (request.message === 'stop-record' && request.from === 'worker') {
       sendResponse(request);
     }
   } catch (error) {

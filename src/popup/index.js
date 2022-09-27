@@ -1,3 +1,4 @@
+const alertEl = document.querySelector('.alert');
 const videoMediaSourceEL = document.getElementById('video-media-source');
 
 let recordOptions = {
@@ -11,12 +12,17 @@ let recordOptions = {
 
   mimeType: 'video/webm;codecs=vp8,opus',
 
-  enableTimer: true
+  enableTimer: true,
+  autoDownload: true
 }
 
 const getCurrentTabId = async () => {
   const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
-  return tabs[0].id
+  const currentTab = tabs[0];
+  if (currentTab.url.includes('chrome://')) {
+    throw new Error('This page is not supported...')
+  }
+  else return { tabId: currentTab.id, tabTitle: currentTab.title }
 }
 
 const onGrantPermission = async () => {
@@ -38,11 +44,12 @@ const onStartRecord = async (e) => {
       else recordOptions[element.name] = element.value;
     }
 
-    const tabId = await getCurrentTabId();
-    const response = await chrome.runtime.sendMessage({ from: 'popup', message: 'start-record', tabId, ...recordOptions });
+    const { tabId, tabTitle } = await getCurrentTabId();
+    const response = await chrome.runtime.sendMessage({ from: 'popup', message: 'start-record', tabId, tabTitle, ...recordOptions });
     console.log(response);
   } catch (error) {
     console.log(error.message);
+    alertEl.textContent = error.message;
   }
 }
 

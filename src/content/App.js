@@ -11,6 +11,7 @@ import { btnStyle, containerStyle, videoContainer, videoStyle } from './styles';
 import downloadVideo from './utils/downloadVideo';
 import record from './utils/record';
 import ButtonMove from './components/ButtonMove';
+import ButtonDownload from './components/ButtonDownload';
 
 function App({ request }) {
   const videoEl = useRef();
@@ -38,11 +39,12 @@ function App({ request }) {
         }
 
         stream.getTracks().forEach(track => { track.stop(); });
-        downloadVideo(chunks, 'reco', 'video/webm');
 
         setMediaRecorder(null);
         setIsRecordingPlay(false);
         setIsRecordingFinished(true);
+
+        if (request.autoDownload) onDownload();
         console.log('mediaRecorder.onstop: recording is stopped');
       }
 
@@ -53,7 +55,7 @@ function App({ request }) {
   }, []);
 
   const onStop = () => {
-    if (localStream.value) {
+    if (!isRecordingPlay && localStream.value) {
       localStream.value.getTracks().forEach((track) => { track.stop(); });
       localStream.value = null;
     }
@@ -81,12 +83,13 @@ function App({ request }) {
     if (!request.enableCamera) return;
 
     const constraints = {
-      audio: request.enableAudioCamera,
+      audio: true,
       video: { deviceId: request.cameraID, facingMode: 'user' }
     }
 
     navigator.mediaDevices.getUserMedia(constraints)
       .then(stream => {
+        if (!request.enableAudioCamera) stream.getAudioTracks().forEach((track) => { track.stop(); });
         videoEl.current.autoplay = true;
         videoEl.current.srcObject = stream;
         localStream.value = stream;
@@ -99,8 +102,14 @@ function App({ request }) {
     }
   }, []);
 
+  const onDownload = useCallback(() => {
+    downloadVideo(chunks, request.tabTitle || 'reco', 'video/webm');
+  }, []);
+
   if (isRecordingFinished) {
-    return <Fragment></Fragment>
+    return <Draggable style={containerStyle}>
+      {!request.autoDownload && <ButtonDownload style={btnStyle} onClick={onDownload} />}
+    </Draggable>
   }
   else {
     return <Fragment>
@@ -110,10 +119,10 @@ function App({ request }) {
 
         {request.enableTimer && <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />}
 
+        <ButtonStop style={btnStyle} onClick={onStop} />
+
         {isRecordingPlay
           ? <Fragment>
-            <ButtonStop style={btnStyle} onClick={onStop} />
-
             {isRecordingPaused
               ? <ButtonResume style={btnStyle} onClick={onResume} />
               : <ButtonPause style={btnStyle} onClick={onPause} />}

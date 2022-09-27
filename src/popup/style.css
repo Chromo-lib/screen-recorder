@@ -95,6 +95,18 @@ hr {
 
 #video-media-source li svg { width: 35px; }
 
+.alert {
+  width: 100%;
+  font-size: 12px;
+  margin-top: 10px;
+  margin-bottom: 0;
+  background-color: #e91e63;
+  color: #fff;
+  padding: 5px;
+  overflow: auto;
+  border-radius: 7px;
+}
+
 .d-flex { display: flex; justify-content: center; align-items: center; }
 .flex-column {flex-direction: column;}
 .align-center {align-items: center;}

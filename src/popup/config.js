@@ -33,8 +33,8 @@ function setMimeTypes() {
     'video/webm;codecs=daala',
     'video/mp4;codecs=h264,aac',
     'video/mpeg',
-    'audio/webm',
-    'audio/wav'
+    // 'audio/webm',
+    // 'audio/wav'
   ];
 
   mimeTypes.filter(mimeType => {
