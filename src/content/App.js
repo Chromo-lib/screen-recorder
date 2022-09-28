@@ -108,6 +108,7 @@ function App({ request }) {
 
   if (isRecordingFinished) {
     return <Draggable style={containerStyle}>
+      <ButtonMove style={btnStyle} />
       {!request.autoDownload && <ButtonDownload style={btnStyle} onClick={onDownload} />}
     </Draggable>
   }
