@@ -130,7 +130,7 @@ function App({ request }) {
 
         {enableTimer && <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />}
 
-        <ButtonStop style={btnStyle} onClick={onStop} />
+        <ButtonStop style={btnStyle} onClick={onStop} title={isRecordingFinished ? 'Stop Recording' : 'Cancel Recording'} />
 
         {isRecordingPlay
           ? <Fragment>
