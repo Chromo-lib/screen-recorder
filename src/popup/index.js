@@ -38,7 +38,6 @@ const onGrantPermission = async () => {
 const onStartRecord = async (e) => {
   e.preventDefault();
   try {
-
     for (const element of e.target.elements) {
       const value = element.value;
 
@@ -58,9 +57,10 @@ const onStartRecord = async (e) => {
       ...devicesStatus
     });
 
-    console.log(response);
+    alertEl.style.display = 'block';
+    alertEl.textContent = response;
   } catch (error) {
-    console.log(error.message);
+    alertEl.style.display = 'block';
     alertEl.textContent = error.message;
   }
 }

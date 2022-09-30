@@ -29,6 +29,6 @@ export default function Timer({ isRecordingPlay, isRecordingPaused }) {
   }, [isRecordingPlay, isRecordingPaused]);
 
   return (
-    <button style={btnStyle}>{timer}</button>
+    <button style={btnStyle}  title="Timer">{timer}</button>
   )
 }

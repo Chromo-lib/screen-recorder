@@ -10,14 +10,14 @@ async function checkDevicesPermission(request) {
   }
 
   if (enableCamera) {
-    const permission = await navigator.permissions.query({ name: 'camera' });    
+    const permission = await navigator.permissions.query({ name: 'camera' });
     request.enableCamera = enableCamera && permission.state === 'granted';
     if (permission.state === 'denied') openSiteSettings()
     else return request;
   }
 
   if (enableMicrophone) {
-    const permission = await navigator.permissions.query({ name: 'microphone' });    
+    const permission = await navigator.permissions.query({ name: 'microphone' });
     request.enableMicrophone = enableMicrophone && permission.state === 'granted';
     if (permission.state === 'denied') openSiteSettings()
     else return request;
@@ -26,9 +26,9 @@ async function checkDevicesPermission(request) {
 
 const onMessage = async (request, _, sendResponse) => {
   try {
-    const { message, tabId, videoMediaSource } = request;
+    const { from, message, tabId, videoMediaSource } = request;
 
-    if (message === 'start-record' && tabId) {
+    if (from === 'popup' && message === 'start-record' && tabId) {
       const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
 
       request = await checkDevicesPermission(request);
@@ -38,12 +38,14 @@ const onMessage = async (request, _, sendResponse) => {
           if (chromeMediaSourceId) {
             const response = await chrome.tabs.sendMessage(tabId, { ...request, from: 'worker', chromeMediaSourceId });
             console.log(response);
+            sendResponse('Recording start...');
           }
         });
       }
       else {
         const response = await chrome.tabs.sendMessage(tabId, { ...request, from: 'worker' });
-        sendResponse(response || null);
+        console.log(response);
+        sendResponse('Recording start...');
       }
     }
     else {
