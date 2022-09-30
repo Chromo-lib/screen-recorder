@@ -1,28 +1,4 @@
-async function checkDevicesPermission(request) {
-  const { enableCamera, enableMicrophone } = request;
-
-  const openSiteSettings = () => {
-    let browserName = null;
-    if (/Chrome/gi.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)) browserName = "chrome";
-    if (/Edg/gi.test(navigator.userAgent)) browserName = "edge";
-    chrome.tabs.create({ url: browserName + '://settings/content/siteDetails?site=' + encodeURIComponent(location.href) });
-    return
-  }
-
-  if (enableCamera) {
-    const permission = await navigator.permissions.query({ name: 'camera' });
-    request.enableCamera = enableCamera && permission.state === 'granted';
-    if (permission.state === 'denied') openSiteSettings()
-    else return request;
-  }
-
-  if (enableMicrophone) {
-    const permission = await navigator.permissions.query({ name: 'microphone' });
-    request.enableMicrophone = enableMicrophone && permission.state === 'granted';
-    if (permission.state === 'denied') openSiteSettings()
-    else return request;
-  }
-}
+import checkDevicesPermission from "./checkDevicesPermission";
 
 const onMessage = async (request, _, sendResponse) => {
   try {

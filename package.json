@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "watch": "nodemon --watch src --exec \"bash ./build.sh\" --ext '*'",
-    "build": "bash ./build.sh && NODE_ENV=production rollup -c",
+    "build:worker": "NODE_ENV=production rollup -c rollup.config.worker.js",
+    "build": "bash ./build.sh && yarn build:worker && NODE_ENV=production rollup -c",
     "dev": "NODE_ENV=dev rollup -c -w"
   },
   "author": "Haikel Fazzani",

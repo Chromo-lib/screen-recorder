@@ -116,6 +116,9 @@ function App({ request }) {
     downloadVideo(chunks, tabTitle || 'reco', 'video/webm');
   }, []);
 
+  if (autoDownload && isRecordingFinished) {
+    return <Fragment></Fragment>
+  }
   if (isRecordingFinished) {
     return <Draggable style={containerStyle}>
       <ButtonMove style={btnStyle} />
