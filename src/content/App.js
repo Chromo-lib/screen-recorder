@@ -14,6 +14,13 @@ import ButtonMove from './components/ButtonMove';
 import ButtonDownload from './components/ButtonDownload';
 
 function App({ request }) {
+  const { enableAudioCamera, enableCamera,
+    cameraID,
+    isMicrophoneConnected, isCameraConnected,
+    tabTitle,
+    autoDownload, enableTimer
+  } = request;
+
   const videoEl = useRef();
   const localStream = signal(null);
 
@@ -44,7 +51,7 @@ function App({ request }) {
         setIsRecordingPlay(false);
         setIsRecordingFinished(true);
 
-        if (request.autoDownload) onDownload();
+        if (autoDownload) onDownload();
         console.log('mediaRecorder.onstop: recording is stopped');
       }
 
@@ -80,19 +87,22 @@ function App({ request }) {
   }
 
   useEffect(() => {
-    if (!request.enableCamera) return;
+    if (!enableCamera || !isCameraConnected) return;
 
     const constraints = {
-      audio: true,
-      video: { deviceId: request.cameraID, facingMode: 'user' }
+      audio: isMicrophoneConnected,
+      video: { deviceId: cameraID, facingMode: 'user' }
     }
 
     navigator.mediaDevices.getUserMedia(constraints)
       .then(stream => {
-        if (!request.enableAudioCamera) stream.getAudioTracks().forEach((track) => { track.stop(); });
+        if (!enableAudioCamera && isMicrophoneConnected) stream.getAudioTracks().forEach((track) => { track.stop(); });
         videoEl.current.autoplay = true;
         videoEl.current.srcObject = stream;
         localStream.value = stream;
+      })
+      .catch(e => {
+        //localStream.value = null;
       });
 
     return () => {
@@ -103,13 +113,13 @@ function App({ request }) {
   }, []);
 
   const onDownload = useCallback(() => {
-    downloadVideo(chunks, request.tabTitle || 'reco', 'video/webm');
+    downloadVideo(chunks, tabTitle || 'reco', 'video/webm');
   }, []);
 
   if (isRecordingFinished) {
     return <Draggable style={containerStyle}>
       <ButtonMove style={btnStyle} />
-      {!request.autoDownload && <ButtonDownload style={btnStyle} onClick={onDownload} />}
+      {!autoDownload && <ButtonDownload style={btnStyle} onClick={onDownload} />}
     </Draggable>
   }
   else {
@@ -118,7 +128,7 @@ function App({ request }) {
 
         <ButtonMove style={btnStyle} />
 
-        {request.enableTimer && <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />}
+        {enableTimer && <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />}
 
         <ButtonStop style={btnStyle} onClick={onStop} />
 

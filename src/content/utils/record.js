@@ -1,9 +1,9 @@
 async function record(request) {
-  const { chromeMediaSourceId, videoMediaSource, mimeType, enableMicrophone } = request;
+  const { chromeMediaSourceId, videoMediaSource, mimeType, enableMicrophone, isMicrophoneConnected } = request;
 
   const constraints = videoMediaSource !== 'webcam'
     ? {
-      video: {        
+      video: {
         mandatory: {
           chromeMediaSource: 'desktop',
           chromeMediaSourceId: chromeMediaSourceId,
@@ -19,7 +19,7 @@ async function record(request) {
   const stream = await navigator.mediaDevices.getUserMedia(constraints);
   const mediaRecorder = new MediaRecorder(stream, { mimeType });
 
-  if (enableMicrophone) {
+  if (enableMicrophone && isMicrophoneConnected) {
     const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioStream.getAudioTracks()[0].enabled = true;
     stream.addTrack(audioStream.getAudioTracks()[0]);

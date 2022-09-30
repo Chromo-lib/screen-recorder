@@ -40,12 +40,24 @@ const onStartRecord = async (e) => {
   try {
 
     for (const element of e.target.elements) {
+      const value = element.value;
+
       if (element.type === 'checkbox') recordOptions[element.name] = JSON.parse(element.checked);
-      else recordOptions[element.name] = element.value;
+      else recordOptions[element.name] = value && value.length > 1 ? value : recordOptions[element.name];
     }
 
+    const devicesStatus = await checkDevices();
+
     const { tabId, tabTitle } = await getCurrentTabId();
-    const response = await chrome.runtime.sendMessage({ from: 'popup', message: 'start-record', tabId, tabTitle, ...recordOptions });
+    const response = await chrome.runtime.sendMessage({
+      from: 'popup',
+      message: 'start-record',
+      tabId,
+      tabTitle,
+      ...recordOptions,
+      ...devicesStatus
+    });
+
     console.log(response);
   } catch (error) {
     console.log(error.message);
