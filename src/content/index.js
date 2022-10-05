@@ -2,11 +2,17 @@ import { h, render } from "preact";
 import App from "./App";
 
 const onMessage = async (request, _, sendResponse) => {
-  try {    
+  try {
     if (request.message === 'start-record' && request.from === 'worker') {
-      const div = document.createElement('div')
-      document.body.appendChild(div);
-      render(<App request={request} />, div);
+      let rootElement = document.getElementById('reco-record');
+      if (rootElement) {
+        rootElement.parentNode.removeChild(rootElement);
+      }
+
+      rootElement = document.createElement('div');
+      rootElement.id = 'reco-record';
+      document.body.appendChild(rootElement);
+      render(<App request={request} />, rootElement);
       sendResponse(request);
     }
 
@@ -16,7 +22,7 @@ const onMessage = async (request, _, sendResponse) => {
   } catch (error) {
     const permission = await navigator.permissions.query({ name: 'microphone' });
     await chrome.runtime.sendMessage({ from: 'content', error: error.message, permission });
-    console.log(error);
+    sendResponse(error);
   }
 };
 

@@ -2,8 +2,8 @@ export const containerStyle = {
   maxWidth: '200px',
   height: '40px',
   position: 'fixed',
-  bottom: '10px',
-  left: '10px',
+  bottom: '20px',
+  left: '20px',
   display: 'flex',
   alignItems: 'center',
   borderRadius: '7px',
@@ -24,15 +24,16 @@ export const btnStyle = {
   justifyContent: 'center',  
   cursor: 'pointer',
   margin: '0 5px',
-  padding: '5px 8px'
+  padding: '5px 8px',
+  whiteSpace: 'pre-wrap'
 };
 
 export const videoContainer = {
   width: '180px',
   height: '180px',
   position: 'fixed',
-  bottom: '10px',
-  right: '10px',
+  bottom: '20px',
+  right: '20px',
   zIndex: 2147483647,
   cursor:'move'
 };
