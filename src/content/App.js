@@ -27,7 +27,7 @@ function App({ request }) {
 
   const [isCameraOn, setIsCameraOn] = useState(enableCamera);
 
-  const [errorMessage, setErrorMessage] = useState(false)
+  const [errorMessage, setErrorMessage] = useState(false);
 
   const chunks = [];
 
@@ -67,6 +67,7 @@ function App({ request }) {
         setIsRecordingPaused(false);
       }
     } catch (error) {
+      console.log(error);
       setIsCameraOn(false);
       setErrorMessage('Max Timeout 5s, Please refresh the page');
     }
@@ -80,7 +81,7 @@ function App({ request }) {
     downloadVideo(chunks, tabTitle || 'reco', 'video/webm');
   }, []);
 
-  if(errorMessage) {
+  if (errorMessage) {
     return <Draggable style={containerStyle}><PreBug text={errorMessage} /></Draggable>
   }
   if (autoDownload && isRecordingFinished) {

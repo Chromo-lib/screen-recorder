@@ -10,7 +10,8 @@ export const containerStyle = {
   background: '#000000c9',
   textTransform: 'uppercase',
   zIndex: 2147483647,
-  cursor:'move'
+  cursor:'move',
+  boxShadow:'0 0 3em rgb(0 0 0 / 15%)'
 };
 
 export const btnStyle = {
@@ -42,5 +43,6 @@ export const videoStyle = {
   width: '100%',
   height: '100%',
   borderRadius: '50%',
-  objectFit:'cover'
+  objectFit:'cover',
+  boxShadow:'0 0 3em rgb(0 0 0 / 15%)'
 }

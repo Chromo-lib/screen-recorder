@@ -13,7 +13,9 @@ let recordOptions = {
   mimeType: 'video/webm;codecs=vp8,opus',
 
   enableTimer: true,
-  autoDownload: true
+  autoDownload: true,
+
+  resolution: { width: 1280, height: 720 },
 }
 
 const getCurrentTabId = async () => {
@@ -40,11 +42,15 @@ const onStartRecord = async (e) => {
   try {
     for (const element of e.target.elements) {
       const value = element.value;
+      const name = element.name;
 
-      if (element.type === 'checkbox') recordOptions[element.name] = JSON.parse(element.checked);
-      else recordOptions[element.name] = value && value.length > 1 ? value : recordOptions[element.name];
+      if (value && name) {
+        if (name === "resolution") { recordOptions.resolution = resolutions[+value]; }
+        if (element.type === 'checkbox') recordOptions[name] = JSON.parse(element.checked);
+        else recordOptions[name] = value && value.length > 1 ? value : recordOptions[name];
+      }
     }
-
+    
     const devicesStatus = await checkDevices();
 
     const { tabId, tabTitle } = await getCurrentTabId();
@@ -60,8 +66,10 @@ const onStartRecord = async (e) => {
     alertEl.style.display = 'block';
     alertEl.textContent = response;
   } catch (error) {
-    alertEl.style.display = 'block';
-    alertEl.textContent = error.message;
+    if (!error.message.includes('The message port closed before a response was received')) {
+      alertEl.style.display = 'block';
+      alertEl.textContent = error.message;
+    }
   }
 }
 

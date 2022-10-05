@@ -1,3 +1,12 @@
+const resolutions = [
+  { width: 320, height: 240 },
+  { width: 640, height: 480 },
+  { width: 1280, height: 720 },
+  { width: 1920, height: 1080 },
+  { width: 3840, height: 2160 },
+  { width: 4096, height: 2160 }
+];
+
 /**
  * @returns Promose<Object>
  */
@@ -67,5 +76,18 @@ function setMimeTypes() {
   })
 }
 
+function setResolutions() {
+  const resolution = document.getElementById('resolution');
+
+  resolutions.forEach((rs, index) => {
+    const option = document.createElement('option');
+    option.value = index;
+    option.textContent = rs.width + 'x' + rs.height;
+    if (rs.height === 720) option.selected = true;
+    resolution.appendChild(option);
+  });
+}
+
+setResolutions();
 setMimeTypes();
 setAudioInputs();

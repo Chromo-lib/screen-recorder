@@ -5,7 +5,7 @@ import Draggable from './Draggable';
 import { videoContainer, videoStyle } from '../styles';
 
 export default function Camera({ request, isCameraOn }) {
-  const { enableAudioCamera, enableCamera, cameraID, isMicrophoneConnected, isCameraConnected, } = request;
+  const { videoMediaSource, enableAudioCamera, enableCamera, cameraID, isMicrophoneConnected, isCameraConnected, resolution } = request;
   const videoEl = useRef();
   const localStream = signal(null);
 
@@ -18,7 +18,12 @@ export default function Camera({ request, isCameraOn }) {
 
     const constraints = {
       audio: isMicrophoneConnected,
-      video: { deviceId: cameraID, facingMode: 'user' }
+      video: {
+        deviceId: cameraID,
+        facingMode: 'user',
+        height: { exact: videoMediaSource === 'webcam' ? resolution.height : videoEl.current.clientHeight },
+        width: { exact: videoMediaSource === 'webcam' ? resolution.width : videoEl.current.clientWidth }
+      }
     }
 
     navigator.mediaDevices.getUserMedia(constraints)
