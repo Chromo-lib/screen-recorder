@@ -14,7 +14,7 @@
   <img src="https://i.giphy.com/media/WVNfkzbtf9gaXVQobR/giphy.webp">
 </div>
 
-### Similar Apps
+## Similar Apps
 - [fullpage Screenshot](https://github.com/Chromo-lib/screenshot-fullpage-extension)
 
 # License
