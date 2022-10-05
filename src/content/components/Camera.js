@@ -34,7 +34,7 @@ export default function Camera({ request, isCameraOn }) {
         localStream.value = stream;
       })
       .catch(e => {
-        //localStream.value = null;
+        console.log('Local video: ',e.message);
       });
 
     return () => {

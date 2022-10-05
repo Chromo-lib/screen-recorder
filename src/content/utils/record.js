@@ -1,5 +1,5 @@
 async function record(request) {
-  const { chromeMediaSourceId, videoMediaSource, mimeType, enableMicrophone, isMicrophoneConnected,resolution } = request;
+  const { chromeMediaSourceId, videoMediaSource, mimeType, enableMicrophone, isMicrophoneConnected, resolution } = request;
 
   const constraints = videoMediaSource !== 'webcam'
     ? {
@@ -8,13 +8,15 @@ async function record(request) {
           chromeMediaSource: 'desktop',
           chromeMediaSourceId: chromeMediaSourceId,
         },
-        minWidth:resolution.width,
-        minHeight:resolution.height,
+        minWidth: resolution.width,
+        minHeight: resolution.height,
+        maxWidth: resolution.width,
+        maxHeight: resolution.height,
         // aspectRatio: 1.777,
         // frameRate: { min: 5, ideal: 15, max: 30, }
       }, audio: false
     }
-    : { video: true, audio: true };
+    : { video: { width: { ideal: resolution.width }, height: { ideal: resolution.height } }, audio: true };
 
   const stream = await navigator.mediaDevices.getUserMedia(constraints);
   const mediaRecorder = new MediaRecorder(stream, { mimeType });

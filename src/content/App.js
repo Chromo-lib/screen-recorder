@@ -67,7 +67,7 @@ function App({ request }) {
         setIsRecordingPaused(false);
       }
     } catch (error) {
-      console.log(error);
+      console.log('Recording: ', error);
       setIsCameraOn(false);
       setErrorMessage('Max Timeout 5s, Please refresh the page');
     }

@@ -1,5 +1,5 @@
 export const containerStyle = {
-  maxWidth: '200px',
+  maxWidth: '250px',
   height: '40px',
   position: 'fixed',
   bottom: '20px',
