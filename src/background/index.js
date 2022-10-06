@@ -2,33 +2,11 @@ import checkDevicesPermission from "./checkDevicesPermission";
 
 const onMessage = async (request, _, sendResponse) => {
   try {
-    const { from, message, tabId, videoMediaSource } = request;
+    request = await checkDevicesPermission(request);
 
-    if (from === 'popup' && message === 'start-record' && tabId) {
-      const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
+    const response = await chrome.tabs.sendMessage(request.tabId, { ...request, from: 'worker' });    
+    sendResponse(response || 'Recording start...');
 
-      request = await checkDevicesPermission(request);
-
-      if (videoMediaSource !== 'webcam') {
-        chrome.desktopCapture.chooseDesktopMedia([videoMediaSource || 'window', 'screen', 'tab'], tabs[0], async (chromeMediaSourceId) => {
-          if (chromeMediaSourceId) {
-            const response = await chrome.tabs.sendMessage(tabId, { ...request, from: 'worker', chromeMediaSourceId });
-            console.log(response);
-            sendResponse('Recording start...');
-          }
-        });
-      }
-      else {
-        const response = await chrome.tabs.sendMessage(tabId, { ...request, from: 'worker' });
-        console.log(response);
-        sendResponse('Recording start...');
-      }
-    }
-    else {
-      sendResponse(request);
-    }
-
-    // await chrome.runtime.sendMessage(request);    
   } catch (error) {
     console.log(error.message);
     sendResponse(null)

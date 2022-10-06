@@ -1,7 +1,5 @@
 import { terser } from "rollup-plugin-terser";
 
-console.log(process.env.NODE_ENV);
-
 export default {
   input: "src/background/index.js",
   output: {
@@ -10,6 +8,6 @@ export default {
     sourcemap: false,
   },
   plugins: [
-    terser()
+    process.env.NODE_ENV === 'production' ? terser() : ''
   ]
 };

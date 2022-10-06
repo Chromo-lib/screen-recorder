@@ -46,8 +46,8 @@ function App({ request }) {
           setIsRecordingPlay(false);
           setIsRecordingFinished(true);
 
-          if (autoDownload) onDownload();
           console.log('mediaRecorder.onstop: recording is stopped');
+          if (autoDownload) onDownload();
         }
 
         mediaRecorder.ondataavailable = (e) => {

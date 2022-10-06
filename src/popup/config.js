@@ -71,6 +71,7 @@ function setMimeTypes() {
       const option = document.createElement('option');
       option.textContent = mimeType;
       option.value = mimeType;
+      if ('video/webm;codecs=vp8') option.selected = true;
       selectMimeTypeEL.appendChild(option);
     }
   })
@@ -87,7 +88,3 @@ function setResolutions() {
     resolution.appendChild(option);
   });
 }
-
-setResolutions();
-setMimeTypes();
-setAudioInputs();

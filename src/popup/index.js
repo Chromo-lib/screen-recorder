@@ -2,7 +2,7 @@ const alertEl = document.querySelector('.alert');
 const videoMediaSourceEL = document.getElementById('video-media-source');
 
 let recordOptions = {
-  videoMediaSource: 'tab',
+  videoMediaSource: 'tab', // webcam, tab, desktop, window
   microphoneID: 'default',
   cameraID: 'default',
 
@@ -21,7 +21,7 @@ let recordOptions = {
 const getCurrentTabId = async () => {
   const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
   const currentTab = tabs[0];
-  const tabURL = new URL("https://haikel-fazzani.ml/portfolio/19-drag-react").origin;
+  const tabURL = new URL(currentTab.url).origin;
 
   if (currentTab.url.includes('chrome://')) {
     throw new Error('This page is not supported...')

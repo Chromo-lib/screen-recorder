@@ -5,8 +5,6 @@ import replace from '@rollup/plugin-replace';
 import alias from '@rollup/plugin-alias';
 import { terser } from "rollup-plugin-terser";
 
-console.log(process.env.NODE_ENV);
-
 export default {
   input: "src/content/index.js",
   output: {
@@ -38,6 +36,6 @@ export default {
       ],
     }),
     commonjs(),
-    terser()
+    process.env.NODE_ENV === 'production' ? terser() : ''
   ]
 };

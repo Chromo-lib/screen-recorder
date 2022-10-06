@@ -1,27 +1,20 @@
-async function record(request) {
-  const { chromeMediaSourceId, videoMediaSource, mimeType, enableMicrophone, isMicrophoneConnected, resolution } = request;
+export default async function record(request) {
+  const { videoMediaSource, mimeType, enableMicrophone, isMicrophoneConnected, resolution } = request;
 
-  const constraints = videoMediaSource !== 'webcam'
-    ? {
-      video: {
-        mandatory: {
-          chromeMediaSource: 'desktop',
-          chromeMediaSourceId: chromeMediaSourceId,
-        },
-        minWidth: resolution.width,
-        minHeight: resolution.height,
-        maxWidth: resolution.width,
-        maxHeight: resolution.height,
-        // aspectRatio: 1.777,
-        // frameRate: { min: 5, ideal: 15, max: 30, }
-      }, audio: false
-    }
-    : { video: { width: { ideal: resolution.width }, height: { ideal: resolution.height } }, audio: true };
+  const isVideoMediaSourceWebcam = videoMediaSource === 'webcam';
+  let stream = null;
 
-  const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  const constraints = {
+    video: { width: { ideal: resolution.width }, height: { ideal: resolution.height } },
+    audio: isVideoMediaSourceWebcam
+  };
+
+  if (isVideoMediaSourceWebcam) stream = await navigator.mediaDevices.getUserMedia(constraints);
+  else stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+
   const mediaRecorder = new MediaRecorder(stream, { mimeType });
 
-  if (enableMicrophone && isMicrophoneConnected) {
+  if (!isVideoMediaSourceWebcam && enableMicrophone && isMicrophoneConnected) {
     const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioStream.getAudioTracks()[0].enabled = true;
     stream.addTrack(audioStream.getAudioTracks()[0]);
@@ -42,7 +35,5 @@ async function record(request) {
     stream.getVideoTracks()[0].onended = async () => {
       mediaRecorder.stop();
     };
-  })
+  });
 }
-
-export default record;
