@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { signal } from "@preact/signals";
 import Draggable from './Draggable';
 import { alertStyle, videoContainer, videoStyle } from '../styles';
-import getSiteURLSettings from '../utils/getSiteURLSettings';
 
 export default function Camera({ request, isCameraOn }) {
   const { videoMediaSource, enableAudioCamera, enableCamera, cameraID, isMicrophoneConnected, isCameraConnected, resolution } = request;
@@ -49,10 +48,7 @@ export default function Camera({ request, isCameraOn }) {
 
   if (error) {
     return <Draggable style={{ ...videoContainer, width: '400px' }}>
-      <div style={alertStyle}>
-        {error}<br /><br />
-        Link to website settings:<br />{getSiteURLSettings()}
-      </div>
+      <div style={alertStyle}>{error}</div>
     </Draggable>
   }
   else {

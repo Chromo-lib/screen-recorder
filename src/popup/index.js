@@ -1,3 +1,11 @@
+import checkDevices from "./utils/checkDevices";
+import checkPermission from "./utils/checkPermission";
+import getCurrentTabId from "./utils/getCurrentTabId";
+import resolutions from "./utils/resolutions";
+import setAudioInputs from "./dom/setAudioInputs";
+import setMimeTypes from "./dom/setMimeTypes";
+import setResolutions from "./dom/setResolutions";
+
 const alertEl = document.querySelector('.alert');
 const videoMediaSourceEL = document.getElementById('video-media-source');
 
@@ -18,26 +26,9 @@ let recordOptions = {
   resolution: { width: 1280, height: 720 },
 }
 
-const getCurrentTabId = async () => {
-  const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
-  const currentTab = tabs[0];
-  const tabURL = new URL(currentTab.url).origin;
-
-  if (currentTab.url.includes('chrome://')) {
-    throw new Error('This page is not supported...')
-  }
-  else return { tabId: currentTab.id, tabTitle: currentTab.title, tabURL }
-}
-
-const onGrantPermission = async () => {
-  try {
-    const tabId = await getCurrentTabId();
-    const response = await chrome.runtime.sendMessage({ from: 'popup', message: 'grant-permission', tabId, ...recordOptions });
-    console.log(response);
-  } catch (error) {
-    console.log(error.message);
-  }
-}
+setAudioInputs();
+setMimeTypes();
+setResolutions();
 
 const onStartRecord = async (e) => {
   e.preventDefault();
@@ -53,9 +44,10 @@ const onStartRecord = async (e) => {
       }
     }
 
+    const permission = await checkPermission(recordOptions);
     const devicesStatus = await checkDevices();
-
     const tabInfos = await getCurrentTabId();
+    
     const response = await chrome.runtime.sendMessage({
       from: 'popup',
       message: 'start-record',
@@ -95,4 +87,3 @@ const onTabVideoMediaSource = e => {
 
 document.getElementById('video-media-source').addEventListener('click', onTabVideoMediaSource);
 document.getElementById('form-start-record').addEventListener('submit', onStartRecord);
-// document.getElementById('btn-grant-permission').addEventListener('click', onGrantPermission, false);

@@ -5,7 +5,7 @@ export default function downloadVideo(data, filename, type, vidExtension = 'webm
 
   const link = document.createElement('a');
   link.href = url;
-  link.download = `${filename}.${vidExtension}`;
+  link.download = `${new Date().toISOString()}.${vidExtension}`;
 
   document.body.appendChild(link);
   link.click();

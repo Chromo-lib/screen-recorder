@@ -1,14 +1,14 @@
 {
   "name": "reco",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Reco is screen, audio and camera recorder extension tool",
   "main": "index.js",
   "private": true,
   "scripts": {
     "watch": "nodemon --watch src --exec \"bash ./build.sh\" --ext '*'",
-    "build:worker": "NODE_ENV=production rollup -c rollup.config.worker.js",
-    "build": "bash ./build.sh && yarn build:worker && NODE_ENV=production rollup -c",
-    "dev": "NODE_ENV=dev rollup -c -w"
+    "build:popup": "NODE_ENV=production rollup -c rollup.config.popup",
+    "build": "bash ./build.sh && yarn build:popup && NODE_ENV=production rollup -c",
+    "dev": "NODE_ENV=dev rollup -c -w && rollup -c -w rollup.config.popup"
   },
   "author": "Haikel Fazzani",
   "license": "MIT",
