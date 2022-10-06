@@ -46,3 +46,12 @@ export const videoStyle = {
   objectFit:'cover',
   boxShadow:'0 0 3em rgb(0 0 0 / 15%)'
 }
+
+export const alertStyle = {  
+  wordBreak: 'break-word',
+  whiteSpace: 'pre-wrap',
+  background: '#ff3131',
+  color: '#fff',
+  padding: '10px',
+  borderRadius: '7px'
+}

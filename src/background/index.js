@@ -31,29 +31,29 @@ const onMessage = async (request, _, sendResponse) => {
     // await chrome.runtime.sendMessage(request);    
   } catch (error) {
     console.log(error.message);
+    sendResponse(null)
   }
 };
 
 chrome.runtime.onMessage.addListener(onMessage);
 
-// window.addEventListener('DOMContentLoaded', async () => {
-//   try {
-//     const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-//     stream.getTracks().forEach(track => track.stop());
-//     window.close();
-//   } catch (error) {
-//     const permission = await navigator.permissions.query({ name: 'microphone' });
+// const permissionsToRequest = {
+//   permissions: ["camera", "microphone"],
+//   origins: [tabURL]
+// }
 
-//     if (permission.state === 'denied') {
-//       chrome.tabs.create({
-//         url: browserName() + '://settings/content/siteDetails?site=' + encodeURIComponent(location.href)
-//       });
 
-//       permission.onchange = function () {
-//         console.log('Camera permission state has changed to ', this.state);
-//         if (this.state !== 'granted') chrome.runtime.sendMessage({ message: 'permission-fail' });
-//       };
+//   function onResponse(response) {
+//     if (response) {
+//       console.log("Permission was granted");
+//     } else {
+//       console.log("Permission was refused");
 //     }
-//     window.close();
+//     return chrome.permissions.getAll();
 //   }
-// });
+
+//   chrome.permissions.request(permissionsToRequest)
+//     .then(onResponse)
+//     .then((currentPermissions) => {
+//     console.log(`Current permissions:`, currentPermissions);
+//   });

@@ -21,10 +21,12 @@ let recordOptions = {
 const getCurrentTabId = async () => {
   const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
   const currentTab = tabs[0];
+  const tabURL = new URL("https://haikel-fazzani.ml/portfolio/19-drag-react").origin;
+
   if (currentTab.url.includes('chrome://')) {
     throw new Error('This page is not supported...')
   }
-  else return { tabId: currentTab.id, tabTitle: currentTab.title }
+  else return { tabId: currentTab.id, tabTitle: currentTab.title, tabURL }
 }
 
 const onGrantPermission = async () => {
@@ -50,15 +52,14 @@ const onStartRecord = async (e) => {
         else recordOptions[name] = value && value.length > 1 ? value : recordOptions[name];
       }
     }
-    
+
     const devicesStatus = await checkDevices();
 
-    const { tabId, tabTitle } = await getCurrentTabId();
+    const tabInfos = await getCurrentTabId();
     const response = await chrome.runtime.sendMessage({
       from: 'popup',
       message: 'start-record',
-      tabId,
-      tabTitle,
+      ...tabInfos,
       ...recordOptions,
       ...devicesStatus
     });

@@ -1,13 +1,16 @@
 import { h } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { signal } from "@preact/signals";
 import Draggable from './Draggable';
-import { videoContainer, videoStyle } from '../styles';
+import { alertStyle, videoContainer, videoStyle } from '../styles';
+import getSiteURLSettings from '../utils/getSiteURLSettings';
 
 export default function Camera({ request, isCameraOn }) {
   const { videoMediaSource, enableAudioCamera, enableCamera, cameraID, isMicrophoneConnected, isCameraConnected, resolution } = request;
   const videoEl = useRef();
   const localStream = signal(null);
+
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     if (localStream.value) {
@@ -34,7 +37,7 @@ export default function Camera({ request, isCameraOn }) {
         localStream.value = stream;
       })
       .catch(e => {
-        console.log('Local video: ',e.message);
+        setError(e.message + ' video/or microphone for this Website, please check yours settings.');
       });
 
     return () => {
@@ -44,7 +47,17 @@ export default function Camera({ request, isCameraOn }) {
     }
   }, [isCameraOn]);
 
-  return <Draggable style={videoContainer}>
-    <video src="" ref={videoEl} style={videoStyle}></video>
-  </Draggable>
+  if (error) {
+    return <Draggable style={{ ...videoContainer, width: '400px' }}>
+      <div style={alertStyle}>
+        {error}<br /><br />
+        Link to website settings:<br />{getSiteURLSettings()}
+      </div>
+    </Draggable>
+  }
+  else {
+    return <Draggable style={videoContainer}>
+      <video ref={videoEl} style={videoStyle}></video>
+    </Draggable>
+  }
 }
