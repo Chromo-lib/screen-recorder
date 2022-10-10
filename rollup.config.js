@@ -9,12 +9,11 @@ import { resolve } from 'path';
 
 console.log('process ===> ',process.env.BROWSER,process.env.NODE_ENV);
 const isChrome = process.env.BROWSER === 'chrome';
-
-const from = isChrome ? 'browser' : 'chrome';
-const to = isChrome ? 'chrome' : 'browser';
+const from = isChrome ? 'browser' : 'chrome'; // this var for replaceWord plugin
+const to = isChrome ? 'chrome' : 'browser'; // this var for replaceWord plugin
 
 if(!isChrome) {
-  const content = readFileSync(resolve(process.cwd(), 'src', 'manifest-firefox.json'), 'utf8');
+  const content = readFileSync(resolve(process.cwd(), 'src', 'manifest-v2.json'), 'utf8');
   writeFileSync(resolve(process.cwd(), 'dist', 'manifest.json'), content)
 }
 
