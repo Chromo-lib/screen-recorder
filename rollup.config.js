@@ -1,19 +1,20 @@
+import { readFileSync, writeFileSync } from 'fs'
+import path, { resolve } from 'path';
+import postcss from 'rollup-plugin-postcss'
 import babel from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
 import { terser } from "rollup-plugin-terser";
 import { replaceWord } from './plugin';
-import {readFileSync, writeFileSync} from 'fs'
-import { resolve } from 'path';
 
-console.log('process ===> ',process.env.BROWSER,process.env.NODE_ENV);
-const isChrome = process.env.BROWSER === 'chrome';
+console.log('process ===> ', process.env.BROWSER, process.env.NODE_ENV);
+const isChrome = process.env.BROWSER === undefined ? true : process.env.BROWSER === 'chrome';
 const from = isChrome ? 'browser' : 'chrome'; // this var for replaceWord plugin
 const to = isChrome ? 'chrome' : 'browser'; // this var for replaceWord plugin
 
-if(!isChrome) {
-  const content = readFileSync(resolve(process.cwd(), 'src', 'manifest-v2.json'), 'utf8');
+if (!isChrome) {
+  const content = readFileSync(resolve(process.cwd(), 'manifest-v2.json'), 'utf8');
   writeFileSync(resolve(process.cwd(), 'dist', 'manifest.json'), content)
 }
 
@@ -21,7 +22,7 @@ export default [
   {
     input: "src/background/index.js",
     output: {
-      file: "dist/background/index.js",
+      file: "dist/background.js",
       format: "iife",
       sourcemap: false,
     },
@@ -33,11 +34,15 @@ export default [
   {
     input: "src/popup/index.js",
     output: {
-      file: "dist/popup/index.js",
+      file: "dist/popup.js",
       format: "iife",
       sourcemap: false,
     },
     plugins: [
+      postcss({
+        extract: true,
+        extract: path.resolve('dist/popup.css')
+      }),
       replaceWord({ from, to }),
       process.env.NODE_ENV === 'production' ? terser() : ''
     ]
@@ -45,11 +50,15 @@ export default [
   {
     input: "src/permission/index.js",
     output: {
-      file: "dist/permission/index.js",
+      file: "dist/permission.js",
       format: "iife",
       sourcemap: false,
     },
     plugins: [
+      postcss({
+        extract: true,
+        extract: path.resolve('dist/permission.css')
+      }),
       replaceWord({ from, to }),
       process.env.NODE_ENV === 'production' ? terser() : ''
     ]
@@ -57,7 +66,7 @@ export default [
   {
     input: "src/content/index.js",
     output: {
-      file: "dist/content/index.js",
+      file: "dist/content.js",
       format: "iife",
       sourcemap: false,
     },

@@ -16,7 +16,7 @@ export default function Camera({ request, isCameraOn }) {
     cameraForm
   } = request;
 
-  const borderRadius = cameraForm === 'cirle' ? '50%' : '7px';
+  const borderRadius = cameraForm === 'circle' ? '50%' : '7px';
   const width = cameraForm === 'rectangle' ? '250px' : '180px';
   const height = cameraForm === 'rectangle' ? '150px' : '180px';
 
@@ -36,8 +36,8 @@ export default function Camera({ request, isCameraOn }) {
       video: {
         deviceId: cameraID,
         facingMode: 'user',
-        height: { exact: videoMediaSource === 'webcam' ? resolution.height : videoEl.current.clientHeight },
-        width: { exact: videoMediaSource === 'webcam' ? resolution.width : videoEl.current.clientWidth }
+        // height: { exact: videoMediaSource === 'webcam' ? resolution.height : videoEl.current.clientHeight },
+        // width: { exact: videoMediaSource === 'webcam' ? resolution.width : videoEl.current.clientWidth }
       }
     }
 
@@ -49,6 +49,7 @@ export default function Camera({ request, isCameraOn }) {
         localStream.value = stream;
       })
       .catch(e => {
+        console.log(e.message);
         setError(e.message + ' video/or microphone for this Website, please check yours settings.');
       });
 

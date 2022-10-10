@@ -1,8 +1,8 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Reco - Screen Recorder",
   "description": "Reco is screen, audio and camera recorder extension tool",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "icons": {
     "512": "icons/512.png",
     "256": "icons/256.png",
@@ -10,24 +10,25 @@
     "64": "icons/64.png",
     "32": "icons/32.png"
   },
-  "browser_action": {
+  "action": {
     "default_title": "Reco - Screen Recorder",
-    "default_popup": "popup/index.html"
+    "default_popup": "popup.html"
   },
   "permissions": [
     "desktopCapture",
     "activeTab",
-    "tabs",
+    "tabs"
+  ],
+  "host_permissions": [
     "<all_urls>"
   ],
   "background": {
-    "scripts": ["background/index.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "js": [
-        "content/index.js"
+        "content.js"
       ],
       "matches": [
         "*://*/*"

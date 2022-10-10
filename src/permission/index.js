@@ -1,3 +1,5 @@
+import './style.css'
+
 function browserName() {
   let browserName = 'No browser detection';
   if (/browser/gi.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)) browserName = "browser";

@@ -5,6 +5,7 @@ import resolutions from "./utils/resolutions";
 import setAudioInputs from "./dom/setAudioInputs";
 import setMimeTypes from "./dom/setMimeTypes";
 import setResolutions from "./dom/setResolutions";
+import './style.css';
 
 const alertEl = document.querySelector('.alert');
 const videoMediaSourceEL = document.getElementById('video-media-source');
@@ -44,7 +45,7 @@ const onStartRecord = async (e) => {
       }
     }
 
-    // const permission = await checkPermission(recordOptions);
+    const permission = await checkPermission(recordOptions);
     const devicesStatus = await checkDevices();
     const tabInfos = await getCurrentTabId();
     
