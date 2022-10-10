@@ -22,7 +22,7 @@ let recordOptions = {
 
   enableTimer: true,
   autoDownload: true,
-
+  cameraForm: 'circle',
   resolution: { width: 1280, height: 720 },
 }
 
@@ -44,7 +44,7 @@ const onStartRecord = async (e) => {
       }
     }
 
-    const permission = await checkPermission(recordOptions);
+    // const permission = await checkPermission(recordOptions);
     const devicesStatus = await checkDevices();
     const tabInfos = await getCurrentTabId();
     

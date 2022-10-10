@@ -1,20 +1,22 @@
 import { h, Fragment } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
 
-import ButtonPause from './components/ButtonPause';
-import ButtonPlay from './components/ButtonPlay';
-import ButtonResume from './components/ButtonResume';
-import ButtonStop from './components/ButtonStop';
 import Draggable from './components/Draggable';
 import Timer from './components/Timer';
 import { btnStyle, containerStyle } from './styles';
 import downloadVideo from './utils/downloadVideo';
 import record from './utils/record';
-import ButtonMove from './components/ButtonMove';
-import ButtonDownload from './components/ButtonDownload';
+
+import ButtonMove from './components/button/ButtonMove';
+import ButtonPause from './components/button/ButtonPause';
+import ButtonPlay from './components/button/ButtonPlay';
+import ButtonResume from './components/button/ButtonResume';
+import ButtonStop from './components/button/ButtonStop';
+import ButtonDownload from './components/button/ButtonDownload';
+import ButtonCameraOn from './components/button/ButtonCameraOn';
+import ButtonCameraOff from './components/button/ButtonCameraOff';
+
 import Camera from './components/Camera';
-import ButtonCameraOn from './components/ButtonCameraOn';
-import ButtonCameraOff from './components/ButtonCameraOff';
 import PreBug from './components/PreBug';
 
 function App({ request }) {
@@ -99,12 +101,13 @@ function App({ request }) {
 
         <ButtonMove style={btnStyle} />
 
-        {isCameraOn
-          ? <ButtonCameraOff style={btnStyle} onClick={onCameraControl} />
-          : <ButtonCameraOn style={btnStyle} onClick={onCameraControl} />}
+        {enableCamera && <Fragment>
+          {isCameraOn
+            ? <ButtonCameraOff style={btnStyle} onClick={onCameraControl} />
+            : <ButtonCameraOn style={btnStyle} onClick={onCameraControl} />}
+        </Fragment>}
 
         {enableTimer && <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />}
-
 
         {isRecordingPlay
           ? <Fragment>

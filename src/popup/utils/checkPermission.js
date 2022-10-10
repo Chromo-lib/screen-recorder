@@ -3,6 +3,7 @@
  * @returns boolean
  */
 export default async function checkPermission(recordOptions) {
+
   if (recordOptions.enableCamera) {
     const permissionCam = await navigator.permissions.query({ name: 'camera' });
 

@@ -84,6 +84,8 @@ hr {
   margin: 17px auto;
 }
 
+legend {white-space: pre;}
+
 #video-media-source li { 
   text-align: center; cursor: pointer;
   text-transform: uppercase;

@@ -1,6 +1,6 @@
 function browserName() {
   let browserName = 'No browser detection';
-  if (/Chrome/gi.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)) browserName = "chrome";
+  if (/browser/gi.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)) browserName = "browser";
   if (/Edg/gi.test(navigator.userAgent)) browserName = "edge";
   return browserName;
 }

@@ -5,11 +5,24 @@ import Draggable from './Draggable';
 import { alertStyle, videoContainer, videoStyle } from '../styles';
 
 export default function Camera({ request, isCameraOn }) {
-  const { videoMediaSource, enableAudioCamera, enableCamera, cameraID, isMicrophoneConnected, isCameraConnected, resolution } = request;
+  const {
+    videoMediaSource,
+    enableAudioCamera,
+    enableCamera,
+    cameraID,
+    isMicrophoneConnected,
+    isCameraConnected,
+    resolution,
+    cameraForm
+  } = request;
+
+  const borderRadius = cameraForm === 'cirle' ? '50%' : '7px';
+  const width = cameraForm === 'rectangle' ? '250px' : '180px';
+  const height = cameraForm === 'rectangle' ? '150px' : '180px';
+
   const videoEl = useRef();
   const localStream = signal(null);
-
-  const [error, setError] = useState(null)
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (localStream.value) {
@@ -47,13 +60,14 @@ export default function Camera({ request, isCameraOn }) {
   }, [isCameraOn]);
 
   if (error) {
-    return <Draggable style={{ ...videoContainer, width: '400px' }}>
+    return <Draggable style={{ ...videoContainer, display: 'flex', width: '400px' }}>
+      <button onClick={() => { setError(null) }} style={{ marginRight: '10px', cursor: 'pointer' }}>X</button>
       <div style={alertStyle}>{error}</div>
     </Draggable>
   }
   else {
-    return <Draggable style={videoContainer}>
-      <video ref={videoEl} style={videoStyle}></video>
+    return <Draggable style={{ ...videoContainer, width, height }}>
+      <video ref={videoEl} style={{ ...videoStyle, borderRadius }}></video>
     </Draggable>
   }
 }

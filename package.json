@@ -1,14 +1,15 @@
 {
   "name": "reco",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Reco is screen, audio and camera recorder extension tool",
   "main": "index.js",
   "private": true,
   "scripts": {
-    "watch": "nodemon --watch src --exec \"bash ./build.sh\" --ext '*'",
-    "build:popup": "NODE_ENV=production rollup -c rollup.config.popup",
-    "build": "bash ./build.sh && yarn build:popup && NODE_ENV=production rollup -c",
-    "dev": "NODE_ENV=dev rollup -c -w && rollup -c -w rollup.config.popup"
+    "copy:files": "bash ./copy.sh",
+    "dev": "NODE_ENV=dev rollup -c -w",
+    "build": "yarn copy:files && NODE_ENV=production rollup -c",
+    "zip:chrome": "NODE_ENV=production BROWSER=chrome yarn build && (cd dist; zip -r ../chrome.zip .)",
+    "zip:firefox": "NODE_ENV=production BROWSER=firefox yarn build && (cd dist; zip -r ../firefox.zip .)"
   },
   "author": "Haikel Fazzani",
   "license": "MIT",
@@ -17,15 +18,10 @@
     "preact": "^10.11.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.3",
-    "@babel/plugin-transform-react-jsx": "^7.19.0",
-    "@babel/plugin-transform-runtime": "^7.19.1",
-    "@babel/preset-react": "^7.18.6",
     "@rollup/plugin-alias": "^3.1.9",
-    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-node-resolve": "^13.3.0",
-    "@rollup/plugin-replace": "^4.0.0",
     "babel-preset-preact": "^2.0.0",
     "rollup": "^2.79.0",
     "rollup-plugin-terser": "^7.0.2"

@@ -30,8 +30,6 @@ export const btnStyle = {
 };
 
 export const videoContainer = {
-  width: '180px',
-  height: '180px',
   position: 'fixed',
   bottom: '20px',
   right: '20px',
@@ -42,7 +40,6 @@ export const videoContainer = {
 export const videoStyle = {
   width: '100%',
   height: '100%',
-  borderRadius: '50%',
   objectFit:'cover',
   boxShadow:'0 0 3em rgb(0 0 0 / 15%)'
 }
