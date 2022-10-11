@@ -21,11 +21,16 @@
     "<all_urls>"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": [
+      "background.js"
+    ],
     "persistent": false
   },
   "content_scripts": [
     {
+      "css": [
+        "content.css"
+      ],
       "js": [
         "content.js"
       ],

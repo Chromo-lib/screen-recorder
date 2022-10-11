@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useCallback, useEffect, useRef } from 'preact/hooks';
 
-function Draggable({ children, style }) {
+function Draggable({ children, style, className = "" }) {
   const dragRef = useRef(null);
   let isMouseDown = false;
   let offset = [0, 0];
@@ -75,7 +75,7 @@ function Draggable({ children, style }) {
     }
   }, []);
 
-  return <div ref={dragRef} style={style}>{children}</div>
+  return <div ref={dragRef} class={className} style={style}>{children}</div>
 }
 
 export default Draggable;

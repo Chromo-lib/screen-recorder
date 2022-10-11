@@ -10,7 +10,7 @@ export default function setMimeTypes() {
     'video/webm;codecs=H264',
     'video/webm;codecs=avc1',
     'video/webm;codecs=vp8,opus',
-    'video/WEBM;codecs=VP8,OPUS',
+    'video/webm;codecs=VP8,OPUS',
     'video/webm;codecs=vp9,opus',
     'video/webm;codecs=vp8,vp9,opus',
     'video/webm;codecs=h264,opus',
@@ -25,7 +25,7 @@ export default function setMimeTypes() {
       const option = document.createElement('option');
       option.textContent = mimeType;
       option.value = mimeType;
-      if ('video/webm') option.selected = true;
+      if (mimeType === 'video/webm') option.selected = true;
       selectMimeTypeEL.appendChild(option);
     }
   })

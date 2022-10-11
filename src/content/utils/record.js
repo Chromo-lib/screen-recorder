@@ -3,6 +3,7 @@ export default async function record(request) {
 
   const isVideoMediaSourceWebcam = videoMediaSource === 'webcam';
   let stream = null;
+  let audioStream = null;
 
   const constraints = {
     video: { width: { ideal: resolution.width }, height: { ideal: resolution.height } },
@@ -15,7 +16,7 @@ export default async function record(request) {
   const mediaRecorder = new MediaRecorder(stream, { mimeType });
 
   if (!isVideoMediaSourceWebcam && enableMicrophone && isMicrophoneConnected) {
-    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioStream.getAudioTracks()[0].enabled = true;
     stream.addTrack(audioStream.getAudioTracks()[0]);
   }
@@ -24,7 +25,7 @@ export default async function record(request) {
     mediaRecorder.start();
 
     mediaRecorder.onstart = () => {
-      resolve({ mediaRecorder, stream });
+      resolve({ mediaRecorder, stream, audioStream });
     };
 
     mediaRecorder.onerror = async event => {

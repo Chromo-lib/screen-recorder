@@ -90,6 +90,10 @@ export default [
           ["@babel/plugin-transform-react-jsx", { pragma: "h", pragmaFrag: "Fragment", }]
         ],
       }),
+      postcss({
+        extract: true,
+        extract: path.resolve('dist/content.css')
+      }),
       commonjs(),
       replaceWord({ from, to }),
       process.env.NODE_ENV === 'production' ? terser() : ''

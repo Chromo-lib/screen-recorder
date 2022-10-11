@@ -1,6 +1,5 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { btnStyle } from '../styles';
 import convertTime from '../utils/convertTime';
 
 export default function Timer({ isRecordingPlay, isRecordingPaused }) {
@@ -27,6 +26,6 @@ export default function Timer({ isRecordingPlay, isRecordingPaused }) {
   }, [isRecordingPlay, isRecordingPaused]);
 
   return (
-    <button style={btnStyle} title="Timer">{timer}</button>
+    <button title="Timer">{timer}</button>
   )
 }

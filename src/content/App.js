@@ -3,7 +3,6 @@ import { useCallback, useState } from 'preact/hooks';
 
 import Draggable from './components/Draggable';
 import Timer from './components/Timer';
-import { btnStyle, containerStyle } from './styles';
 import downloadVideo from './utils/downloadVideo';
 import record from './utils/record';
 
@@ -13,21 +12,22 @@ import ButtonPlay from './components/button/ButtonPlay';
 import ButtonResume from './components/button/ButtonResume';
 import ButtonStop from './components/button/ButtonStop';
 import ButtonDownload from './components/button/ButtonDownload';
-import ButtonCameraOn from './components/button/ButtonCameraOn';
-import ButtonCameraOff from './components/button/ButtonCameraOff';
 
-import Camera from './components/Camera';
+import ButtonMicOn from './components/button/ButtonMicOn';
+import ButtonMicOff from './components/button/ButtonMicOff';
+
 import PreBug from './components/PreBug';
 
 function App({ request }) {
-  const { tabTitle, autoDownload, enableTimer, enableCamera } = request;
+  const { tabTitle, autoDownload, enableTimer, enableCamera, enableMicrophone, isMicrophoneConnected } = request;
 
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [isRecordingPlay, setIsRecordingPlay] = useState(false);
   const [isRecordingPaused, setIsRecordingPaused] = useState(false);
   const [isRecordingFinished, setIsRecordingFinished] = useState(false);
 
-  const [isCameraOn, setIsCameraOn] = useState(enableCamera);
+  const [audioStream, setAudioStream] = useState(null);
+  const [isMicOn, setIsMicOn] = useState(enableCamera);
 
   const [errorMessage, setErrorMessage] = useState(false);
 
@@ -36,9 +36,10 @@ function App({ request }) {
   const onMediaControl = async (actionType) => {
     try {
       if (actionType === 'play' && mediaRecorder === null) {
-        const { mediaRecorder, stream } = await record(request);
+        const { mediaRecorder, stream, audioStream } = await record(request);
 
         setMediaRecorder(mediaRecorder);
+        setAudioStream(audioStream);
         setIsRecordingPlay(true);
 
         mediaRecorder.onstop = async () => {
@@ -70,13 +71,17 @@ function App({ request }) {
       }
     } catch (error) {
       console.log('Recording: ', error);
-      setIsCameraOn(false);
+      setIsMicOn(false);
       setErrorMessage('Max Timeout 5s, Please refresh the page');
     }
   }
 
-  const onCameraControl = () => {
-    setIsCameraOn(!isCameraOn);
+  const onMicControl = () => {
+    if (audioStream && audioStream.getTracks().length > 0) {
+      const state = !isMicOn;
+      audioStream.getTracks().forEach((track) => { track.enabled = state });
+      setIsMicOn(state);
+    }
   }
 
   const onDownload = useCallback(() => {
@@ -84,43 +89,41 @@ function App({ request }) {
   }, []);
 
   if (errorMessage) {
-    return <Draggable style={containerStyle}><PreBug text={errorMessage} /></Draggable>
+    return <Draggable className="drag-reco" style={{ left: '20px' }}><PreBug text={errorMessage} /></Draggable>
   }
   if (autoDownload && isRecordingFinished) {
     return <Fragment></Fragment>
   }
   if (isRecordingFinished) {
-    return <Draggable style={containerStyle}>
-      <ButtonMove style={btnStyle} />
-      {!autoDownload && <ButtonDownload style={btnStyle} onClick={onDownload} />}
+    return <Draggable className="drag-reco" style={{ left: '20px' }}>
+      <ButtonMove />
+      {!autoDownload && <ButtonDownload onClick={onDownload} />}
     </Draggable>
   }
   else {
     return <Fragment>
-      <Draggable style={containerStyle}>
+      <Draggable className="drag-reco" style={{ left: '20px' }}>
 
-        <ButtonMove style={btnStyle} />
+        <ButtonMove />
 
-        {enableCamera && <Fragment>
-          {isCameraOn
-            ? <ButtonCameraOff style={btnStyle} onClick={onCameraControl} />
-            : <ButtonCameraOn style={btnStyle} onClick={onCameraControl} />}
+        {isMicrophoneConnected && <Fragment>
+          {isMicOn
+            ? <ButtonMicOn onClick={onMicControl} />
+            : <ButtonMicOff onClick={onMicControl} />}
         </Fragment>}
 
         {enableTimer && <Timer isRecordingPlay={isRecordingPlay} isRecordingPaused={isRecordingPaused} />}
 
         {isRecordingPlay
           ? <Fragment>
-            <ButtonStop style={btnStyle} onClick={() => { onMediaControl('stop') }} title={isRecordingFinished ? 'Stop Recording' : 'Cancel Recording'} />
+            <ButtonStop onClick={() => { onMediaControl('stop') }} title={isRecordingFinished ? 'Stop Recording' : 'Cancel Recording'} />
             {isRecordingPaused
-              ? <ButtonResume style={btnStyle} onClick={() => { onMediaControl('resume') }} />
-              : <ButtonPause style={btnStyle} onClick={() => { onMediaControl('pause') }} />}
+              ? <ButtonResume onClick={() => { onMediaControl('resume') }} />
+              : <ButtonPause onClick={() => { onMediaControl('pause') }} />}
           </Fragment>
 
-          : <ButtonPlay style={btnStyle} onClick={() => { onMediaControl('play') }} />}
+          : <ButtonPlay onClick={() => { onMediaControl('play') }} />}
       </Draggable>
-
-      {isCameraOn && <Camera request={request} isCameraOn={isCameraOn} />}
     </Fragment>
   }
 }
