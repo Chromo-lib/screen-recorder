@@ -1,4 +1,4 @@
-# 🔥 [Reco](https://wutility.github.io/screen-recorder)
+# 🔥 [Reco](https://chromo-lib.github.io/screen-recorder/)
 Browser extension to record audio, webcam, window, screen and tab.
 
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen) ![GitHub release](https://img.shields.io/github/release/Chromo-lib/reco/all?logo=GitHub) ![](https://badgen.net/github/license/Chromo-lib/reco)  
