@@ -1,10 +1,11 @@
 {
   "name": "reco",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Reco is screen, audio and camera recorder extension tool",
   "main": "index.js",
   "private": true,
   "scripts": {
+    "docs": "servino -r docs -w docs",
     "cp": "bash ./copy.sh",
     "dev": "NODE_ENV=dev rollup -c -w",
     "build": "yarn cp && NODE_ENV=production rollup -c",
@@ -13,7 +14,8 @@
   },
   "dependencies": {
     "@preact/signals": "^1.1.1",
-    "preact": "^10.11.0"
+    "preact": "^10.11.0",
+    "servino": "^2.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
@@ -30,5 +32,5 @@
     "rollup-plugin-terser": "^7.0.2"
   },
   "author": "Haikel Fazzani",
-  "license": "MIT"
+  "license": "Apache Version 2.0"
 }
