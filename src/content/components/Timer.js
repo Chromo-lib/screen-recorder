@@ -9,14 +9,15 @@ export default function Timer({ isRecordingPlay, isRecordingPaused }) {
     let timerId;
 
     if (isRecordingPlay) {
-      const initialTime = Date.now();
-
       timerId = setInterval(() => {
         if (!isRecordingPaused) {
-          const timeDifference = Date.now() - initialTime;
-          setTimer(timeDifference);
+          setTimer(prev => {
+            const counter = prev + 1;
+            localStorage.setItem('reco-timer', '' + counter)
+            return counter
+          });
         }
-      }, 100);
+      }, 1000);
     }
 
     return () => {

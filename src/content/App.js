@@ -95,7 +95,8 @@ function App({ request }) {
 
   const onOpenEditor = useCallback(async () => {
     const videoURL = createLink(chunks);
-    await chrome.runtime.sendMessage({ from: 'content', videoURL, videoLen: chunks.length, tabTitle });
+    const videoLen = +localStorage.getItem('reco-timer');
+    await chrome.runtime.sendMessage({ from: 'content', videoURL, videoLen, tabTitle });
   }, []);
 
   const onDeleteRecording = () => {
