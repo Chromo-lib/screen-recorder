@@ -21,6 +21,8 @@ import createLink from './utils/createLink';
 import ButtonOpenEditor from './components/button/ButtonOpenEditor';
 import ButtonTash from './components/button/ButtonTash';
 
+const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
 function App({ request }) {
   const { tabTitle, autoDownload, enableTimer, enableCamera, isMicrophoneConnected } = request;
 
@@ -41,11 +43,7 @@ function App({ request }) {
   const onMediaControl = async (actionType) => {
     try {
       if (actionType === 'play' && mediaRecorder === null) {
-        const { mediaRecorder, stream, audioStream } = await record(request);
-
-        setMediaRecorder(mediaRecorder);
-        setAudioStream(audioStream);
-        setIsRecordingPlay(true);
+        const { mediaRecorder, stream, audioStream } = await record(request);        
 
         mediaRecorder.onstop = async () => {
           stream.getTracks().forEach(track => { track.stop(); });
@@ -61,6 +59,10 @@ function App({ request }) {
         mediaRecorder.ondataavailable = (e) => {
           chunks.push(e.data);
         }
+
+        setMediaRecorder(mediaRecorder);
+        setAudioStream(audioStream);
+        setIsRecordingPlay(true);
       }
 
       if (actionType === 'stop' && mediaRecorder) { mediaRecorder.stop(); }
@@ -113,7 +115,7 @@ function App({ request }) {
     return <Draggable className="drag-reco" style={{ left: '20px' }}>
       <ButtonMove />
       {!autoDownload && <ButtonTash onClick={onDeleteRecording} />}
-      {!autoDownload && <ButtonOpenEditor onClick={onOpenEditor} />}
+      {!autoDownload && !isFirefox && <ButtonOpenEditor onClick={onOpenEditor} />}
       {!autoDownload && <ButtonDownload onClick={onDownload} />}
     </Draggable>
   }
