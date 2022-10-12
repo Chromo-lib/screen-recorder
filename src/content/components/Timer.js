@@ -3,7 +3,7 @@ import { useState, useEffect } from 'preact/hooks';
 import convertTime from '../utils/convertTime';
 
 export default function Timer({ isRecordingPlay, isRecordingPaused }) {
-  const [timer, setTimer] = useState('00:00');
+  const [timer, setTimer] = useState(0);
 
   useEffect(() => {
     let timerId;
@@ -14,8 +14,7 @@ export default function Timer({ isRecordingPlay, isRecordingPaused }) {
       timerId = setInterval(() => {
         if (!isRecordingPaused) {
           const timeDifference = Date.now() - initialTime;
-          const formatted = convertTime(timeDifference);
-          setTimer(formatted);
+          setTimer(timeDifference);
         }
       }, 100);
     }
@@ -25,7 +24,5 @@ export default function Timer({ isRecordingPlay, isRecordingPaused }) {
     }
   }, [isRecordingPlay, isRecordingPaused]);
 
-  return (
-    <button title="Timer">{timer}</button>
-  )
+  return <button title="Timer">{convertTime(timer)}</button>
 }

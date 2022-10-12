@@ -48,6 +48,22 @@ export default [
     ]
   },
   {
+    input: "src/editor/index.js",
+    output: {
+      file: "dist/editor.js",
+      format: "iife",
+      sourcemap: false,
+    },
+    plugins: [
+      postcss({
+        extract: true,
+        extract: path.resolve('dist/editor.css')
+      }),
+      replaceWord({ from, to }),
+      process.env.NODE_ENV === 'production' ? terser() : ''
+    ]
+  },
+  {
     input: "src/permission/index.js",
     output: {
       file: "dist/permission.js",

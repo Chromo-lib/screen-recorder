@@ -1,0 +1,55 @@
+:root {
+  --light:#999999;
+  --black:#181717;
+  --green:#4CAF50;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 20px;
+  background: rgb(247, 247, 247);
+}
+
+button {
+  border: none;   
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  background-color: var(--black);  
+  outline: none;
+  letter-spacing: 2px;
+  line-height: 1.5;
+  transition: opacity .25s;
+}
+
+button:hover {opacity: 0.8;}
+
+button,input { margin: 10px 0; padding: 12px 25px; border-radius: 4px; }
+
+label {font-size: 1.2rem;}
+
+video {
+  width: 100%;  
+  box-shadow: 0 0 3em rgb(0 0 0 / 15%);
+}
+
+form {
+  display: grid;
+  background: white;
+    padding: 20px;
+    border-radius: 7px;
+    box-shadow: 0 0 3em rgb(0 0 0 / 15%);
+}
+
+h1 {margin-top: 0;}
+
+.br7 {border-radius: 7px;}

@@ -17,9 +17,12 @@ import ButtonMicOn from './components/button/ButtonMicOn';
 import ButtonMicOff from './components/button/ButtonMicOff';
 
 import PreBug from './components/PreBug';
+import createLink from './utils/createLink';
+import ButtonOpenEditor from './components/button/ButtonOpenEditor';
+import ButtonTash from './components/button/ButtonTash';
 
 function App({ request }) {
-  const { tabTitle, autoDownload, enableTimer, enableCamera, enableMicrophone, isMicrophoneConnected } = request;
+  const { tabTitle, autoDownload, enableTimer, enableCamera, isMicrophoneConnected } = request;
 
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [isRecordingPlay, setIsRecordingPlay] = useState(false);
@@ -30,6 +33,8 @@ function App({ request }) {
   const [isMicOn, setIsMicOn] = useState(enableCamera);
 
   const [errorMessage, setErrorMessage] = useState(false);
+
+  const [isAppClosed, setIsAppClosed] = useState(false);
 
   const chunks = [];
 
@@ -88,15 +93,26 @@ function App({ request }) {
     downloadVideo(chunks, tabTitle || 'reco', 'video/webm');
   }, []);
 
+  const onOpenEditor = useCallback(async () => {
+    const videoURL = createLink(chunks);
+    await chrome.runtime.sendMessage({ from: 'content', videoURL, videoLen: chunks.length, tabTitle });
+  }, []);
+
+  const onDeleteRecording = () => {
+    setIsAppClosed(true)
+  }
+
   if (errorMessage) {
     return <Draggable className="drag-reco" style={{ left: '20px' }}><PreBug text={errorMessage} /></Draggable>
   }
-  if (autoDownload && isRecordingFinished) {
+  if ((autoDownload && isRecordingFinished) || isAppClosed) {
     return <Fragment></Fragment>
   }
   if (isRecordingFinished) {
     return <Draggable className="drag-reco" style={{ left: '20px' }}>
       <ButtonMove />
+      {!autoDownload && <ButtonTash onClick={onDeleteRecording} />}
+      {!autoDownload && <ButtonOpenEditor onClick={onOpenEditor} />}
       {!autoDownload && <ButtonDownload onClick={onDownload} />}
     </Draggable>
   }
@@ -116,7 +132,7 @@ function App({ request }) {
 
         {isRecordingPlay
           ? <Fragment>
-            <ButtonStop onClick={() => { onMediaControl('stop') }} title={isRecordingFinished ? 'Stop Recording' : 'Cancel Recording'} />
+            <ButtonStop onClick={() => { onMediaControl('stop') }} title='Stop Recording' />
             {isRecordingPaused
               ? <ButtonResume onClick={() => { onMediaControl('resume') }} />
               : <ButtonPause onClick={() => { onMediaControl('pause') }} />}
