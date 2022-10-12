@@ -8,7 +8,7 @@
     "docs": "servino -r docs -w docs",
     "cp": "bash ./copy.sh",
     "dev": "NODE_ENV=dev rollup -c -w",
-    "build": "yarn cp && NODE_ENV=production rollup -c",
+    "build": "rm -rf dist && yarn cp && NODE_ENV=production rollup -c",
     "zip:chrome": "NODE_ENV=production BROWSER=chrome yarn build && (cd dist; zip -r ../chrome.zip .)",
     "zip:firefox": "NODE_ENV=production BROWSER=firefox yarn build && (cd dist; zip -r ../firefox.zip .)"
   },

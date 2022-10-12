@@ -8,15 +8,21 @@ import alias from '@rollup/plugin-alias';
 import { terser } from "rollup-plugin-terser";
 import { replaceWord } from './plugin';
 
-console.log('process ===> ', process.env.BROWSER, process.env.NODE_ENV);
+const pkg = require('./package.json');
+
+console.log('Process ===> ', process.env.BROWSER, process.env.NODE_ENV);
+
 const isChrome = process.env.BROWSER === undefined ? true : process.env.BROWSER === 'chrome';
-const from = isChrome ? 'browser' : 'chrome'; // this var for replaceWord plugin
-const to = isChrome ? 'chrome' : 'browser'; // this var for replaceWord plugin
+const from = isChrome ? 'browser' : 'chrome';
+const to = isChrome ? 'chrome' : 'browser';
 
 if (!isChrome) {
   const content = readFileSync(resolve(process.cwd(), 'manifest-v2.json'), 'utf8');
-  writeFileSync(resolve(process.cwd(), 'dist', 'manifest.json'), content)
+  writeFileSync(resolve(process.cwd(), 'dist', 'manifest.json'), content);
 }
+
+const isProduction = process.env.NODE_ENV === 'production';
+const banner = `/*! Reco - v${pkg.version} | Copyright 2022 - Haikel Fazzani */\n`;
 
 export default [
   {
@@ -24,11 +30,12 @@ export default [
     output: {
       file: "dist/background.js",
       format: "iife",
-      sourcemap: false,
+      sourcemap: !isProduction,
+      banner
     },
     plugins: [
       replaceWord({ from, to }),
-      process.env.NODE_ENV === 'production' ? terser() : ''
+      isProduction ? terser() : ''
     ]
   },
   {
@@ -36,15 +43,17 @@ export default [
     output: {
       file: "dist/popup.js",
       format: "iife",
-      sourcemap: false,
+      sourcemap: !isProduction,
+      banner
     },
     plugins: [
       postcss({
         extract: true,
+        minimize: isProduction,
         extract: path.resolve('dist/popup.css')
       }),
       replaceWord({ from, to }),
-      process.env.NODE_ENV === 'production' ? terser() : ''
+      isProduction ? terser() : ''
     ]
   },
   {
@@ -52,15 +61,17 @@ export default [
     output: {
       file: "dist/editor.js",
       format: "iife",
-      sourcemap: false,
+      sourcemap: !isProduction,
+      banner
     },
     plugins: [
       postcss({
         extract: true,
+        minimize: isProduction,
         extract: path.resolve('dist/editor.css')
       }),
       replaceWord({ from, to }),
-      process.env.NODE_ENV === 'production' ? terser() : ''
+      isProduction ? terser() : ''
     ]
   },
   {
@@ -68,15 +79,17 @@ export default [
     output: {
       file: "dist/permission.js",
       format: "iife",
-      sourcemap: false,
+      sourcemap: !isProduction,
+      banner
     },
     plugins: [
       postcss({
         extract: true,
+        minimize: isProduction,
         extract: path.resolve('dist/permission.css')
       }),
       replaceWord({ from, to }),
-      process.env.NODE_ENV === 'production' ? terser() : ''
+      isProduction ? terser() : ''
     ]
   },
   {
@@ -84,7 +97,8 @@ export default [
     output: {
       file: "dist/content.js",
       format: "iife",
-      sourcemap: false,
+      sourcemap: !isProduction,
+      banner
     },
     plugins: [
       alias({
@@ -108,11 +122,12 @@ export default [
       }),
       postcss({
         extract: true,
+        minimize: isProduction,
         extract: path.resolve('dist/content.css')
       }),
       commonjs(),
       replaceWord({ from, to }),
-      process.env.NODE_ENV === 'production' ? terser() : ''
+      isProduction ? terser() : ''
     ]
   }
 ];

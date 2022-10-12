@@ -66,18 +66,18 @@ const onStartRecord = async (e) => {
 
     const permission = await checkPermission(recordOptions);
     const devicesStatus = await checkDevices();
-    // const tabInfos = await getCurrentTabId();
+    const tabInfos = await getCurrentTabId();
 
-    // const response = await chrome.runtime.sendMessage({
-    //   from: 'popup',
-    //   message: 'start-record',
-    //   ...tabInfos,
-    //   ...recordOptions,
-    //   ...devicesStatus
-    // });
+    const response = await chrome.runtime.sendMessage({
+      from: 'popup',
+      message: 'start-record',
+      ...tabInfos,
+      ...recordOptions,
+      ...devicesStatus
+    });
 
-    // alertEl.style.display = 'block';
-    // alertEl.textContent = response;
+    alertEl.style.display = 'block';
+    alertEl.textContent = response;
   } catch (error) {
     if (!error.message.includes('The message port closed before a response was received')) {
       alertEl.style.display = 'block';

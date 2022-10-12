@@ -1,10 +1,10 @@
+import isFirefox from "./isFirefox";
+
 /** 
  * @param {Object} recordOptions 
  * @returns boolean
  */
 export default async function checkPermission(recordOptions) {
-
-  const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
   const showPermissionWin = () => chrome.windows.create({ url: 'permission.html?video=true&audio=true', width: 400, height: 400, type: 'popup' });
 
   if (isFirefox) { showPermissionWin(); return; }
