@@ -18,7 +18,7 @@ const createElement = (id = 'reco-controls') => {
 const onMessage = async (request, _, sendResponse) => {
   try {
     if (request.message === 'start-record' && request.from === 'worker') {
-      render(<Camera request={request} />, createElement('reco-camera'));
+      if (request.enableCamera) render(<Camera request={request} />, createElement('reco-camera'));
       render(<App request={request} />, createElement());
       sendResponse(request);
     }
@@ -28,8 +28,6 @@ const onMessage = async (request, _, sendResponse) => {
     }
   } catch (error) {
     console.log(error);
-    const permission = await navigator.permissions.query({ name: 'microphone' });
-    await chrome.runtime.sendMessage({ from: 'content', error: error.message, permission });
     sendResponse(error);
   }
 };

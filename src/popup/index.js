@@ -27,6 +27,25 @@ let recordOptions = {
   resolution: { width: 1280, height: 720 },
 }
 
+// const configuration = {
+//   enable: {
+//     microphone: false,
+//     camera: false,
+//     audioCamera: false,
+//   },
+//   deviceid: {
+//     microphone: 'default',
+//     camera: 'default',
+//   },
+//   mimeType: 'video/webm;codecs=vp8,opus',
+//   options: {
+//     enableTimer: true,
+//     autoDownload: true,
+//     cameraForm: 'circle',
+//   },
+//   resolution: { width: 1280, height: 720 }
+// }
+
 setAudioInputs();
 setMimeTypes();
 setResolutions();
@@ -47,18 +66,18 @@ const onStartRecord = async (e) => {
 
     const permission = await checkPermission(recordOptions);
     const devicesStatus = await checkDevices();
-    const tabInfos = await getCurrentTabId();
-    
-    const response = await chrome.runtime.sendMessage({
-      from: 'popup',
-      message: 'start-record',
-      ...tabInfos,
-      ...recordOptions,
-      ...devicesStatus
-    });
+    // const tabInfos = await getCurrentTabId();
 
-    alertEl.style.display = 'block';
-    alertEl.textContent = response;
+    // const response = await chrome.runtime.sendMessage({
+    //   from: 'popup',
+    //   message: 'start-record',
+    //   ...tabInfos,
+    //   ...recordOptions,
+    //   ...devicesStatus
+    // });
+
+    // alertEl.style.display = 'block';
+    // alertEl.textContent = response;
   } catch (error) {
     if (!error.message.includes('The message port closed before a response was received')) {
       alertEl.style.display = 'block';
