@@ -25,12 +25,16 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 13px;
   font-size: 14px;
   font-family: Arial, Helvetica, sans-serif;
   letter-spacing: 0.6px;
 }
 
  button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   border-radius: 4px;  
   text-transform: uppercase;
@@ -42,6 +46,13 @@ body {
   letter-spacing: 2px;
   line-height: 1.5;
   transition: opacity .25s;
+}
+
+.btn-svg {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: initial;
 }
 
 input {
@@ -62,17 +73,24 @@ input, select {
 
 input[type="checkbox"] {padding: 0; width: 15px; margin-right: 15px;}
 
-label,fieldset {
+label,fieldset {  
   color: var(--light);
   text-transform: uppercase;
   line-height: 1.5;
 }
 
-fieldset {margin-bottom: 10px; border: 1px solid #ddd; border-radius: 7px;}
+label {  
+  white-space: pre;
+}
+
+fieldset {margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 7px;}
 
 svg path{
   fill: var(--light);
 }
+
+svg {margin-right: 15px;}
+li svg {margin: 0;}
 
 button:hover {opacity: 0.8;}
 
@@ -131,16 +149,16 @@ legend {white-space: pre;}
 
 .border-bottom { border-bottom: 1px solid var(--light); }
 
-.p-20 {padding: 0.9rem;}
+.p-2 {padding: 0.9rem;}
 .p-5 {padding: 5px;}
 
-.ml-5 {margin-left: 5px;}
-.ml-10 { margin-left: 10px }
-.mr-10 { margin-right: 10px }
-.mb-10 { margin-bottom: 10px }
-.mt-10 { margin-top: 10px }
+.ml-05{margin-left: 5px;}
+.ml-1 { margin-left: 10px }
+.mr-1 { margin-right: 10px }
+.mb-1 { margin-bottom: 10px }
+.mt-1 { margin-top: 10px }
 
-.mb-20 { margin-bottom: 20px }
+.mb-2 { margin-bottom: 20px }
 
 .mt-0 {margin-top: 0;}
 

@@ -2,20 +2,21 @@
 #reco-camera button {
   background: transparent !important;
   border: 0;
-  font-size: 16px;
+  font-size: 14px;
   color: #fff;
   box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin: 0 5px;  
+  margin: 0 10px !important;
+  padding: 0 !important;  
   white-space: pre-wrap;
 }
 
 .drag-reco {
   width: max-content;
-  max-width: 370px;
+  max-width: max-content;
   height: 40px;
 
   position: fixed;
@@ -59,10 +60,6 @@
 
 .video-container-reco:hover .controls {
   opacity: 1;
-}
-
-.video-container-reco .controls button {
-  margin: 0 10px !important;
 }
 
 .alert-reco {

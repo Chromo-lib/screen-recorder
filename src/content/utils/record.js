@@ -1,5 +1,5 @@
 export default async function record(request) {
-  const { videoMediaSource, mimeType, enableMicrophone, isMicrophoneConnected, resolution, microphoneID } = request;
+  const { videoMediaSource, mimeType, enableMicrophone, isMicrophoneConnected, resolution, audioInput } = request;
 
   const isVideoMediaSourceWebcam = videoMediaSource === 'webcam';
   let stream = null;
@@ -16,7 +16,7 @@ export default async function record(request) {
   const mediaRecorder = new MediaRecorder(stream, { mimeType });
 
   if (!isVideoMediaSourceWebcam && enableMicrophone && isMicrophoneConnected) {
-    audioStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceid: microphoneID } });
+    audioStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceid: audioInput } });
     audioStream.getAudioTracks()[0].enabled = true;
     stream.addTrack(audioStream.getAudioTracks()[0]);
   }

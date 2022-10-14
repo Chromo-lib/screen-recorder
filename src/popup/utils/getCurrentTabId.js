@@ -5,8 +5,6 @@ export default async function getCurrentTabId() {
   const currentTab = tabs[0];
   const tabURL = new URL(currentTab.url).origin;
 
-  if (currentTab.url.includes('browser://')) {
-    throw new Error('This page is not supported...')
-  }
+  if (currentTab.url.includes('browser://')) throw new Error('This page is not supported...');
   else return { tabId: currentTab.id, tabTitle: currentTab.title, tabURL }
 }

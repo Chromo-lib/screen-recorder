@@ -19,7 +19,7 @@ import ButtonMicOff from './components/button/ButtonMicOff';
 import PreBug from './components/PreBug';
 import createLink from './utils/createLink';
 import ButtonOpenEditor from './components/button/ButtonOpenEditor';
-import ButtonTash from './components/button/ButtonTash';
+import ButtonClose from './components/button/ButtonClose';
 
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
@@ -102,7 +102,9 @@ function App({ request }) {
   }, []);
 
   const onDeleteRecording = () => {
-    setIsAppClosed(true)
+    if(window.confirm('Do you really want to delete this?')) {
+      setIsAppClosed(true)
+    }
   }
 
   if (errorMessage) {
@@ -114,7 +116,7 @@ function App({ request }) {
   if (isRecordingFinished) {
     return <Draggable className="drag-reco" style={{ left: '20px' }}>
       <ButtonMove />
-      {!autoDownload && <ButtonTash onClick={onDeleteRecording} />}
+      {!autoDownload && <ButtonClose onClick={onDeleteRecording} className="red" title="Delete Record" />}
       {!autoDownload && !isFirefox && <ButtonOpenEditor onClick={onOpenEditor} />}
       {!autoDownload && <ButtonDownload onClick={onDownload} />}
     </Draggable>

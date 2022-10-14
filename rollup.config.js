@@ -39,24 +39,6 @@ export default [
     ]
   },
   {
-    input: "src/popup/index.js",
-    output: {
-      file: "dist/popup.js",
-      format: "iife",
-      sourcemap: !isProduction,
-      banner
-    },
-    plugins: [
-      postcss({
-        extract: true,
-        minimize: isProduction,
-        extract: path.resolve('dist/popup.css')
-      }),
-      replaceWord({ from, to }),
-      isProduction ? terser() : ''
-    ]
-  },
-  {
     input: "src/editor/index.js",
     output: {
       file: "dist/editor.js",
@@ -88,6 +70,44 @@ export default [
         minimize: isProduction,
         extract: path.resolve('dist/permission.css')
       }),
+      replaceWord({ from, to }),
+      isProduction ? terser() : ''
+    ]
+  },
+  {
+    input: "src/popup/index.js",
+    output: {
+      file: "dist/popup.js",
+      format: "iife",
+      sourcemap: !isProduction,
+      banner
+    },
+    plugins: [
+      alias({
+        entries: [
+          { find: 'react', replacement: 'preact/compat' },
+          { find: 'react-dom/test-utils', replacement: 'preact/test-utils' },
+          { find: 'react-dom', replacement: 'preact/compat' },
+          { find: 'react/jsx-runtime', replacement: 'preact/jsx-runtime' }
+        ]
+      }),
+      nodeResolve({
+        extensions: [".js"],
+      }),
+      babel({
+        babelHelpers: 'runtime',
+        presets: ["@babel/preset-react"],
+        plugins: [
+          "@babel/plugin-transform-runtime",
+          ["@babel/plugin-transform-react-jsx", { pragma: "h", pragmaFrag: "Fragment", }]
+        ],
+      }),
+      postcss({
+        extract: true,
+        minimize: isProduction,
+        extract: path.resolve('dist/popup.css')
+      }),
+      commonjs(),
       replaceWord({ from, to }),
       isProduction ? terser() : ''
     ]

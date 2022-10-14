@@ -11,7 +11,7 @@ export default function Camera({ request }) {
   const {
     enableAudioCamera,
     enableCamera,
-    cameraID,
+    videoInput,
     isMicrophoneConnected,
     isCameraConnected,
     resolution,
@@ -19,8 +19,8 @@ export default function Camera({ request }) {
   } = request;
 
   const borderRadius = cameraForm === 'circle' ? '50%' : '7px';
-  const width = cameraForm === 'rectangle' ? '300px' : '240px';
-  const height = cameraForm === 'rectangle' ? '200px' : '240px';
+  const width = cameraForm === 'square' ? '340px' : '240px';
+  const height = cameraForm === 'square' ? '200px' : '240px';
 
   const videoEl = useRef();
   const [cameraStream, setCameraStream] = useState(null);
@@ -39,7 +39,7 @@ export default function Camera({ request }) {
     const constraints = {
       audio: isMicrophoneConnected,
       video: {
-        deviceId: cameraID,
+        deviceId: videoInput,
         facingMode: 'user',
         // height: { exact: videoMediaSource === 'webcam' ? resolution.height : videoEl.current.clientHeight },
         // width: { exact: videoMediaSource === 'webcam' ? resolution.width : videoEl.current.clientWidth }

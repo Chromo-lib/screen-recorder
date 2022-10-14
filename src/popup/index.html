@@ -2,131 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="description" content="Free screen recorder, browser extension">
-  <meta name="keywords" content="desktop, tab, window, record, recorder">
-  <meta name="author" content="Haikel Fazzani">
-  <title>Reco is screen, audio and camera recorder extension tool</title>
+  <title>Document</title>
   <link rel="stylesheet" href="popup.css">
 </head>
-
 <body>
-  <div class="w-100 d-flex flex-column p-20">
-    <fieldset>
-      <legend>Screen sharing</legend>
-      <ul class="w-100 d-flex justify-between" id="video-media-source">
-        <li class="active-tab" data-value="tab" title="share tab">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <path fill="currentColor"
-              d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V192h416v234z" />
-          </svg>
-          <span>tab</span>          
-        </li>
-
-        <li data-value="window" title="share window">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <path fill="currentColor"
-              d="M464 0H144c-26.5 0-48 21.5-48 48v48H48c-26.5 0-48 21.5-48 48v320c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48v-48h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-96 464H48V256h320v208zm96-96h-48V144c0-26.5-21.5-48-48-48H144V48h320v320z" />
-          </svg>
-          <span>window</span>          
-        </li>
-
-        <li data-value="screen" title="share screen">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
-            <path fill="currentColor"
-              d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z" />
-          </svg>
-          <span>desktop</span>          
-        </li>
-
-        <li data-value="webcam" title="Only Webcam">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M0 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H9.269c.144.162.33.324.531.475a6.785 6.785 0 0 0 .907.57l.014.006.003.002A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.224-.947l.003-.002.014-.007a4.473 4.473 0 0 0 .268-.148 6.75 6.75 0 0 0 .639-.421c.2-.15.387-.313.531-.475H2a2 2 0 0 1-2-2V6Zm2-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H2Z"/>
-            <path d="M8 6.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0Zm7 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Z"/>
-          </svg>
-          <span>Webcam</span>          
-        </li>
-      </ul>
-    </fieldset>
-
-    <form class="w-100" id="form-start-record">
-      <fieldset>
-        <legend>codec</legend>
-        <select class="mt-10" name="mimeType" id="mimeType"></select>
-      </fieldset>
-
-      <fieldset>
-        <legend>Microphone</legend>
-        <div class="vertical-align mb-10">
-          <input type="checkbox" id="enableMicrophone" name="enableMicrophone" checked value="true">
-          <label for="enableMicrophone">Microphone</label>
-        </div>
-        <select name="microphoneID" id="microphoneID"></select>
-      </fieldset>
-
-      <fieldset id="camera">
-        <legend>Camera</legend>
-
-        <div class="w-100 mb-10">
-          <div class="vertical-align">
-            <input type="checkbox" id="enableCamera" name="enableCamera" checked value="true">
-            <label for="enableCamera"> video</label>
-          </div>
-
-          <div class="vertical-align enableAudioCamera">
-            <input type="checkbox" id="enableAudioCamera" name="enableAudioCamera" value="false">
-            <label for="enableAudioCamera"> Background Audio</label>
-          </div>
-        </div>
-
-        <select name="cameraID" id="cameraID"></select>
-      </fieldset>
-
-      <fieldset id="options">
-        <legend>Options</legend>
-
-        <div class="w-100 d-flex">
-          <legend class="mr-10">Camera form</legend>
-          <select name="cameraForm" id="cameraForm">
-            <option value="circle" selected>circle</option>
-            <option value="square">Square</option>
-            <option value="rectangle">rectangle</option>
-          </select>
-        </div>
-
-        <div class="w-100 d-flex">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="ml-5 mr-10" viewBox="0 0 16 16">
-            <path d="M10.53 5.968h-.843v4.06h.843c1.117 0 1.622-.667 1.622-2.02 0-1.354-.51-2.04-1.622-2.04z"/>
-            <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm5.396 3.001V11H6.209V8.43H3.687V11H2.5V5.001h1.187v2.44h2.522V5h1.187zM8.5 11V5.001h2.188c1.824 0 2.685 1.09 2.685 2.984C13.373 9.893 12.5 11 10.69 11H8.5z"/>
-          </svg>
-          <legend class="mr-10">Resolution</legend>
-          <select name="resolution" id="resolution"></select>
-        </div>
-
-        <div class="w-100">
-          <div class="vertical-align">
-            <input type="checkbox" id="enableTimer" name="enableTimer" checked value="true">
-            <label for="enableTimer">Enable timer</label>
-          </div>
-        </div>
-
-        <div class="w-100">
-          <div class="vertical-align">
-            <input type="checkbox" id="autoDownload" name="autoDownload" checked value="true">
-            <label for="autoDownload">Enable auto download</label>
-          </div>
-        </div>            
-      </fieldset>
-
-      <button type="submit" class="w-100 d-flex">
-        <img src="record.svg" alt="record" width="20" height="20" class="mr-10" /> start record
-      </button>
-    </form>
-    
-    <pre class="alert" hidden></pre>
-  </div>
-
-  <script src="popup.js" defer></script>
+  <div id="root" class="w-100"></div>
+  <script src="popup.js"></script>
 </body>
 </html>

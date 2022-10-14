@@ -14,4 +14,6 @@ export default function downloadVideo(data, filename, type, vidExtension = 'webm
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   }, 1000);
+
+  return url;
 }

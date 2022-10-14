@@ -1,5 +1,8 @@
-export default function setMimeTypes() {
-  const selectMimeTypeEL = document.getElementById('mimeType')
+import { h } from 'preact';
+import { useMemo } from "preact/hooks";
+
+export default function MimeTypes({ onChange, value }) {
+
   const mimeTypes = [
     'video/webm',
     'video/webm;codecs=vp8',
@@ -20,13 +23,15 @@ export default function setMimeTypes() {
     // 'audio/wav'
   ];
 
-  mimeTypes.filter(mimeType => {
-    if (MediaRecorder.isTypeSupported(mimeType)) {
-      const option = document.createElement('option');
-      option.textContent = mimeType;
-      option.value = mimeType;
-      if (mimeType === 'video/webm') option.selected = true;
-      selectMimeTypeEL.appendChild(option);
-    }
-  })
+  const supported = useMemo(() => {
+    return mimeTypes.filter(mimeType => {
+      if (MediaRecorder.isTypeSupported(mimeType)) {
+        return mimeType
+      }
+    });
+  }, []);
+
+  return <select onChange={onChange} value={value} name="mimeType">
+    {supported.map((mimeType, i) => <option key={i} value={mimeType} selected={value === mimeType}>{mimeType}</option>)}
+  </select>
 }
