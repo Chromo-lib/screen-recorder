@@ -16,11 +16,7 @@ export default function Camera({ request }) {
     isCameraConnected,
     resolution,
     cameraForm
-  } = request;
-
-  const borderRadius = cameraForm === 'circle' ? '50%' : '7px';
-  const width = cameraForm === 'square' ? '340px' : '240px';
-  const height = cameraForm === 'square' ? '200px' : '240px';
+  } = request; 
 
   const videoEl = useRef();
   const [cameraStream, setCameraStream] = useState(null);
@@ -29,11 +25,11 @@ export default function Camera({ request }) {
   const [isClosed, setIsClosed] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach((track) => { track.stop(); });
-    }
+  const borderRadius = cameraForm === 'circle' ? '50%' : '7px';
+  const width = cameraForm === 'square' ? '340px' : '240px';
+  const height = cameraForm === 'square' ? '200px' : '240px';
 
+  useEffect(() => {
     if (!enableCamera || !isCameraConnected) return;
 
     const constraints = {

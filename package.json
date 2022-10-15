@@ -1,6 +1,6 @@
 {
   "name": "reco",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Reco is screen, audio and camera recorder extension tool",
   "main": "index.js",
   "private": true,
@@ -10,7 +10,8 @@
     "dev": "NODE_ENV=dev rollup -c -w",
     "build": "rm -rf dist && yarn cp && NODE_ENV=production rollup -c",
     "zip:chrome": "NODE_ENV=production BROWSER=chrome yarn build && (cd dist; zip -r ../chrome.zip .)",
-    "zip:firefox": "NODE_ENV=production BROWSER=firefox yarn build && (cd dist; zip -r ../firefox.zip .)"
+    "zip:firefox": "NODE_ENV=production BROWSER=firefox yarn build && (cd dist; zip -r ../firefox.zip .)",
+    "zip": "npm run zip:firefox && npm run zip:chrome"
   },
   "dependencies": {
     "@preact/signals": "^1.1.1",
