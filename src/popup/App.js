@@ -5,7 +5,7 @@ import ToggleMic from './containers/ToggleMic';
 import ToggleCamera from './containers/ToggleCamera';
 import MediaSource from './components/MediaSource';
 import AudioInputs from './containers/AudioInputs';
-import CameraForm from './containers/CameraForm';
+
 import MimeTypes from './containers/MimeTypes';
 import Resolutions from './containers/Resolutions';
 import VideoInputs from './containers/VideoInputs';
@@ -32,14 +32,25 @@ function App() {
 
     enableTimer: true,
     autoDownload: true,
-    cameraForm: 'circle',
     resolution: '1280x720',
+
+    placeholder: {
+      radius: 50,
+      width: 240,
+      height: 240
+    }
   });
 
   const [message, setMessage] = useState(null)
 
   const onChange = e => {
-    setOptions({ ...options, [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
+    console.log(e.target.name, e.target.value);
+    if (e.target.name.startsWith('placeholder')) {
+      const name = e.target.name.replace(/\w+\./g, '');
+      let placeholder = { ...options.placeholder, [name]: e.target.value };
+      setOptions({ ...options, placeholder });
+    }
+    else setOptions({ ...options, [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
   }
 
   const onStartRecording = async e => {
@@ -79,10 +90,22 @@ function App() {
         <AudioInputs onChange={onChange} value={options.audioInput} />
       </fieldset>
 
-      <fieldset class="w-100 d-flex align-center">
+      <fieldset>
         <legend>Camera</legend>
-        <ToggleCamera onClick={(status) => { setOptions({ ...options, enableCamera: status }) }} value={options.enableCamera} />
-        <VideoInputs onChange={onChange} value={options.videoInput} />
+
+        <div class="w-100 d-flex align-center">
+          <ToggleCamera onClick={(status) => { setOptions({ ...options, enableCamera: status }) }} value={options.enableCamera} />
+          <VideoInputs onChange={onChange} value={options.videoInput} />
+        </div>
+
+        <div class="w-100 vertical-align justify-between mt-1">
+          H: <input type="number" id="placeholder.height" name="placeholder.height"
+            min="0" onChange={onChange} value={options.placeholder.height} title="Height (px)" />
+          W: <input type="number" id="placeholder.width" name="placeholder.width"
+            min="0" onChange={onChange} value={options.placeholder.width} title="Width (px)" />
+          R: <input type="number" id="placeholder.width" name="placeholder.radius"
+            min="0" onChange={onChange} value={options.placeholder.radius} title="Border Radius (%)" />
+        </div>
       </fieldset>
 
       <fieldset class="w-100 d-flex align-center">
@@ -92,21 +115,18 @@ function App() {
       </fieldset>
 
       <fieldset class="w-100">
-        <legend>Others</legend>
-        <CameraForm onChange={onChange} value={options.cameraForm} />
+        <legend>options</legend>
+
         <Resolutions onChange={onChange} value={options.resolution} />
-        <div class="w-100">
-          <div class="vertical-align">
-            <input type="checkbox" id="enableTimer" name="enableTimer" onChange={onChange} value={options.enableTimer} checked={options.enableTimer} />
-            <label for="enableTimer">Enable timer</label>
-          </div>
+
+        <div class="w-100 vertical-align">
+          <input type="checkbox" id="enableTimer" name="enableTimer" onChange={onChange} value={options.enableTimer} checked={options.enableTimer} />
+          <label for="enableTimer">Enable timer</label>
         </div>
 
-        <div class="w-100">
-          <div class="vertical-align">
-            <input type="checkbox" id="autoDownload" name="autoDownload" onChange={onChange} value={options.autoDownload} checked={options.autoDownload} />
-            <label for="autoDownload">Enable auto download</label>
-          </div>
+        <div class="w-100 vertical-align">
+          <input type="checkbox" id="autoDownload" name="autoDownload" onChange={onChange} value={options.autoDownload} checked={options.autoDownload} />
+          <label for="autoDownload">Enable auto download</label>
         </div>
       </fieldset>
 

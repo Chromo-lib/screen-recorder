@@ -29,6 +29,7 @@
   border-radius: 20px;
   background: #000000c9;
   text-transform: uppercase;
+  text-align: center;
   z-index: 2147483647;
   cursor: move;
   box-shadow: 0 0 3em rgb(0 0 0 / 15%);
@@ -38,22 +39,22 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
+  display: block;
   z-index: 2147483647;
   cursor: move;
 }
 
 .video-container-reco video {
-  width: 80%;
-  height: 80%;
   object-fit: cover !important
 }
 
 .video-container-reco .controls {
-  background: #070707ce !important;
-  margin-bottom: 10px;
-  height: 15%;
-  padding: 0 7px;
-  border-radius: 20px;
+  width: fit-content;
+  background-color: #000000c9;
+  padding: 5px;
+  margin: 0 auto 10px;
+  border-radius: 50px;
+  text-align: center;
   opacity: 0;
   transition: opacity 0.25s;
 }
@@ -103,10 +104,10 @@
   margin-left: 0;
 }
 
-.shadow {
+.shadow-reco {
   box-shadow: 0 0 3em rgb(0 0 0 / 15%);
 }
 
-.shadow-0 {
+.shadow-reco-0 {
   box-shadow: none !important;
 }

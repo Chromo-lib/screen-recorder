@@ -21,20 +21,16 @@ export default async function record(request) {
     stream.addTrack(audioStream.getAudioTracks()[0]);
   }
 
-  return new Promise((resolve, reject) => {
-    mediaRecorder.start();
+  setTimeout(() => { mediaRecorder.start(); }, 100);
 
-    mediaRecorder.onstart = () => {
-      resolve({ mediaRecorder, stream, audioStream });
-    };
+  mediaRecorder.onerror = async event => {
+    console.error(`Error recording stream: ${event.error.name}`);
+    reject(event.error.name)
+  }
 
-    mediaRecorder.onerror = async event => {
-      console.error(`Error recording stream: ${event.error.name}`);
-      reject(event.error.name)
-    }
+  stream.getVideoTracks()[0].onended = async () => {
+    mediaRecorder.stop();
+  };
 
-    stream.getVideoTracks()[0].onended = async () => {
-      mediaRecorder.stop();
-    };
-  });
+  return { mediaRecorder, stream, audioStream }
 }

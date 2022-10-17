@@ -16,7 +16,6 @@ import ButtonDownload from './components/button/ButtonDownload';
 import ButtonMicOn from './components/button/ButtonMicOn';
 import ButtonMicOff from './components/button/ButtonMicOff';
 
-import PreBug from './components/PreBug';
 import createLink from './utils/createLink';
 import ButtonOpenEditor from './components/button/ButtonOpenEditor';
 import ButtonClose from './components/button/ButtonClose';
@@ -34,8 +33,6 @@ function App({ request }) {
   const [audioStream, setAudioStream] = useState(null);
   const [isMicOn, setIsMicOn] = useState(enableCamera);
 
-  const [errorMessage, setErrorMessage] = useState(false);
-
   const [isAppClosed, setIsAppClosed] = useState(false);
 
   const chunks = [];
@@ -43,7 +40,7 @@ function App({ request }) {
   const onMediaControl = async (actionType) => {
     try {
       if (actionType === 'play' && mediaRecorder === null) {
-        const { mediaRecorder, stream, audioStream } = await record(request);        
+        const { mediaRecorder, stream, audioStream } = await record(request);
 
         mediaRecorder.onstop = async () => {
           stream.getTracks().forEach(track => { track.stop(); });
@@ -58,7 +55,7 @@ function App({ request }) {
 
         mediaRecorder.ondataavailable = (e) => {
           chunks.push(e.data);
-        }
+        }        
 
         setMediaRecorder(mediaRecorder);
         setAudioStream(audioStream);
@@ -79,7 +76,6 @@ function App({ request }) {
     } catch (error) {
       console.log('Recording: ', error);
       setIsMicOn(false);
-      setErrorMessage('Max Timeout 5s, Please refresh the page');
     }
   }
 
@@ -107,9 +103,6 @@ function App({ request }) {
     }
   }
 
-  if (errorMessage) {
-    return <Draggable className="drag-reco" style={{ left: '20px' }}><PreBug text={errorMessage} /></Draggable>
-  }
   if ((autoDownload && isRecordingFinished) || isAppClosed) {
     return <Fragment></Fragment>
   }

@@ -20,7 +20,7 @@ html {
 
 body {
   margin: 0;
-  min-width: 300px;
+  width: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -72,6 +72,7 @@ input, select {
 }
 
 input[type="checkbox"] {padding: 0; width: 15px; margin-right: 15px;}
+input[type="number"] { border: 1px solid #ddd; padding: 5px; width: 60px;}
 
 label,fieldset {  
   color: var(--light);

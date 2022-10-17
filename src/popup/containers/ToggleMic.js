@@ -11,7 +11,7 @@ export default function ToggleMic({ onClick, value }) {
     onClick(status);
   }
 
-  return <button type="button" class="btn-svg" onClick={onToggleMic} title={enable ? 'Microphone ON' : 'Microphone OFF'}>
+  return <button type="button" class="btn-svg" onClick={onToggleMic} title={enable ? 'Turn ON Microphone' : 'Turn OFF Microphone'}>
     {enable
       ? <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
         <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z" />

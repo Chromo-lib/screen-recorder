@@ -15,8 +15,8 @@ export default function Camera({ request }) {
     isMicrophoneConnected,
     isCameraConnected,
     resolution,
-    cameraForm
-  } = request; 
+    placeholder
+  } = request;
 
   const videoEl = useRef();
   const [cameraStream, setCameraStream] = useState(null);
@@ -25,9 +25,21 @@ export default function Camera({ request }) {
   const [isClosed, setIsClosed] = useState(false);
   const [error, setError] = useState(null);
 
-  const borderRadius = cameraForm === 'circle' ? '50%' : '7px';
-  const width = cameraForm === 'square' ? '340px' : '240px';
-  const height = cameraForm === 'square' ? '200px' : '240px';
+  const isCircle = placeholder.radius === 50;
+  const borderRadius = isCircle ? '50%' : placeholder.radius + '%';
+
+  const containerStyle = {
+    width: isCircle ? placeholder.width + 'px' : 'auto',
+    height: isCircle ? placeholder.height + 'px' : 'auto',
+    background: 'transparent',
+    borderRadius
+  };
+
+  const videoStyle = {
+    width: isCircle ? '80%' : placeholder.width + 'px',
+    height: isCircle ? '80%' : placeholder.height + 'px',
+    borderRadius
+  }
 
   useEffect(() => {
     if (!enableCamera || !isCameraConnected) return;
@@ -92,10 +104,10 @@ export default function Camera({ request }) {
     </Draggable>
   }
   else {
-    return <Draggable className="drag-reco video-container-reco d-flex flex-column justify-between shadow-0"
-      style={{ width, height, background: 'transparent', borderRadius }}>
+    return <Draggable className="drag-reco video-container-reco shadow-reco-0"
+      style={containerStyle}>
 
-      <div class="controls d-flex align-center justify-center shadow">
+      <div class="controls d-flex align-center justify-center shadow-reco">
         {isMicrophoneConnected && <Fragment>
           {isMicOn
             ? <ButtonMicOn className="ml-0" onClick={onToggleMic} />
@@ -109,7 +121,7 @@ export default function Camera({ request }) {
         <ButtonClose className="red" onClick={onClose} />
       </div>
 
-      <video class="video-reco shadow" ref={videoEl} style={{ borderRadius }}></video>
+      <video class="video-reco shadow-reco" ref={videoEl} style={videoStyle}></video>
     </Draggable>
   }
 }

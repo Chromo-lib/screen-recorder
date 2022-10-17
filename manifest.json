@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Reco - Screen Recorder",
   "description": "An effective tool for high quality video record from active tab, desktop or webcam",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "icons": {
     "512": "icons/512.png",
     "128": "icons/128.png",

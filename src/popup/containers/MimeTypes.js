@@ -31,7 +31,7 @@ export default function MimeTypes({ onChange, value }) {
     });
   }, []);
 
-  return <select onChange={onChange} value={value} name="mimeType">
+  return <select onChange={onChange} value={value} name="mimeType" title="Choose a Video Codec">
     {supported.map((mimeType, i) => <option key={i} value={mimeType} selected={value === mimeType}>{mimeType}</option>)}
   </select>
 }
