@@ -1,6 +1,6 @@
 {
   "name": "reco",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Reco is screen, audio and camera recorder extension tool",
   "main": "index.js",
   "private": true,
