@@ -3,6 +3,11 @@ testr/
 dist/
 build/
 
+.cache
+.devin
+.cursor
+.agents
+
 .github
 .vscode
 .cache

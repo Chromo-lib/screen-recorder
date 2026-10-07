@@ -7,14 +7,14 @@ import isFirefox from "./isFirefox";
 export default async function checkPermission(recordOptions) {
   const showPermissionWin = () => chrome.windows.create({ url: 'permission.html?video=true&audio=true', width: 400, height: 400, type: 'popup' });
 
-  if (isFirefox) { showPermissionWin(); return; }
+  if (isFirefox) { showPermissionWin(); return false; }
 
   if (recordOptions.enableCamera) {
     const permissionCam = await navigator.permissions.query({ name: 'camera' });
 
     if (permissionCam.state !== 'granted') {
       showPermissionWin();
-      return;
+      return false;
     }
   }
 
@@ -23,7 +23,7 @@ export default async function checkPermission(recordOptions) {
 
     if (permissionMic.state !== 'granted') {
       showPermissionWin();
-      return;
+      return false;
     }
   }
 

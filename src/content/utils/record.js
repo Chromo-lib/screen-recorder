@@ -25,7 +25,7 @@ export default async function record(request) {
 
   mediaRecorder.onerror = async event => {
     console.error(`Error recording stream: ${event.error.name}`);
-    reject(event.error.name)
+    throw new Error(event.error.name)
   }
 
   stream.getVideoTracks()[0].onended = async () => {
